@@ -8,7 +8,7 @@
         var hooker = require('hooker'),
             fsExtra = require('fs-extra'),
             path = require('path'),
-            ngApimock = require('./../tasks/index')(),
+            ngApimock = require('./../../tasks/index')(),
             DEFAULT_OUTPUT_DIR = '.tmp/mocks',
             SOME_OTHER_DIR = '.tmp/some-mock-dir',
             log;

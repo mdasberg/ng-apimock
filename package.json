@@ -30,7 +30,7 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "node node_modules/jasmine-node/bin/jasmine-node test/*.spec.js"
+    "test": "node node_modules/jasmine-node/bin/jasmine-node test/unit/*.spec.js"
   },
   "dependencies": {
     "angular": "1.5.7",
