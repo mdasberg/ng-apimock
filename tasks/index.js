@@ -5,16 +5,24 @@
         var glob = require('glob'),
             async = require('async'),
             _ = require('lodash'),
-            exit = require('exit'),
             utils = require('../lib/utils.js'),
             processor = require('./processor.js')(),
             defaultOutputDir = '.tmp/mocks/';
 
         return {
             run: function (configuration) {
-                if (typeof configuration.src === 'undefined') {
+                if (configuration === undefined) {
+                    console.error('No configuration has been specified.');
+                    throw new Error('No configuration has been specified.');
+                }
+                
+                if (configuration.src === undefined) {
                     console.error('No mock source directory have been specified.');
-                    exit(1);
+                    throw new Error('No mock source directory have been specified.');
+                }
+                
+                if(configuration.done === undefined) {
+                    configuration.done = function() {}
                 }
 
                 var mocks,
