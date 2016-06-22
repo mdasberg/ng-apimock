@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="nl" data-ng-app="ng-apimock" data-ng-strict-di>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ng-apimock</title>
+
+    <script src="js/angular.min.js"></script>
+    <script src="js/angular-resource.min.js"></script>
+    <script src="js/ngApimock.js"></script>
+    <script src="js/controller.js"></script>
+    <script src="js/mocks.service.js"></script>
+    <script src="js/variables.service.js"></script>
+    <link href="css/main.css" rel="stylesheet"/>
+
+</head>
+<div data-ng-controller="NgApimockController as ctrl" class="container">
+    <h1>Scenario based api mocking support <small>by <a href="https://github.com/mdasberg/ng-apimock" target="_blank">ng-apimock</a></small></h1>
+
+    <hr />
+    <h4>How does it work?</h4>
+    <p>
+        It's very easy. Each line represents is an expression that matches a http call. <br />
+        By selecting a scenario, the call will not go through to the backend, but will return the matching response for the selected scenario.
+    </p>
+    <br />
+
+    <h4>Howtos</h4>
+    <p>
+        <a href="https://github.com/mdasberg/ng-apimock/blob/master/README.md#howto-write-mocks" target="_blank">Howto write mocks</a><br />
+        <a href="https://github.com/mdasberg/ng-apimock/blob/master/README.md#howto-serve-selected-mocks" target="_blank">Howto serve selected mocks</a>
+    </p>
+    <br />
+    <h4>Currently the following mocks have been detected</h4>
+
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Expression</th>
+            <th>Method</th>
+            <th>Name</th>
+            <th>Scenario</th>
+            <th>Echo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-ng-repeat="mock in ctrl.mocks" data-ng-init="selected = ctrl.selections[mock.identifier]">
+            <td>{{mock.expression.toString()}}</td>
+            <td>{{mock.method}}</td>
+            <td>{{mock.name}}</td>
+            <td><select name="{{mock.expression.toString()}}$${{mock.method}}" data-ng-options="k as k for (k, v) in mock.responses" data-ng-model="selected" data-ng-change="ctrl.selectMock(mock, selected)">
+                <option value="">passThrough</option>
+            </select></td>
+            <td>
+                <div data-ng-if="mock.method === 'POST'" data-ng-init="echo = !!mock.echo;">
+                    <label>
+                        <input type="checkbox" data-ng-value="true" data-ng-model="echo" data-ng-change="ctrl.echoMock(mock, echo)">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="5" class="text-right">
+                <button data-ng-click="ctrl.defaultMocks()">Reset to defaults</button>
+                <button data-ng-click="ctrl.passThroughMocks()">All to passThrough</button>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <h4>Currently the following global variables have been detected</h4>
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+            <th>Options</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-ng-repeat="(key, value) in ctrl.variables" id="{{key}}">
+            <td><span data-ng-bind="key"/></td>
+            <td><input type="text" data-ng-model="value" style="width: 100%;" data-ng-model-options="{ debounce: 500 }" data-ng-change='ctrl.updateVariable(key, value)'/></td>
+            <td class="text-right"><button data-ng-click="ctrl.deleteVariable(key)">x</button></td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td><input type="text" data-ng-model="ctrl.variable.key" style="width: 100%;"/></td>
+            <td><input type="text" data-ng-model="ctrl.variable.value" style="width: 100%;"/></td>
+            <td class="text-right"><button data-ng-click="ctrl.addVariable()" data-ng-disabled="ctrl.variable.key === undefined">Add variable</button> </td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+<body>
+</body>
+</html>

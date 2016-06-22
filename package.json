@@ -1,0 +1,57 @@
+{
+  "name": "ng-apimock",
+  "description": "Node plugin that provides the ability to use scenario based api mocking of angular apps",
+  "version": "1.0.2",
+  "homepage": "https://github.com/mdasberg/ng-apimock#readme",
+  "author": {
+    "name": "Mischa Dasberg",
+    "email": "mischa@dasberg.nl"
+  },
+  "contributors": [
+    "Justus Romijn <justus.romijn@gmail.com>",
+    "Richard Rijnberk <r.rijnberk@gmail.com>",
+    "Frank Merema <frankmerema@gmail.com"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdasberg/ng-apimock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mdasberg/ng-apimock/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/mdasberg/ng-apimock/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "tasks/index.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "npm local"
+  },
+  "dependencies": {
+    "angular": "1.5.7",
+    "angular-mocks": "1.5.7",
+    "angular-resource": "1.5.7",
+    "async": "2.0.0-rc.6",
+    "exit": "^0.1.2",
+    "fs-extra": "^0.30.0",
+    "glob": "7.0.5",
+    "hooker": "^0.2.3",
+    "lodash": "4.13.1",
+    "path": "0.12.7",
+    "sync-request": "3.0.1",
+    "url-join": "^1.1.0"
+  },
+  "keywords": [
+    "angular",
+    "api",
+    "mock",
+    "scenario",
+    "httpbackend"
+  ],
+  "devDependencies": {}
+}
