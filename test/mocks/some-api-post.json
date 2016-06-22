@@ -1,0 +1,26 @@
+{
+  "expression": "online\/rest\/some\/api\/.*\/and\/.*",
+  "method": "POST",
+  "name": "updateTodo",
+  "responses": {
+    "successful": {
+      "status": 200,
+      "default": true,
+      "data": {
+        "some": "thing"
+      }
+    },
+    "anotherSuccess": {
+      "status": 200,
+      "data": {
+        "some": "thing else"
+      }
+    },
+    "internal-server-error": {
+      "status": 500
+    }
+  }
+}
+
+        
+        

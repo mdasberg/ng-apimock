@@ -1,0 +1,15 @@
+<div ng-controller="SomeController as ctrl">
+    <h1>GET data with service</h1>
+    <p>
+        <span>data: <span>{{ctrl.data}}</span></span><br/>
+        <span>error: <span>{{ctrl.error}}</span></span>
+    </p>
+    <button ng-click="ctrl.refresh()">refresh</button>
+
+    <h1>POST data with service</h1><button ng-click="ctrl.update()">post me</button>
+    <p>
+        <span>data: <span>{{ctrl.postedData}}</span></span><br/>
+        <span>error: <span>{{ctrl.postedError}}</span></span><br />
+        <span>logging: <span>{{ctrl.logging}}</span></span>
+    </p>
+</div>
