@@ -30,14 +30,13 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "npm local"
+    "test": "node node_modules/jasmine-node/bin/jasmine-node test/*.spec.js"
   },
   "dependencies": {
     "angular": "1.5.7",
     "angular-mocks": "1.5.7",
     "angular-resource": "1.5.7",
     "async": "2.0.0-rc.6",
-    "exit": "^0.1.2",
     "fs-extra": "^0.30.0",
     "glob": "7.0.5",
     "hooker": "^0.2.3",
@@ -53,5 +52,8 @@
     "scenario",
     "httpbackend"
   ],
-  "devDependencies": {}
+  "devDependencies": {
+    "hooker": "^0.2.3",
+    "jasmine-node": "^1.14.5"
+  }
 }
