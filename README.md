@@ -24,7 +24,7 @@ var ngApimock = require('ng-apimock')();
 In order to use the available mocks, you need to call the run function with this line of JavaScript:
 
 ```js
-ngApimock.run({"src': "test/mocks", "outputPath", "path/to/outputDir", done: function() { // async });
+ngApimock.run({"src': "test/mocks", "outputPath", "path/to/outputDir", "done": function() { // async }});
 
 ```
 
