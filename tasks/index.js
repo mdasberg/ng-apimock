@@ -15,14 +15,15 @@
                     console.error('No configuration has been specified.');
                     throw new Error('No configuration has been specified.');
                 }
-                
+
                 if (configuration.src === undefined) {
                     console.error('No mock source directory have been specified.');
                     throw new Error('No mock source directory have been specified.');
                 }
-                
-                if(configuration.done === undefined) {
-                    configuration.done = function() {}
+
+                if (configuration.done === undefined) {
+                    configuration.done = function () {
+                    }
                 }
 
                 var mocks,
