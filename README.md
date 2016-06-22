@@ -73,7 +73,7 @@ you can make your data more flexible, like this:
 "responses": {
     "some-meaningful-scenario-name": {
         "data": {
-            "today": '%%today%%
+            "today": '%%today%%'
         }
     }
 }
