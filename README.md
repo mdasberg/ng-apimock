@@ -4,6 +4,9 @@
  - for local development 
  - for protractor testing
  
+#### Plugins that use ng-apimock
+ - [grunt-ng-apimock](https://mdasberg.github.io/grunt-ng-apimock) is a plugin that makes ng-apimock available for [Grunt](http://gruntjs.com/)
+
 ## Getting Started
 
 ```shell
