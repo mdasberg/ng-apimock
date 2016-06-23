@@ -6,6 +6,7 @@
  
 #### Plugins that use ng-apimock
  - [grunt-ng-apimock](https://mdasberg.github.io/grunt-ng-apimock) is a plugin that makes ng-apimock available for [Grunt](http://gruntjs.com/)
+ - [gulp-ng-apimock](https://mdasberg.github.io/gulp-ng-apimock) is a plugin that makes ng-apimock available for [Gulp](http://gulpjs.com/)
 
 ## Getting Started
 
