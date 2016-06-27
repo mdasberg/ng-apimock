@@ -121,6 +121,68 @@
             });
         });
 
+        describe('when changing some selected scenarios to passThrough', function () {
+            beforeEach(function () {
+                ngApimock.setGlobalVariable('replaceMe', 'y');
+                ngApimock.selectScenario('getAllTodos', 'some-meaningful-scenario-name');
+                ngApimock.selectScenario('updateTodo', 'successful');
+                browser.get('/index.html');
+            });
+
+            describe('when fetching data with a service', function () {
+                it('should show data when changing to scenario undefined', function () {
+                    expect(element(by.binding('ctrl.data')).getText()).toBe('[{"x":"y"}]');
+                    ngApimock.selectScenario('getAllTodos');
+                    element(by.buttonText('refresh')).click();
+                    expect(element(by.binding('ctrl.data')).getText()).toBe('[{"a":"b"}]');
+                });
+
+                it('should show data when changing to scenario passThrough', function () {
+                    expect(element(by.binding('ctrl.data')).getText()).toBe('[{"x":"y"}]');
+                    ngApimock.selectScenario('getAllTodos', 'passThrough');
+                    element(by.buttonText('refresh')).click();
+                    expect(element(by.binding('ctrl.data')).getText()).toBe('[{"a":"b"}]');
+                });
+            });
+
+            describe('when posting data with a service', function () {
+                beforeEach(function () {
+                    element(by.buttonText('post me')).click();
+                });
+
+                it('should show data when changing to scenario undefined', function () {
+                    expect(element(by.binding('ctrl.postedData')).getText()).toBe('{"some":"thing"}');
+                    ngApimock.selectScenario('updateTodo', 'anotherSuccess');
+                    element(by.buttonText('post me')).click();
+                    
+                    var text = element(by.binding('ctrl.postedData')).getText();
+                    expect(text).toBe('{"some":"thing else"}');
+                    text.then(function () {
+                        ngApimock.selectScenario('updateTodo');
+                    });
+                    
+                    element(by.buttonText('post me')).click();
+                    expect(element(by.binding('ctrl.postedData')).getText()).toBe('{"c":"d"}');
+                });
+
+
+                it('should show data when changing to scenario passThrough', function () {
+                    expect(element(by.binding('ctrl.postedData')).getText()).toBe('{"some":"thing"}');
+                    ngApimock.selectScenario('updateTodo', 'anotherSuccess');
+                    element(by.buttonText('post me')).click();
+
+                    var text = element(by.binding('ctrl.postedData')).getText();
+                    expect(text).toBe('{"some":"thing else"}');
+                    text.then(function () {
+                        ngApimock.selectScenario('updateTodo');
+                    });
+
+                    element(by.buttonText('post me')).click();
+                    expect(element(by.binding('ctrl.postedData')).getText()).toBe('{"c":"d"}');
+                });
+            });
+        });
+
         describe('when resetting the scenarios to default', function () {
             beforeAll(function () {
                 ngApimock.setGlobalVariable('replaceMe', 'y');

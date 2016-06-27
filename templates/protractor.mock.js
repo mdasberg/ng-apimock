@@ -49,7 +49,7 @@
             },
             json: {
                 identifier: identifier,
-                scenario: scenario
+                scenario: scenario || null
             }
         });
 
