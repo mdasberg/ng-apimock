@@ -172,8 +172,8 @@ This ensures that changing a scenario in one test, will not effect another test.
 ### Available functions
 All these functions are protractor promises, so they can be chained.
 
-#### selectScenario(json, scenarionName)
-Selects the given scenario
+#### selectScenario(json, scenarionName) 
+Selects the given scenario (when calling this function without a scenario or with 'passThrough' as scenario name, the call will be passed through to the actual backend)
   
 #### setAllScenariosToDefault()
 Resets all mocks to the default scenarios
