@@ -17,6 +17,10 @@ exports.config = {
         '../**/*.feature'
     ],
 
+    specs: [
+        '../**/*.feature'
+    ],
+
     onPrepare: function () {
         global.ngApimock = require('../../../.tmp/some-other-dir/protractor.mock.js');
         global.chai = chai;
