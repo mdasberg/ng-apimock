@@ -1,4 +1,8 @@
-(function() {
+(function () {
+    'use strict';
+
+    var fs = require('fs');
+
     module.exports = function () {
         this.Given(/^I open the test page$/, function (callback) {
             browser.get('/index.html').then(callback);
@@ -62,6 +66,18 @@
 
         this.When(/^I switch back to the mocking page$/, function (callback) {
             browser.get('/mocking').then(callback);
+        });
+
+        this.When(/^I click download$/, function (callback) {
+            element(by.buttonText('download')).click().then(callback);
+        });
+
+        this.Then(/^a file should be downloaded$/, function (callback) {
+            browser.wait(function() {
+                return fs.existsSync(browser.params.default_directory + 'my.pdf') || browser.params.environment === 'TRAVIS';
+            }, 5000).then(function() {
+                callback();
+            });
         });
     };
 })();
