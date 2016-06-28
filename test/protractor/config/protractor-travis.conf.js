@@ -4,8 +4,8 @@ config.sauceUser = process.env.SAUCE_USERNAME;
 config.sauceKey = process.env.SAUCE_ACCESS_KEY;
 
 config.params = {
-    environment: 'BUILD',
-    default_directory: '/home/travis/build/mdasberg/ng-apimock/'
+    environment: 'TRAVIS',
+    default_directory: '/tmp/'
 };
 
 config.multiCapabilities = [{

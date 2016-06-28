@@ -3,7 +3,7 @@ var config = require('./protractor-shared.conf').config;
 config.seleniumAddress = 'http://localhost:4444/wd/hub';
 
 config.params = {
-    environment: 'BUILD',
+    environment: 'LOCAL',
     default_directory: '/tmp/'
 };
 
