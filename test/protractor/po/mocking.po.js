@@ -40,7 +40,7 @@ MockingPO.prototype = Object.create({}, {
     },
     addVariable: {
         value: function(key, value) {
-            element(by.model('ctrl.variable.key')).clear().sendKeys(key).then(function() {
+            return element(by.model('ctrl.variable.key')).clear().sendKeys(key).then(function() {
                 element(by.model('ctrl.variable.value')).clear().sendKeys(value).then(function() {
                     element(by.buttonText('Add variable')).click();
                 });
@@ -49,14 +49,14 @@ MockingPO.prototype = Object.create({}, {
     },
     updateVariable: {
         value: function(key, value) {
-            element(by.id(key)).element(by.tagName('input')).clear().sendKeys(value).then(function() {
+            return element(by.id(key)).element(by.tagName('input')).clear().sendKeys(value).then(function() {
                 browser.sleep(501); // debounce of 500
             });
         }
     },
     deleteVariable: {
         value: function(key, value) {
-            element(by.id(key)).element(by.tagName('button')).click();
+            return element(by.id(key)).element(by.tagName('button')).click();
         }
     }
 });
