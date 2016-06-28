@@ -1,0 +1,16 @@
+{
+  "expression": "online\/rest\/some\/api\/pdf",
+  "method": "GET",
+  "name": "getPdfDownload",
+  "responses": {
+    "binary-download": {
+      "default": true,
+      "file": "test/mocks/test.pdf",
+      "headers": {
+        "Content-type": "application/pdf"
+      }
+    }
+  }
+}
+
+

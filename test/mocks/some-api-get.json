@@ -15,10 +15,6 @@
     },
     "internal-server-error": {
       "status":500
-    },
-    "binary-download": {
-        "file": "test/mocks/test.pdf",
-        "headers": {"Content-type":"application/pdf"}
     }
   }
 }

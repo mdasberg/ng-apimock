@@ -69,3 +69,7 @@ Feature: ngApimock - protractor usage (protractor.mock.js)
     When I delete the global variable replaceMe
     And I refresh the data
     Then the data from the get response should be [{"x":"%%replaceMe%%"}]
+
+  Scenario: When I select a scenario that returns a file the api call should return the selected scenario response
+    When I click download
+    Then a file should be downloaded

@@ -36,6 +36,9 @@
             fetch();
         }
 
+        vm.download = function() {
+            api.download({});
+        }
     }
 
     SomeController.$inject = ['api', 'shadowLogger'];

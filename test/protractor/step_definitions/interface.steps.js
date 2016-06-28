@@ -49,7 +49,5 @@
             // no idea how I can check the server log for now check manually
             callback();
         });
-
-
     };
 })();
