@@ -57,7 +57,7 @@
     "chai": "3.5.0",
     "chai-as-promised": "5.3.0",
     "connect": "^3.4.1",
-    "cucumber": "0.10.3",
+    "cucumber": "1.2.0",
     "cucumberjs-junitxml": "0.0.12",
     "hooker": "^0.2.3",
     "jasmine-node": "^1.14.5",
