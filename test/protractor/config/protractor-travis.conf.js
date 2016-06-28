@@ -9,7 +9,19 @@ config.multiCapabilities = [{
     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
     'build': process.env.TRAVIS_BUILD_NUMBER,
     'shardTestFiles': true,
-    'maxInstances': 10
+    'maxInstances': 10,
+    chromeOptions: {
+        // Get rid of --ignore-certificate yellow warning
+        args: ['--no-sandbox', '--test-type=browser'],
+        // Set download path and avoid prompting for download even though
+        // this is already the default on Chrome but for completeness
+        prefs: {
+            'download': {
+                'prompt_for_download': false,
+                'default_directory': '/tmp/'
+            }
+        }
+    }
 }];
 
 
