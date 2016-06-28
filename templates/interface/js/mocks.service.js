@@ -4,23 +4,22 @@
     function MockService($resource) {
         return $resource('/ngapimock/mocks', {}, {
             get: {
-                method: 'GET',
-                cache: true,
-                isArray: false
+                method: 'GET'
             },
             update: {
-                method: 'PUT',
-                isArray: false
+                method: 'PUT'
             },
             setAllToPassThrough: {
                 url: '/ngapimock/mocks/passthroughs',
-                method: 'PUT',
-                isArray: false
+                method: 'PUT'
             },
             setAllToDefault: {
                 url: '/ngapimock/mocks/defaults',
+                method: 'PUT'
+            },
+            toggleRecord: {
                 method: 'PUT',
-                isArray: false
+                url: '/ngapimock/mocks/record'
             }
         });
     }
