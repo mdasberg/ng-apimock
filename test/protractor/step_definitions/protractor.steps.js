@@ -74,7 +74,7 @@
 
         this.Then(/^a file should be downloaded$/, function (callback) {
             browser.wait(function() {
-                return fs.existsSync('/tmp/my.pdf');
+                return fs.existsSync(browser.params.default_directory + 'my.pdf');
             }, 5000).then(function() {
                 callback();
             });

@@ -13,10 +13,6 @@ exports.config = {
     framework: 'custom',
     frameworkPath: require.resolve('protractor-cucumber-framework'),
 
-    params: {
-        environment: 'BUILD'
-    },
-
     specs: [
         '../**/*.feature'
     ],

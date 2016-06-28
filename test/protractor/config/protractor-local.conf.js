@@ -2,6 +2,11 @@ var config = require('./protractor-shared.conf').config;
 
 config.seleniumAddress = 'http://localhost:4444/wd/hub';
 
+config.params = {
+    environment: 'BUILD',
+    default_directory: '/tmp/'
+};
+
 config.multiCapabilities = [
     {
         browserName: 'chrome',
@@ -15,7 +20,7 @@ config.multiCapabilities = [
             prefs: {
                 'download': {
                     'prompt_for_download': false,
-                    'default_directory': '/tmp/'
+                    'default_directory': config.params.default_directory
                 }
             }
         }

@@ -3,6 +3,11 @@ var config = require('./protractor-shared.conf').config;
 config.sauceUser = process.env.SAUCE_USERNAME;
 config.sauceKey = process.env.SAUCE_ACCESS_KEY;
 
+config.params = {
+    environment: 'BUILD',
+    default_directory: '/home/travis/build/mdasberg/ng-apimock/'
+};
+
 config.multiCapabilities = [{
     'browserName': 'chrome',
     'name': 'ngApimock - protractor',
@@ -18,7 +23,7 @@ config.multiCapabilities = [{
         prefs: {
             'download': {
                 'prompt_for_download': false,
-                'default_directory': '/tmp/'
+                'default_directory': config.params.default_directory
             }
         }
     }
