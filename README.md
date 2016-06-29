@@ -56,10 +56,10 @@ There are a couple of rules to follow.
     "some-meaningful-scenario-name": {
       "default": true, // if false or not provided this response will not be used as default
       "status": 200, // optional - defaults to 200
-      "data": {}, // optional
       "headers": {}, // optional - defaults to {}
-      "statusText": "", //optional
-      "file": "path/to/some/file.pdf"   // optional, will result in file download instead of data
+      "data": {}, // optional
+      "file": "path/to/file.ext" // optional, when provided don't forget the matching content-type header as it will result in a file download instead of data
+      "statusText": "" // optional
     },
     "some-other-meaningful-scenario-name": {
       "data": {}
