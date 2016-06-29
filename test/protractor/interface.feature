@@ -93,3 +93,16 @@ Feature: ngApimock - web interface usage
     When I switch back to the mocking page
     And I click echo
     Then it should disable echoing
+
+  Scenario: When I enable recording the api calls should be recorded
+    When I switch back to the mocking page
+    And I click record
+    And I switch back to the test page
+    And I refresh the data
+    And I switch back to the mocking page
+
+    When I show the recordings
+    Then there should be recordings present
+
+    When I hide the recordings
+    Then there should be no recordings present

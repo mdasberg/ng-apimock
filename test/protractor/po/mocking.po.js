@@ -1,64 +1,53 @@
-'use strict';
+(function () {
+    'use strict';
 
-/**
- * Mocking page object.
- * @constructor
- */
-var MockingPO = function () {
-};
+    /**
+     * Mocking page object.
+     * @constructor
+     */
+    var MockingPO = function () {
+        var openDetailCounter = 0;
 
-MockingPO.prototype = Object.create({}, {
-    partials: {
-       get: function() {
-           return element(by.name('partials/.*$$GET'));
-       }
-    },
-    apiGET: {
-        get: function() {
-            return element(by.name('online/rest/some/api/.*/and/.*$$GET'));
-        }
-    },
-    apiPOST: {
-        get: function() {
-            return element(by.name('online/rest/some/api/.*/and/.*$$POST'));
-        }
-    },
-    echoPOST: {
-        get: function() {
-            return element(by.model('echo'));
-        }
-    },
-    passThrough: {
-        value: function() {
+        this.partials = element(by.name('partials/.*$$GET'));
+        this.apiGET = element(by.name('online/rest/some/api/.*/and/.*$$GET'));
+        this.apiPOST = element(by.name('online/rest/some/api/.*/and/.*$$POST'));
+        this.echoPOST = element(by.model('echo'));
+        this.record = element(by.model('ctrl.record'));
+        this.recordings = function(index) {
+            return element.all(by.repeater('mock in ctrl.mocks')).get(index + openDetailCounter).all(by.binding('recording.url'));
+        };
+        this.showRecordings = function (index) {
+            return element.all(by.repeater('mock in ctrl.mocks')).get(index).element(by.linkText('Show')).click().then(function(){
+                openDetailCounter++;
+            });
+        };
+        this.hideRecordings = function (index) {
+            return element.all(by.repeater('mock in ctrl.mocks')).get(index).element(by.linkText('Hide')).click().then(function() {
+                openDetailCounter--;
+            });
+        };
+        this.passThrough = function() {
             return element(by.buttonText('All to passThrough')).click();
-        }
-    },
-    defaults: {
-        value: function() {
+        };
+        this.defaults = function() {
             return element(by.buttonText('Reset to defaults')).click();
-        }
-    },
-    addVariable: {
-        value: function(key, value) {
-            return element(by.model('ctrl.variable.key')).clear().sendKeys(key).then(function() {
-                element(by.model('ctrl.variable.value')).clear().sendKeys(value).then(function() {
-                    element(by.buttonText('Add variable')).click();
+        };
+        this.addVariable = function(key, value) {
+            return element(by.model('ctrl.variable.key')).clear().sendKeys(key).then(function () {
+                return element(by.model('ctrl.variable.value')).clear().sendKeys(value).then(function () {
+                    return element(by.buttonText('Add variable')).click();
                 });
             });
-        }
-    },
-    updateVariable: {
-        value: function(key, value) {
-            return element(by.id(key)).element(by.tagName('input')).clear().sendKeys(value).then(function() {
-                browser.sleep(501); // debounce of 500
+        };
+        this.updateVariable = function(key, value) {
+            return element(by.id(key)).element(by.tagName('input')).clear().sendKeys(value).then(function () {
+                return browser.sleep(501); // debounce of 500
             });
-        }
-    },
-    deleteVariable: {
-        value: function(key, value) {
+        };
+        this.deleteVariable = function(key) {
             return element(by.id(key)).element(by.tagName('button')).click();
-        }
-    }
-});
+        };
+    };
 
-module.exports = MockingPO;
+    module.exports = MockingPO;
+})();

@@ -58,7 +58,7 @@ There are a couple of rules to follow.
       "status": 200, // optional - defaults to 200
       "headers": {}, // optional - defaults to {}
       "data": {}, // optional
-      "file": "path/to/file.ext" // optional, when provided don't forget the matching content-type header
+      "file": "path/to/file.ext" // optional, when provided don't forget the matching content-type header as it will result in a file download instead of data
       "statusText": "" // optional
     },
     "some-other-meaningful-scenario-name": {
@@ -173,7 +173,7 @@ This ensures that changing a scenario in one test, will not effect another test.
 ### Available functions
 All these functions are protractor promises, so they can be chained.
 
-#### selectScenario(json, scenarionName) 
+#### selectScenario(json, scenarionName)
 Selects the given scenario (when calling this function without a scenario or with 'passThrough' as scenario name, the call will be passed through to the actual backend)
   
 #### setAllScenariosToDefault()
@@ -187,6 +187,11 @@ Adds or updates the global key/value pair
 
 #### deleteGlobalVariable(key)
 Remove the global variable matching the key
+
+### Howto use recording functionality
+You can record API calls in NgApimock. This is usefull if you have a live API, and want to create mocks for them. 
+You turn on Recording in the header Record (checkbox), and start calling the API. Requests are recored for each mock. You can zoom in up to Request Response information.
+The response data can be used in mock files, described earlier.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code committing.

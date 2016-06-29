@@ -44,10 +44,33 @@
             callback();
         });
 
-
         this.Then(/^it should disable echoing$/, function (callback) {
             // no idea how I can check the server log for now check manually
             callback();
+        });
+
+        this.When(/^I click record$/, function (callback) {
+            po.record.click().then(callback);
+        });
+
+        this.When(/^I show the recordings$/, function (callback) {
+            po.showRecordings(1).then(function() {
+                callback();
+            });
+        });
+
+        this.Then(/^there should be recordings present$/, function (callback) {
+            expect(po.recordings(1).count()).to.eventually.be.equal(2).and.notify(callback);
+        });
+
+        this.When(/^I hide the recordings$/, function (callback) {
+            po.hideRecordings(1).then(function() {
+                callback();
+            });
+        });
+
+        this.Then(/^there should be no recordings present$/, function (callback) {
+            expect(po.recordings(1).count()).to.eventually.be.equal(0).and.notify(callback);
         });
     };
 })();
