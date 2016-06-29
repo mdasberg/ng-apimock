@@ -190,7 +190,7 @@ Remove the global variable matching the key
 
 ### Howto use recording functionality
 You can record API calls in NgApimock. This is usefull if you have a live API, and want to create mocks for them. 
-You turn on Recording in the header Record (checkbox), and start calling the API. Requests are recored for each mock. You can zoom in up to Request Response information.
+You turn on Recording in the header Record (checkbox), and start calling the API. Requests are recorded for each mock. You can zoom in up to Request Response information.
 The response data can be used in mock files, described earlier.
 
 ## Contributing
