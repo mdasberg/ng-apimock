@@ -1,3 +1,10 @@
+<a name="1.1.2"></a>
+# 1.1.2 (2016-06-29)
+
+## Feature
+- Add file response functionality (e.g. a pdf download)
+- Add recording functionality in the web interface
+
 <a name="1.1.1"></a>
 # 1.1.1 (2016-06-27)
 
