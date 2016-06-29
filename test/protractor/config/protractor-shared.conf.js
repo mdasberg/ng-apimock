@@ -27,6 +27,8 @@ exports.config = {
         global.expect = chai.expect;
     },
     onCleanUp: function () {
+    },
+    onComplete: function() {
         server.kill();
     },
     beforeLaunch: function () {
