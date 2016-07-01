@@ -1,8 +1,8 @@
-var server = require('child_process')
-    .exec('node test/example/server.js', function (err, stdout, stderr) {
-    });
+var child_process = require('child_process'),
+    chai = require('chai'),
+    q = require('q'),
+    server = child_process.spawn('node', ['test/example/server.js']);
 
-var chai = require('chai');
 chai.use(require('chai-as-promised'));
 
 exports.config = {
@@ -28,8 +28,7 @@ exports.config = {
     },
     onCleanUp: function () {
     },
-    onComplete: function() {
-        server.kill();
+    onComplete: function () {
     },
     beforeLaunch: function () {
 
@@ -45,3 +44,7 @@ exports.config = {
         format: 'summary'
     }
 };
+
+process.on('exit', function() {
+    server.kill();
+});
