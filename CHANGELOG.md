@@ -1,3 +1,9 @@
+<a name="1.1.3"></a>
+# 1.1.3 (2016-07-01)
+
+## Bugfix
+- Fix preventing mocks added more than once
+
 <a name="1.1.2"></a>
 # 1.1.2 (2016-06-29)
 
