@@ -9,8 +9,9 @@
         var openDetailCounter = 0;
 
         this.partials = element(by.name('partials/.*$$GET'));
-        this.apiGET = element(by.name('online/rest/some/api/.*/and/.*$$GET'));
-        this.apiPOST = element(by.name('online/rest/some/api/.*/and/.*$$POST'));
+        this.getAllTodos = element(by.name('online/rest/some/api/.*/and/.*$$GET'));
+        this.updateTodo = element(by.name('online/rest/some/api/.*/and/.*$$POST'));
+        this.getPdfDownload = element(by.name('online/rest/some/api/pdf$$GET'));
         this.echoPOST = element(by.model('echo'));
         this.record = element(by.model('ctrl.record'));
         this.recordings = function(index) {

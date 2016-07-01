@@ -2,6 +2,15 @@ Feature: ngApimock - web interface usage
 
   Scenario: Open the mocking interface page
     Given I open the test page
+    When I switch to the mocking page
+
+  Scenario Outline: Verify defaults
+    Then expression with name <name> should have scenario <scenario> selected as default
+    Examples:
+      | name           | scenario        |
+      | getPdfDownload | binary-download |
+      | getAllTodos    | passThrough     |
+      | updateTodo     | successful      |
 
   Scenario: When I select a scenario the api call should return the selected scenario response
     When I switch to the mocking page

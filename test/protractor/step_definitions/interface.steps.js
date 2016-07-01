@@ -3,12 +3,16 @@
         var MockingPO = require('./../po/mocking.po'),
             po = new MockingPO();
 
+        this.Then(/^expression with name (.*) should have scenario (.*) selected as default$/, function (name, scenario, callback) {
+            expect(po[name].all(by.css('option[selected="selected"]')).first().getText()).to.eventually.equal(scenario).and.notify(callback);
+        });
+
         this.When(/^I select scenario (.*) for getAllTodos from the dropdown$/, function (scenario, callback) {
-            po.apiGET.sendKeys(scenario).then(callback)
+            po.getAllTodos.sendKeys(scenario).then(callback)
         });
 
         this.When(/^I select scenario (.*) for updateTodo from the dropdown$/, function (scenario, callback) {
-            po.apiPOST.sendKeys(scenario).then(callback);
+            po.updateTodo.sendKeys(scenario).then(callback);
         });
 
         this.When(/^I switch back to the test page$/, function (callback) {
@@ -54,7 +58,7 @@
         });
 
         this.When(/^I show the recordings$/, function (callback) {
-            po.showRecordings(1).then(function() {
+            po.showRecordings(1).then(function () {
                 callback();
             });
         });
@@ -64,7 +68,7 @@
         });
 
         this.When(/^I hide the recordings$/, function (callback) {
-            po.hideRecordings(1).then(function() {
+            po.hideRecordings(1).then(function () {
                 callback();
             });
         });
