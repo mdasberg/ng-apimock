@@ -14,4 +14,9 @@
     </p>
 
     <h1>Get binary data with service</h1><button ng-click="ctrl.download()">download</button>
+
+    <h1>Get data with delay using the hold function</h1>
+    <button ng-click="ctrl.refresh()" id="delayed-button">get data</button>
+    <div ng-if="ctrl.loading" id="loading-message">Getting your data, not yet ready</div>
+    <div ng-if="ctrl.success" id="loading-success">Loading done</div>
 </div>
