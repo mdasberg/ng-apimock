@@ -173,9 +173,18 @@ This ensures that changing a scenario in one test, will not effect another test.
 ### Available functions
 All these functions are protractor promises, so they can be chained.
 
-#### selectScenario(json, scenarionName)
+#### selectScenario(json, scenarionName, options)
 Selects the given scenario (when calling this function without a scenario or with 'passThrough' as scenario name, the call will be passed through to the actual backend)
+
+##### Supported options
+###### hold 
+When set to true the subsequent mock-calls will not be immediately returned, but stored in a session. Use `releaseMock(mockName)` (see below) to trigger the mock call to finish.
+Very usefull for testing loading states of your UI. Use in conjunction with `browser.ignoreSynchronization = true` 
   
+#### releaseMock(mockName)
+Release a mock the was hold using the options object in `selectScenario` (see above)
+Trying to release a mock the was not hold will result in a error and failing test.
+
 #### setAllScenariosToDefault()
 Resets all mocks to the default scenarios
 
