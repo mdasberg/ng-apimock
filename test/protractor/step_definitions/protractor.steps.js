@@ -82,7 +82,6 @@
 
         this.Given(/^the used mock is delayed$/, function (callback) {
             ngApimock.selectScenario('getAllTodos', 'some-meaningful-scenario-name', { hold: true }).then(callback);
-            browser.ignoreSynchronization = true;
         });
 
         this.When(/^I click the button to get the data$/, function (callback) {
@@ -94,7 +93,6 @@
         });
 
         this.When(/^the mock is released$/, function (callback) {
-            browser.ignoreSynchronization = false;
             ngApimock.releaseMock('getAllTodos').then(callback);
         });
 

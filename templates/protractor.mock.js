@@ -34,6 +34,7 @@
         var deferred = protractor.promise.defer(), hold;
 
         if (options && options.hold) {
+            browser.ignoreSynchronization = true;
             hold = options.hold;
         }
         // #1
@@ -73,6 +74,7 @@
      * @param {String} name The name of the mock
      */
     function releaseMock(name) {
+        browser.ignoreSynchronization = false;
         var deferred = protractor.promise.defer();
         var response = request('POST', baseUrl + '/mocks/release', {
             headers: {
