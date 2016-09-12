@@ -179,7 +179,7 @@ Selects the given scenario (when calling this function without a scenario or wit
 ##### Supported options
 ###### hold 
 When set to true the subsequent mock-calls will not be immediately returned, but stored in a session. Use `releaseMock(mockName)` (see below) to trigger the mock call to finish.
-Very usefull for testing loading states of your UI. Use in conjunction with `browser.ignoreSynchronization = true` 
+Very usefull for testing loading states of your UI.
   
 #### releaseMock(mockName)
 Release a mock the was hold using the options object in `selectScenario` (see above)
