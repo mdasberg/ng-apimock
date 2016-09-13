@@ -79,5 +79,29 @@
                 callback();
             });
         });
+
+        this.Given(/^the used mock is delayed$/, function (callback) {
+            ngApimock.selectScenario('getAllTodos', 'some-meaningful-scenario-name', { hold: true }).then(callback);
+        });
+
+        this.When(/^I click the button to get the data$/, function (callback) {
+            element(by.id('delayed-button')).click().then(callback);
+        });
+
+        this.Then(/^I see a loading warning$/, function (callback) {
+            expect(element(by.id('loading-message')).isPresent()).to.eventually.be.true.and.notify(callback);
+        });
+
+        this.When(/^the mock is released$/, function (callback) {
+            ngApimock.releaseMock('getAllTodos').then(callback);
+        });
+
+        this.Then(/^I don't see the loading warning$/, function (callback) {
+            expect(element(by.id('loading-message')).isPresent()).to.eventually.be.false.and.notify(callback);
+        });
+
+        this.Then(/^I see a success message$/, function (callback) {
+            expect(element(by.id('loading-success')).isPresent()).to.eventually.be.true.and.notify(callback);
+        });
     };
 })();

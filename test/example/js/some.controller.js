@@ -5,8 +5,12 @@
         var vm = this;
 
         var fetch = function () {
+            vm.loading = true;
+            vm.success = false;
             api.fetch({x: 'x', y: 'y'}, function (data) {
                 vm.data = data;
+                vm.loading = false;
+                vm.success = true;
             }, function (response) {
                 vm.error = response.status;
             });
@@ -34,11 +38,11 @@
 
         vm.refresh = function () {
             fetch();
-        }
+        };
 
         vm.download = function() {
             api.download({});
-        }
+        };
     }
 
     SomeController.$inject = ['api', 'shadowLogger'];

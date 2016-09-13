@@ -28,10 +28,15 @@
      *
      * @param {Object | String} data The data object containing all the information for an expression or the name of the mock.
      * @param scenario The scenario that is selected to be returned when the api is called.
+     * @param {Object} options Currently only supports 'hold' property to delay response of a mock call
      */
-    function selectScenario(data, scenario) {
-        var deferred = protractor.promise.defer();
-        
+    function selectScenario(data, scenario, options) {
+        var deferred = protractor.promise.defer(), hold;
+
+        if (options && options.hold) {
+            browser.ignoreSynchronization = true;
+            hold = options.hold;
+        }
         // #1
         var identifier;
         if (typeof data === 'string') { // name of the mock
@@ -49,12 +54,39 @@
             },
             json: {
                 identifier: identifier,
-                scenario: scenario || null
+                scenario: scenario || null,
+                hold: hold
             }
         });
 
         if (response.statusCode !== 200) {
             deferred.reject('Could not select scenario [' + scenario + ']');
+        } else {
+            deferred.fulfill();
+        }
+        return deferred.promise;
+    }
+
+    /**
+     * release a mock that was hold in the selectScenario function
+     * This feature only works when using named mocks (i.e. it does not work by expression
+     * Also releasing is independent of the selected scenario
+     * @param {String} name The name of the mock
+     */
+    function releaseMock(name) {
+        browser.ignoreSynchronization = false;
+        var deferred = protractor.promise.defer();
+        var response = request('POST', baseUrl + '/mocks/release', {
+            headers: {
+                'Content-Type': 'application/json',
+                'ngapimockid': ngapimockid
+            },
+            json: {
+                identifier: name
+            }
+        });
+        if (response.statusCode !== 200) {
+            deferred.reject('Could not release mock with name [' + name + ']');
         } else {
             deferred.fulfill();
         }
@@ -172,6 +204,7 @@
     /** This Protractor mock allows you to specify which scenario from your json api files you would like to use for your tests. */
     module.exports = {
         selectScenario: selectScenario,
+        releaseMock: releaseMock,
         addMockModule: addMockModule,
         removeMockModule: removeMockModule,
         setAllScenariosToDefault: setAllScenariosToDefault,
