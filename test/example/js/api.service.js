@@ -10,6 +10,11 @@
                 method: 'GET',
                 isArray: true
             },
+            fetchAsJsonP: {
+                method: 'JSONP',
+                isArray: true,
+                params: {callback: 'JSON_CALLBACK'}
+            },
             update: {
                 method: 'POST',
                 isArray: false
