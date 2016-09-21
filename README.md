@@ -49,7 +49,7 @@ There are a couple of rules to follow.
 ```js
 {
   "expression": "your expression here (ie a regex without the leading and trailing '/' or a string)",
-  "method": "the http method (ie GET, POST, PUT or DELETE)",
+  "method": "the http method (ie GET, POST, PUT or DELETE)", // supports JSONP as well
   "name": "identifiable name for this service call"  // if non is provided, expression$$method will be used
   "isArray": "indicates if the response data is an array or object",
   "responses": {

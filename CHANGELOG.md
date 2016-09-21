@@ -1,3 +1,15 @@
+<a name="1.1.5"></a>
+# 1.1.5 (2016-09-21)
+
+## Feature
+Add JSONP support
+
+<a name="1.1.4"></a>
+# 1.1.4 (2016-09-13)
+
+## Feature
+Feature delayed mock response added
+
 <a name="1.1.3"></a>
 # 1.1.3 (2016-07-01)
 

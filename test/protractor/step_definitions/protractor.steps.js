@@ -17,6 +17,10 @@
             element(by.buttonText('refresh')).click().then(callback);
         });
 
+        this.When(/^And I refresh using JSONP the data$/, function (callback) {
+            element(by.buttonText('refresh with jsonp callback')).click().then(callback);
+        });
+
         this.Then(/^the data from the get response should be (.*)$/, function (data, callback) {
             expect(element(by.binding('ctrl.data')).getText()).to.eventually.equal(data).and.notify(callback);
         });
