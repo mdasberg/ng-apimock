@@ -73,8 +73,9 @@
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'index.html')).toBeTruthy();
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'angular.min.js')).toBeTruthy();
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'angular-resource.min.js')).toBeTruthy();
-                expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'ngApimock.js')).toBeTruthy();
-                expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'controller.js')).toBeTruthy();
+                expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + '_ngApimock.js')).toBeTruthy();
+                expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'ngapimock.component.js')).toBeTruthy();
+                expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'ngapimock.controller.js')).toBeTruthy();
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'mocks.service.js')).toBeTruthy();
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'js' + path.sep + 'variables.service.js')).toBeTruthy();
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'css' + path.sep + 'main.css')).toBeTruthy();
@@ -101,8 +102,9 @@
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'index.html')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'angular.min.js')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'angular-resource.min.js')).toBeTruthy();
-                expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'ngApimock.js')).toBeTruthy();
-                expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'controller.js')).toBeTruthy();
+                expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + '_ngApimock.js')).toBeTruthy();
+                expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'ngapimock.component.js')).toBeTruthy();
+                expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'ngapimock.controller.js')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'mocks.service.js')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'variables.service.js')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'css' + path.sep + 'main.css')).toBeTruthy();

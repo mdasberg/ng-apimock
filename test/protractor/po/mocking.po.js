@@ -13,17 +13,17 @@
         this.updateTodo = element(by.name('online/rest/some/api/.*/and/.*$$POST'));
         this.getPdfDownload = element(by.name('online/rest/some/api/pdf$$GET'));
         this.echoPOST = element(by.model('echo'));
-        this.record = element(by.model('ctrl.record'));
+        this.record = element(by.model('$ctrl.record'));
         this.recordings = function(index) {
-            return element.all(by.repeater('mock in ctrl.mocks')).get(index + openDetailCounter).all(by.binding('recording.url'));
+            return element.all(by.repeater('mock in $ctrl.mocks')).get(index + openDetailCounter).all(by.binding('recording.url'));
         };
         this.showRecordings = function (index) {
-            return element.all(by.repeater('mock in ctrl.mocks')).get(index).element(by.linkText('Show')).click().then(function(){
+            return element.all(by.repeater('mock in $ctrl.mocks')).get(index).element(by.linkText('Show')).click().then(function(){
                 openDetailCounter++;
             });
         };
         this.hideRecordings = function (index) {
-            return element.all(by.repeater('mock in ctrl.mocks')).get(index).element(by.linkText('Hide')).click().then(function() {
+            return element.all(by.repeater('mock in $ctrl.mocks')).get(index).element(by.linkText('Hide')).click().then(function() {
                 openDetailCounter--;
             });
         };
@@ -34,8 +34,8 @@
             return element(by.buttonText('Reset to defaults')).click();
         };
         this.addVariable = function(key, value) {
-            return element(by.model('ctrl.variable.key')).clear().sendKeys(key).then(function () {
-                return element(by.model('ctrl.variable.value')).clear().sendKeys(value).then(function () {
+            return element(by.model('$ctrl.variable.key')).clear().sendKeys(key).then(function () {
+                return element(by.model('$ctrl.variable.value')).clear().sendKeys(value).then(function () {
                     return element(by.buttonText('Add variable')).click();
                 });
             });
