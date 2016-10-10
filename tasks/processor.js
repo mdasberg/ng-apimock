@@ -4,7 +4,8 @@
     module.exports = function () {
         var glob = require("glob"),
             fs = require('fs-extra'),
-            path = require('path');
+            path = require('path'),
+            ngApimockCwd = path.resolve(__dirname, '..');
 
         /**
          * Process all the mocks.
@@ -31,13 +32,14 @@
          * #2 copy the dependencies to the output directory
          */
         function generateMockingInterface(outputDir) {
+            var templateDir = path.join(ngApimockCwd, '/templates/interface'),
+                nodeModulesDir = path.join(ngApimockCwd, '/node_modules');
             // #1
-            var templateDir = path.join(path.resolve(__dirname, '..'),'/templates/interface');
-            glob.sync('**/*', {cwd: templateDir, root: '/'}).forEach(function(file) {
+
+            glob.sync('**/*', {cwd: templateDir, root: '/'}).forEach(function (file) {
                 fs.copySync(templateDir + path.sep + file, outputDir + path.sep + file);
             });
 
-            var nodeModulesDir = path.join(process.cwd(), '/node_modules');
             fs.copySync(nodeModulesDir + path.sep + 'angular' + path.sep + 'angular.min.js', outputDir + path.sep + 'js' + path.sep + 'angular.min.js');
             fs.copySync(nodeModulesDir + path.sep + 'angular-resource' + path.sep + 'angular-resource.min.js', outputDir + path.sep + 'js' + path.sep + 'angular-resource.min.js');
         }
@@ -50,7 +52,7 @@
          * #2 write the template to file
          */
         function generateProtractorMock(outputDir) {
-            fs.copySync(path.resolve(__dirname, '..') + '/templates/protractor.mock.js', outputDir + path.sep +'protractor.mock.js');
+            fs.copySync(ngApimockCwd + '/templates/protractor.mock.js', outputDir + path.sep + 'protractor.mock.js');
         }
 
         return {
