@@ -1,3 +1,9 @@
+<a name="1.1.8"></a>
+# 1.1.8 (2016-10-10)
+
+## Bugfix
+- Fix missing angular problem (when both ngapimock and the project that uses it has the same version)
+
 <a name="1.1.7"></a>
 # 1.1.7 (2016-10-10)
 
