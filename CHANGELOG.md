@@ -1,20 +1,26 @@
+<a name="1.1.7"></a>
+# 1.1.7 (2016-10-10)
+
+## Bugfix
+- Fix incorrect version to angular. (The project using ngApimock can have another version.)
+
 <a name="1.1.6"></a>
 # 1.1.6 (2016-10-10)
 
 ## Changes
-Interface is now a component
+- Interface is now a component
 
 <a name="1.1.5"></a>
 # 1.1.5 (2016-09-21)
 
 ## Feature
-Add JSONP support
+- Add JSONP support
 
 <a name="1.1.4"></a>
 # 1.1.4 (2016-09-13)
 
 ## Feature
-Feature delayed mock response added
+- Feature delayed mock response added
 
 <a name="1.1.3"></a>
 # 1.1.3 (2016-07-01)

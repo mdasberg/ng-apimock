@@ -1,7 +1,7 @@
 {
   "name": "ng-apimock",
   "description": "Node plugin that provides the ability to use scenario based api mocking of angular apps",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "homepage": "https://mdasberg.github.io/ng-apimock",
   "author": {
     "name": "Mischa Dasberg",
