@@ -1,3 +1,9 @@
+<a name="1.1.6"></a>
+# 1.1.6 (2016-10-10)
+
+## Changes
+Interface is now a component
+
 <a name="1.1.5"></a>
 # 1.1.5 (2016-09-21)
 
