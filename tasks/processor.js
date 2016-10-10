@@ -5,7 +5,9 @@
         var glob = require("glob"),
             fs = require('fs-extra'),
             path = require('path'),
-            ngApimockCwd = path.resolve(__dirname, '..');
+            ngApimockCwd = path.resolve(__dirname, '..'),
+            ANGULAR_JS_PATH_SUFFIX = path.sep + 'angular' + path.sep + 'angular.min.js',
+            ANGULAR_RESOURCE_PATH_SUFFIX = path.sep + 'angular-resource' + path.sep + 'angular-resource.min.js';
 
         /**
          * Process all the mocks.
@@ -34,14 +36,29 @@
         function generateMockingInterface(outputDir) {
             var templateDir = path.join(ngApimockCwd, '/templates/interface'),
                 nodeModulesDir = path.join(ngApimockCwd, '/node_modules');
+
+            if (!fs.existsSync(fs.existsSync(nodeModulesDir + '/angular'))) {
+                nodeModulesDir = path.join(process.cwd(), '/node_modules');
+            }
             // #1
 
             glob.sync('**/*', {cwd: templateDir, root: '/'}).forEach(function (file) {
                 fs.copySync(templateDir + path.sep + file, outputDir + path.sep + file);
             });
 
-            fs.copySync(nodeModulesDir + path.sep + 'angular' + path.sep + 'angular.min.js', outputDir + path.sep + 'js' + path.sep + 'angular.min.js');
-            fs.copySync(nodeModulesDir + path.sep + 'angular-resource' + path.sep + 'angular-resource.min.js', outputDir + path.sep + 'js' + path.sep + 'angular-resource.min.js');
+            var angularJs = nodeModulesDir + ANGULAR_JS_PATH_SUFFIX,
+                angularResource = nodeModulesDir + ANGULAR_RESOURCE_PATH_SUFFIX;
+
+            if(!fs.existsSync(angularJs)) {
+                angularJs = path.join(process.cwd(), '/node_modules') + ANGULAR_JS_PATH_SUFFIX;
+            }
+
+            if(!fs.existsSync(angularResource)) {
+                angularResource = path.join(process.cwd(), '/node_modules') + ANGULAR_RESOURCE_PATH_SUFFIX;
+            }
+
+            fs.copySync(angularJs, outputDir + path.sep + 'js' + path.sep + 'angular.min.js');
+            fs.copySync(angularResource, outputDir + path.sep + 'js' + path.sep + 'angular-resource.min.js');
         }
 
         /**
