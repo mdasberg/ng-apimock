@@ -46,7 +46,8 @@
     "node-uuid": "^1.4.7",
     "path": "0.12.7",
     "sync-request": "3.0.1",
-    "url-join": "1.1.0"
+    "url-join": "1.1.0",
+    "uuid": "^3.0.0"
   },
   "keywords": [
     "angular",
