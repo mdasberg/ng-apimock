@@ -17,7 +17,22 @@
         angular.module('ngApimock').run(NgApimockHeader)
     };
 
-    browser.addMockModule('ngApimock', ProtractorMock, {'ngapimockid': ngapimockid});
+    browser.getProcessedConfig().then(function (config) {
+        if (config.useAllAngular2AppRoots) {
+            // angular 2 does not have addMockModule support @see https://github.com/angular/protractor/issues/3092
+            // fallback to cookie
+            require('hooker').hook(browser, 'get', {
+                post: function (result) {
+                    return result.then(function () {
+                        return browser.manage().addCookie('ngapimockid', ngapimockid, '/', 'localhost');
+                    });
+                }
+            });
+        } else {
+            browser.addMockModule('ngApimock', ProtractorMock, {'ngapimockid': ngapimockid})
+        }
+    });
+
 
     /**
      * The selectScenario function stores the relevant information from the given data that
@@ -43,7 +58,7 @@
             identifier = data;
         } else if (data.name) { // the data containing the name of the mock
             identifier = data.name;
-        } else { 
+        } else {
             identifier = data.expression + '$$' + data.method;
         }
         // #2
@@ -142,7 +157,7 @@
      * @param value The value.
      */
     function setGlobalVariable(key, value) {
-       var deferred = protractor.promise.defer();
+        var deferred = protractor.promise.defer();
         var response = request('PUT', baseUrl + '/variables', {
             headers: {
                 'Content-Type': 'application/json',
@@ -167,7 +182,7 @@
      * @param key The key.
      */
     function deleteGlobalVariable(key) {
-       var deferred = protractor.promise.defer();
+        var deferred = protractor.promise.defer();
         var response = request('DELETE', baseUrl + '/variables/' + key, {
             headers: {
                 'Content-Type': 'application/json',
