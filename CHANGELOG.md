@@ -1,3 +1,9 @@
+<a name="1.1.9"></a>
+# 1.1.9 (2016-11-21)
+
+## Feature
+- Add support for AngularJS 2 apps
+
 <a name="1.1.8"></a>
 # 1.1.8 (2016-10-10)
 
