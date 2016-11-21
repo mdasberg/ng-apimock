@@ -1,5 +1,5 @@
-<a name="1.1.9"></a>
-# 1.1.9 (2016-11-21)
+<a name="1.1.10"></a>
+# 1.1.10 (2016-11-21)
 
 ## Feature
 - Add support for AngularJS 2 apps
