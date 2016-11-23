@@ -1,8 +1,9 @@
-<a name="1.1.11"></a>
-# 1.1.11 (2016-11-23)
+<a name="1.1.12"></a>
+# 1.1.12 (2016-11-23)
 
 ## Feature
 - Fix incorrect checking if angular exists within the ng-apimock node_modules
+- Fix broken interface
 
 <a name="1.1.10"></a>
 # 1.1.10 (2016-11-21)
