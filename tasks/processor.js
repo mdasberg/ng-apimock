@@ -37,7 +37,7 @@
             var templateDir = path.join(ngApimockCwd, '/templates/interface'),
                 nodeModulesDir = path.join(ngApimockCwd, '/node_modules');
 
-            if (!fs.existsSync(fs.existsSync(nodeModulesDir + '/angular'))) {
+            if (!fs.existsSync(nodeModulesDir + '/angular')) {
                 nodeModulesDir = path.join(process.cwd(), '/node_modules');
             }
             // #1
