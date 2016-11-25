@@ -24,7 +24,7 @@
             require('hooker').hook(browser, 'get', {
                 post: function (result) {
                     return result.then(function () {
-                        return browser.manage().addCookie('ngapimockid', ngapimockid, '/', 'localhost');
+                        return browser.manage().addCookie('ngapimockid', ngapimockid);
                     });
                 }
             });
