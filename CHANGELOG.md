@@ -1,3 +1,9 @@
+<a name="1.1.13"></a>
+# 1.1.13 (2016-11-26)
+
+## Bugfix
+- Fix too restrictive domain and path settings from cookie for Angular 2
+
 <a name="1.1.12"></a>
 # 1.1.12 (2016-11-23)
 
