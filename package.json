@@ -43,7 +43,6 @@
     "glob": "7.1.1",
     "hooker": "0.2.3",
     "lodash": "4.17.2",
-    "node-uuid": "^1.4.7",
     "path": "0.12.7",
     "sync-request": "3.0.1",
     "url-join": "1.1.0",
