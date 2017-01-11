@@ -120,12 +120,12 @@ export abstract class NgApimockHandler implements Handler {
      * @returns matchingMock The matching mock.
      */
     getMatchingMock(mocks: Mock[], url: string, method: string): Mock {
-        return mocks.find(_mock => {
+        return mocks.filter(_mock => {
             const expressionMatches = new RegExp(_mock.expression).exec(url) !== null,
                 methodMatches = _mock.method === method;
 
             return expressionMatches && methodMatches;
-        });
+        })[0];
     }
 
     /**

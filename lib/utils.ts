@@ -102,7 +102,7 @@ import {ProtractorNgApimockHandler} from "./protractorNgApimockHandler";
                 registry.mocks.push(mock);
             }
 
-            const _default = Object.keys(mock.responses).find(key => !!mock.responses[key]['default']);
+            const _default = Object.keys(mock.responses).filter(key => !!mock.responses[key]['default'])[0];
             if (_default !== undefined) {
                 registry.defaults[mock.identifier] = _default;
                 registry.selections[mock.identifier] = _default;

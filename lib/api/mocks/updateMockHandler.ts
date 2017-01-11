@@ -45,8 +45,8 @@ export abstract class UpdateMockHandler implements Handler {
         request.on('data', (rawData: string) => {
             const data = JSON.parse(rawData);
             try {
-                const match = registry.mocks.find(_mock => _mock.identifier === data.identifier);
-                if (match) {
+                const match = registry.mocks.filter(_mock => _mock.identifier === data.identifier)[0];
+                if (match !== undefined) {
                     if (this.isScenarioSelection(data)) {
                         if (this.isPassThroughScenario(data.scenario)) {
                             this.handlePassThroughScenario(registry, data.identifier, ngApimockId);
