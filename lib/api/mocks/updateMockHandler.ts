@@ -1,7 +1,37 @@
-"use strict";
-const http_1 = require("../../http");
+import * as http from "http";
+import {Handler} from "../../Handler";
+import {Registry} from "../../registry";
+import {httpHeaders} from "../../http";
+import {Mock} from "../../../tasks/mock";
+
 /** Abstract Handler for Updating mock state. */
-class UpdateMockHandler {
+export abstract class UpdateMockHandler implements Handler {
+
+    /**
+     * Handle the passthrough selection.
+     * @param registry The registry.
+     * @param identifier The mock identifier.
+     * @param ngApimockId The ngApimock id.
+     */
+    abstract handlePassThroughScenario(registry: Registry, identifier: string, ngApimockId?: string): void;
+
+    /**
+     * Handle the scenario selection.
+     * @param registry The registry.
+     * @param identifier The mock identifier.
+     * @param delay The delay in millis.
+     * @param ngApimockId The ngApimock id.
+     */
+    abstract handleScenarioSelection(registry: Registry, identifier: string, scenario: string, delay: number, ngApimockId?: string): void;
+
+    /**
+     * Handle the echo toggling.
+     * @param mock The mock.
+     * @param toggle Echo indicator.
+     * @param ngApimockId The ngApimock id.
+     */
+    abstract handleEchoToggling(mock: Mock, toggle: boolean, ngApimockId?: string): void;
+
     /**
      * @inheritDoc
      *
@@ -11,8 +41,8 @@ class UpdateMockHandler {
      * - select a scenario
      * - toggle echo state
      */
-    handleRequest(request, response, next, registry, ngApimockId) {
-        request.on('data', (rawData) => {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+        request.on('data', (rawData: string) => {
             const data = JSON.parse(rawData);
             try {
                 const match = registry.mocks.find(_mock => _mock.identifier === data.identifier);
@@ -20,54 +50,53 @@ class UpdateMockHandler {
                     if (this.isScenarioSelection(data)) {
                         if (this.isPassThroughScenario(data.scenario)) {
                             this.handlePassThroughScenario(registry, data.identifier, ngApimockId);
-                        }
-                        else if (match.responses[data.scenario]) {
+                        } else if (match.responses[data.scenario]) {
                             this.handleScenarioSelection(registry, data.identifier, data.scenario, data.delay, ngApimockId);
-                        }
-                        else {
+                        } else {
                             throw new Error('No scenario matching name [' + data.scenario + '] found');
                         }
-                    }
-                    else if (this.isToggleEcho(data)) {
+                    } else if (this.isToggleEcho(data)) {
                         this.handleEchoToggling(match, data.echo, ngApimockId);
                     }
-                }
-                else {
+                } else {
                     throw new Error('No mock matching identifier [' + data.identifier + '] found');
                 }
-                response.writeHead(200, http_1.httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
+                response.writeHead(200, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
                 response.end();
-            }
-            catch (e) {
-                response.writeHead(409, http_1.httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
+            } catch (e) {
+                response.writeHead(409, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
                 response.end(JSON.stringify(e, ["message"]));
             }
         });
     }
+
+
     /**
      * Indicates if the request to wants to select a scenario.
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isScenarioSelection(data) {
+    isScenarioSelection(data: any): boolean {
         return data.scenario !== undefined;
     }
+
     /**
      * Indicates if the given request wants to toggle echo.
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isToggleEcho(data) {
+    isToggleEcho(data: any): boolean {
         return data.echo !== undefined;
     }
+
     /**
      * Indicates if the given scenario represents passThrough.
      * @param scenario The scenario.
      * @returns {boolean} indicator The indicator.
      */
-    isPassThroughScenario(scenario) {
+    isPassThroughScenario(scenario: string): boolean {
         return scenario === null || scenario === 'passThrough';
     }
+
+
 }
-exports.UpdateMockHandler = UpdateMockHandler;
-//# sourceMappingURL=UpdateMockHandler.js.map

@@ -8,6 +8,10 @@ config.params = {
     default_directory: '/tmp/'
 };
 
+config.specs = [
+    '../**/interface.feature'
+];
+
 config.multiCapabilities = [{
     'browserName': 'chrome',
     'name': 'ngApimock - protractor',
@@ -29,5 +33,9 @@ config.multiCapabilities = [{
     }
 }];
 
+config.onPrepare = function () {
+    global.chai = chai;
+    global.expect = chai.expect;
+};
 
 exports.config = config;

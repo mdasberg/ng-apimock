@@ -85,7 +85,7 @@
         });
 
         this.Given(/^the used mock is delayed$/, function (callback) {
-            ngApimock.selectScenario('getAllTodos', 'some-meaningful-scenario-name', { hold: true }).then(callback);
+            ngApimock.selectScenario('getAllTodos', 'some-meaningful-scenario-name', { delay: 2000 }).then(callback);
         });
 
         this.When(/^I click the button to get the data$/, function (callback) {

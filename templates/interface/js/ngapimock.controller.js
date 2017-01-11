@@ -29,6 +29,7 @@
             mockService.get({}, function (response) {
                 vm.mocks = response.mocks;
                 vm.selections = response.selections;
+                vm.recordings = response.recordings;
                 vm.record = response.record;
                 if (vm.record) {
                     interval = $interval(refreshMocks, 5000);
@@ -68,7 +69,9 @@
 
         /** Toggle the recording. */
         function toggleRecording() {
+            console.log('hier')
             mockService.toggleRecord({}, function (response) {
+                console.log(response);
                 vm.record = response.record;
                 if (vm.record) {
                     interval = $interval(refreshMocks, 5000);

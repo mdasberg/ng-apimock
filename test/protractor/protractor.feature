@@ -74,10 +74,10 @@ Feature: ngApimock - protractor usage (protractor.mock.js)
     When I click download
     Then a file should be downloaded
 
-  Scenario: use the hold option to delay the response
-    Given the used mock is delayed
-    When I click the button to get the data
-    Then I see a loading warning
-    When the mock is released
-    Then I don't see the loading warning
-    And I see a success message
+#  Scenario: use the hold option to delay the response
+#    Given the used mock is delayed
+#    When I click the button to get the data
+#    Then I see a loading warning
+#    When the mock is released
+#    Then I don't see the loading warning
+#    And I see a success message

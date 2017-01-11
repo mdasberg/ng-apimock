@@ -1,81 +1,60 @@
-(function () {
-    'use strict';
-
-    module.exports = function () {
-        var glob = require("glob"),
-            fs = require('fs-extra'),
-            path = require('path'),
-            ngApimockCwd = path.resolve(__dirname, '..'),
-            ANGULAR_JS_PATH_SUFFIX = path.sep + 'angular' + path.sep + 'angular.min.js',
-            ANGULAR_RESOURCE_PATH_SUFFIX = path.sep + 'angular-resource' + path.sep + 'angular-resource.min.js';
-
+"use strict";
+const glob = require("glob");
+const fs = require("fs-extra");
+const path = require("path");
+/** Registry represents a group of phases grouped under one name. */
+class Processor {
+    constructor() {
         /**
-         * Process all the mocks.
-         * @param {string} src The directory containing the mocks.
-         *
-         * #1 iterate over each json file
-         * #2 add the content to the mocks collection
+         * Processes all the mocks that are present in the given directory.
+         * @param {string} directory The directory containing the mocks.
+         * @returns {Mock[]} mocks The mocks.
          */
-        function processMocks(src) {
-            var mocks = [];
-            // #1
-            glob.sync('**/*.json', {cwd: src, root: '/'}).forEach(function (file) {
-                // #2
-                mocks.push(fs.readJsonSync(src + path.sep + file, {throws: true}));
+        this.processMocks = (directory) => {
+            const mocks = [];
+            glob.sync('**/*.json', { cwd: directory, root: '/' }).forEach(function (file) {
+                mocks.push(fs.readJsonSync(path.join(directory, file)));
             });
             return mocks;
-        }
-
+        };
         /**
-         * Generate the mocking interface by processing all mocks.
-         * @param {string} outputDir The output directory.
+         * Generates the protractor.mock.js file in the given output directory.
+         * @param {string} directory The output directory
+         */
+        this.generateProtractorMock = (directory) => {
+            fs.copySync(path.join(Processor.PTD, 'protractor.mock.js'), path.join(directory, 'protractor.mock.js'));
+        };
+        /**
+         * Generate the mocking interface.
+         * There can be an angular version difference between the application and ng-apimock.
+         * Therefor ng-apimock should always use its own version.
+         *
+         * @param {string} directory The output directory.
          *
          * #1 copy the interface to the output directory
          * #2 copy the dependencies to the output directory
          */
-        function generateMockingInterface(outputDir) {
-            var templateDir = path.join(ngApimockCwd, '/templates/interface'),
-                nodeModulesDir = path.join(ngApimockCwd, '/node_modules');
-
-            if (!fs.existsSync(nodeModulesDir + '/angular')) {
-                nodeModulesDir = path.join(process.cwd(), '/node_modules');
-            }
-            // #1
-
-            glob.sync('**/*', {cwd: templateDir, root: '/'}).forEach(function (file) {
-                fs.copySync(templateDir + path.sep + file, outputDir + path.sep + file);
+        this.generateMockingInterface = (directory) => {
+            /** Check if the plugin has a different version of angular as the application. */
+            const nmd = !fs.existsSync(path.join(Processor.PNMD, 'angular')) ?
+                path.join(process.cwd(), 'node_modules') :
+                Processor.PNMD, angularJs = path.join(nmd, 'angular', 'angular.min.js'), angularResource = path.join(nmd, 'angular-resource', 'angular-resource.min.js');
+            // copy the interface files
+            glob.sync('**/*', { cwd: Processor.PTID, root: '/' }).forEach(function (file) {
+                fs.copySync(path.join(Processor.PTID, file), path.join(directory, file));
             });
-
-            var angularJs = nodeModulesDir + ANGULAR_JS_PATH_SUFFIX,
-                angularResource = nodeModulesDir + ANGULAR_RESOURCE_PATH_SUFFIX;
-
-            if(!fs.existsSync(angularJs)) {
-                angularJs = path.join(process.cwd(), '/node_modules') + ANGULAR_JS_PATH_SUFFIX;
-            }
-
-            if(!fs.existsSync(angularResource)) {
-                angularResource = path.join(process.cwd(), '/node_modules') + ANGULAR_RESOURCE_PATH_SUFFIX;
-            }
-
-            fs.copySync(angularJs, outputDir + path.sep + 'js' + path.sep + 'angular.min.js');
-            fs.copySync(angularResource, outputDir + path.sep + 'js' + path.sep + 'angular-resource.min.js');
-        }
-
-        /**
-         * Copy the protractor.mock.js file to the output dir.
-         * @param {string} outputDir The output directory.
-         *
-         * #1 update the template with the module name
-         * #2 write the template to file
-         */
-        function generateProtractorMock(outputDir) {
-            fs.copySync(ngApimockCwd + '/templates/protractor.mock.js', outputDir + path.sep + 'protractor.mock.js');
-        }
-
-        return {
-            processMocks: processMocks,
-            generateMockingInterface: generateMockingInterface,
-            generateProtractorMock: generateProtractorMock
+            fs.copySync(angularJs, path.join(directory, 'js', 'angular.min.js'));
+            fs.copySync(angularResource, path.join(directory, 'js', 'angular-resource.min.js'));
         };
-    };
-})();
+    }
+}
+// the current working directory for this plugin
+Processor.PCWD = path.resolve(__dirname, '..');
+// the node_modules directory for this plugin
+Processor.PNMD = path.join(Processor.PCWD, 'node_modules');
+// the templates directory for this plugin
+Processor.PTD = path.join(Processor.PCWD, 'templates');
+// the templates interface directory for this plugin
+Processor.PTID = path.join(Processor.PTD, 'interface');
+exports.Processor = Processor;
+//# sourceMappingURL=processor.js.map

@@ -46,11 +46,10 @@
      * @param {Object} options Currently only supports 'hold' property to delay response of a mock call
      */
     function selectScenario(data, scenario, options) {
-        var deferred = protractor.promise.defer(), hold;
+        var deferred = protractor.promise.defer(), delay;
 
-        if (options && options.hold) {
-            browser.ignoreSynchronization = true;
-            hold = options.hold;
+        if(options && options.delay) {
+            delay = options.delay;
         }
         // #1
         var identifier;
@@ -70,7 +69,7 @@
             json: {
                 identifier: identifier,
                 scenario: scenario || null,
-                hold: hold
+                delay: delay
             }
         });
 
@@ -86,26 +85,10 @@
      * release a mock that was hold in the selectScenario function
      * This feature only works when using named mocks (i.e. it does not work by expression
      * Also releasing is independent of the selected scenario
-     * @param {String} name The name of the mock
      */
-    function releaseMock(name) {
-        browser.ignoreSynchronization = false;
-        var deferred = protractor.promise.defer();
-        var response = request('POST', baseUrl + '/mocks/release', {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            },
-            json: {
-                identifier: name
-            }
-        });
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not release mock with name [' + name + ']');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
+    function releaseMock() {
+        console.log('releaseMock is no longer supported as of version 1.2.*, and will be removed in future versions.' +
+            ' Use delay option instead.');
     }
 
     /** The setAllScenariosToDefault function sets all the scenarios to default. */

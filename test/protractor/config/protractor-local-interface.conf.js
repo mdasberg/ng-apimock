@@ -1,4 +1,5 @@
 var config = require('./protractor-shared.conf').config;
+var chai = require('chai');
 
 config.seleniumAddress = 'http://localhost:4444/wd/hub';
 
@@ -6,6 +7,10 @@ config.params = {
     environment: 'LOCAL',
     default_directory: '/tmp/'
 };
+
+config.specs = [
+    '../**/interface.feature'
+];
 
 config.multiCapabilities = [
     {
@@ -27,4 +32,8 @@ config.multiCapabilities = [
     }
 ];
 
+config.onPrepare = function () {
+    global.chai = chai;
+    global.expect = chai.expect;
+};
 exports.config = config;

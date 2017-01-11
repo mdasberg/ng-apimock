@@ -13,27 +13,17 @@ exports.config = {
     framework: 'custom',
     frameworkPath: require.resolve('protractor-cucumber-framework'),
 
-    specs: [
-        '../**/*.feature'
-    ],
-
-    specs: [
-        '../**/*.feature'
-    ],
-
-    onPrepare: function () {
-        global.ngApimock = require('../../../.tmp/some-other-dir/protractor.mock.js');
-        global.chai = chai;
-        global.expect = chai.expect;
-    },
     onCleanUp: function () {
+        // nothing to do here
     },
     onComplete: function () {
+        // nothing to do here
     },
     beforeLaunch: function () {
-
+        // nothing to do here
     },
     afterLaunch: function () {
+        // nothing to do here
     },
     cucumberOpts: {
         require: [
@@ -45,6 +35,6 @@ exports.config = {
     }
 };
 
-process.on('exit', function() {
+process.on('exit', function () {
     server.kill();
 });
