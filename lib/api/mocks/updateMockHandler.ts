@@ -1,5 +1,5 @@
 import * as http from "http";
-import {Handler} from "../../Handler";
+import {Handler} from "../../handler";
 import {Registry} from "../../registry";
 import {httpHeaders} from "../../http";
 import {Mock} from "../../../tasks/mock";
@@ -97,6 +97,4 @@ export abstract class UpdateMockHandler implements Handler {
     isPassThroughScenario(scenario: string): boolean {
         return scenario === null || scenario === 'passThrough';
     }
-
-
 }

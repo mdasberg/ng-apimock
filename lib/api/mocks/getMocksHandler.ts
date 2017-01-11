@@ -1,5 +1,5 @@
 import * as http from "http";
-import {Handler} from "../../Handler";
+import {Handler} from "../../handler";
 import {Registry} from "../../registry";
 import {httpHeaders} from "../../http";
 

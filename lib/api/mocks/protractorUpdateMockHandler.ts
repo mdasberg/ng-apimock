@@ -1,5 +1,5 @@
 import {Registry} from "../../registry";
-import {UpdateMockHandler} from "./UpdateMockHandler";
+import {UpdateMockHandler} from "./updateMockHandler";
 import {Mock} from "../../../tasks/mock";
 import {helper} from "../helper";
 
