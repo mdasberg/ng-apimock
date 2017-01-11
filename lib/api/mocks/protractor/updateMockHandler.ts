@@ -1,7 +1,7 @@
-import {Registry} from "../../registry";
-import {UpdateMockHandler} from "./updateMockHandler";
-import {Mock} from "../../../tasks/mock";
-import {helper} from "../helper";
+import {Registry} from "../../../registry";
+import {UpdateMockHandler} from "../updateMockHandler";
+import {Mock} from "../../../../tasks/mock";
+import {helper} from "../../helper";
 
 /** Handler that takes care of updating the mock configuration for protractor. */
 export class ProtractorUpdateMockHandler extends UpdateMockHandler{

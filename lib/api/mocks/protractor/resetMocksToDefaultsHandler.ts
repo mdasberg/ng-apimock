@@ -1,5 +1,5 @@
-import {Registry} from "../../registry";
-import {ResetMocksToDefaultsHandler} from "./resetMocksToDefaultsHandler";
+import {Registry} from "../../../registry";
+import {ResetMocksToDefaultsHandler} from "../resetMocksToDefaultsHandler";
 
 /** Handler that takes care of resetting the mocks to defaults for protractor. */
 export class ProtractorResetMocksToDefaultsHandler extends ResetMocksToDefaultsHandler {

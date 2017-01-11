@@ -1,6 +1,6 @@
-import {Registry} from "../../registry";
-import {helper} from "../helper";
-import {AddOrUpdateVariableHandler} from "./addOrUpdateVariableHandler";
+import {Registry} from "../../../registry";
+import {helper} from "../../helper";
+import {AddOrUpdateVariableHandler} from "../addOrUpdateVariableHandler";
 
 /** Handler that takes care of adding or updating variables for protractor. */
 export class ProtractorAddOrUpdateVariableHandler extends AddOrUpdateVariableHandler {

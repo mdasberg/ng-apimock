@@ -1,6 +1,6 @@
-import {Registry} from "../../registry";
-import {helper} from "../helper";
-import {GetVariablesHandler} from "./getVariablesHandler";
+import {Registry} from "../../../registry";
+import {helper} from "../../helper";
+import {GetVariablesHandler} from "../getVariablesHandler";
 
 /** Handler that takes care of getting all the variables for protractor. */
 export class ProtractorGetVariablesHandler extends GetVariablesHandler {

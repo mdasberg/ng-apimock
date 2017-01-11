@@ -1,6 +1,6 @@
-import {Registry} from "../../registry";
-import {helper} from "../helper";
-import {DeleteVariablesHandler} from "./deleteVariableHandler";
+import {Registry} from "../../../registry";
+import {helper} from "../../helper";
+import {DeleteVariablesHandler} from "../deleteVariableHandler";
 
 /** Handler that takes care of deleting a variable for protractor. */
 export class ProtractorDeleteVariableHandler extends DeleteVariablesHandler {
