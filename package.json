@@ -31,8 +31,11 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "local": "node node_modules/typescript/bin/tsc && node node_modules/tslint/bin/tslint -e '**/node_modules/**' **/*.ts && node node_modules/jasmine-node/bin/jasmine-node test/unit/*.spec.js && node node_modules/protractor/bin/protractor test/protractor/config/protractor-local-interface.conf.js && node node_modules/protractor/bin/protractor test/protractor/config/protractor-local-protractor.conf.js",
-    "travis": "node node_modules/typescript/bin/tsc && node node_modules/tslint/bin/tslint -e '**/node_modules/**' **/*.ts && node node_modules/jasmine-node/bin/jasmine-node test/unit/*.spec.js && node node_modules/protractor/bin/protractor test/protractor/config/protractor-travis-interface.conf.js && node node_modules/protractor/bin/protractor test/protractor/config/protractor-travis-protractor.conf.js"
+    "build": "node node_modules/typescript/bin/tsc",
+    "verify": "node node_modules/tslint/bin/tslint -e '**/node_modules/**' **/*.ts",
+    "local": "node node_modules/jasmine-node/bin/jasmine-node test/unit/*.spec.js && node node_modules/protractor/bin/protractor test/protractor/config/protractor-local-interface.conf.js && node node_modules/protractor/bin/protractor test/protractor/config/protractor-local-protractor.conf.js",
+    "travis-interface": "node node_modules/protractor/bin/protractor test/protractor/config/protractor-travis-interface.conf.js",
+    "travis-protractor": "node node_modules/protractor/bin/protractor test/protractor/config/protractor-travis-protractor.conf.js"
   },
   "dependencies": {
     "angular": "1.6.1",
