@@ -1,5 +1,6 @@
 var config = require('./protractor-shared.conf').config;
 var chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 config.seleniumAddress = 'http://localhost:4444/wd/hub';
 

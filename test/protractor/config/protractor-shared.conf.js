@@ -3,8 +3,6 @@ var child_process = require('child_process'),
 
 server.stdout.pipe(process.stdout);
 
-chai.use(require('chai-as-promised'));
-
 exports.config = {
     allScriptsTimeout: 11000,
 

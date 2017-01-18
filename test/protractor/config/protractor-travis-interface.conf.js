@@ -1,5 +1,6 @@
 var config = require('./protractor-shared.conf').config;
 var chai = require('chai');
+chai.use(require('chai-as-promised'));
 
 config.sauceUser = process.env.SAUCE_USERNAME;
 config.sauceKey = process.env.SAUCE_ACCESS_KEY;
