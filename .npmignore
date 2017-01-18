@@ -4,5 +4,9 @@ test
 # typescript
 **/*.ts
 **/*.d.ts
+**/*.js.map
 tslint.json
 tsconfig.json
+
+#travis
+.travis.yml
