@@ -1,80 +1,100 @@
 (function () {
     module.exports = function () {
-        var MockingPO = require('./../po/mocking.po'),
-            po = new MockingPO();
+        var fs = require('fs-extra'),
+            path = require('path'),
+            MockingPO = require('./../po/mocking.po'),
+            responses = {
+                list: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-list.json')).responses,
+                update: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-post.json')).responses,
+                download: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-download.json')).responses
+            },
+            mockingPo = new MockingPO();
 
-        this.Then(/^expression with name (.*) should have scenario (.*) selected as default$/, function (name, scenario, callback) {
-            expect(po[name].all(by.css('option[selected="selected"]')).first().getText()).to.eventually.equal(scenario).and.notify(callback);
-        });
 
-        this.When(/^I select scenario (.*) for getAllTodos from the dropdown$/, function (scenario, callback) {
-            po.getAllTodos.sendKeys(scenario).then(callback)
-        });
-
-        this.When(/^I select scenario (.*) for updateTodo from the dropdown$/, function (scenario, callback) {
-            po.updateTodo.sendKeys(scenario).then(callback);
-        });
-
-        this.When(/^I switch back to the test page$/, function (callback) {
-            browser.get('/index.html').then(callback);
-        });
-
-        this.When(/^I click reset to defaults$/, function (callback) {
-            po.defaults().then(callback);
-        });
-
-        this.When(/^I click All to passThrough$/, function (callback) {
-            po.passThrough().then(callback);
-        });
-
-        this.When(/^I create the global variable (.*) with (.*)$/, function (name, value, callback) {
-            po.addVariable(name, value).then(callback);
-        });
-
-        this.When(/^I update the global variable (.*) with (.*)$/, function (name, value, callback) {
-            po.updateVariable(name, value).then(callback);
-        });
-
-        this.When(/^I click delete the global variable (.*)$/, function (name, callback) {
-            po.deleteVariable(name).then(callback);
-        });
-
-        this.When(/^I click echo$/, function (callback) {
-            po.echoPOST.click().then(callback);
-        });
-
-        this.Then(/^it should enable echoing$/, function (callback) {
-            // no idea how I can check the server log for now check manually
-            callback();
-        });
-
-        this.Then(/^it should disable echoing$/, function (callback) {
-            // no idea how I can check the server log for now check manually
-            callback();
-        });
-
-        this.When(/^I click record$/, function (callback) {
-            po.record.click().then(callback);
-        });
-
-        this.When(/^I show the recordings$/, function (callback) {
-            po.showRecordings(1).then(function () {
-                callback();
+        this.Then(/^I switch to test page$/, function () {
+            browser.getAllWindowHandles().then(function (handles) {
+                browser.driver.switchTo().window(handles[1]);
+                browser.driver.close();
+                browser.driver.switchTo().window(handles[0]);
             });
         });
 
-        this.Then(/^there should be recordings present$/, function (callback) {
-            expect(po.recordings(1).count()).to.eventually.be.equal(2).and.notify(callback);
+        this.Given(/^a mock with name (.*) has marked (.*) as its default scenario$/, function (name, scenario) {
+            return expect(responses[name][scenario]['default']).to.be.true;
         });
 
-        this.When(/^I hide the recordings$/, function (callback) {
-            po.hideRecordings(1).then(function () {
-                callback();
+        this.Given(/^a mock with name (.*) has no scenario marked as default$/, function (name) {
+            expect(Object.keys(responses[name]).filter(function (scenario) {
+                return responses[name][scenario].default || false;
+            }).length).to.equal(0);
+        });
+
+        this.Given(/^I open the mocking interface$/, function () {
+            return browser.get('/mocking');
+        });
+
+        this.Then(/^the following scenario's should be selected:$/, function (table) {
+            return protractor.promise.all(table.hashes().map(function (row) {
+                var actual = mockingPo.mock(row.name).scenario.all(by.css('option[selected="selected"]')).first().getText(),
+                    expected = row.scenario;
+                return expect(actual).to.eventually.equal(expected);
+            }));
+        });
+
+        this.When(/^I select (.*) for mock with name (.*)$/, function (scenario, name) {
+            return mockingPo.mock(name).scenario.sendKeys(scenario);
+        });
+
+        this.When(/^I reset the scenario's to defaults$/, function () {
+            return mockingPo.resetsToDefaults.click();
+        });
+
+        this.When(/^I reset the scenario's to passThroughs$/, function () {
+            return mockingPo.setToPassThroughs.click();
+        });
+
+        this.When(/^I add variable (.*) with value (.*)$/, function (name, value) {
+            return mockingPo.addVariable(name, value);
+        });
+
+        this.When(/^I update variable (.*) with value (.*)$/, function (name, value) {
+            return mockingPo.updateVariable(name, value);
+        });
+
+        this.When(/^I delete variable (.*)$/, function (name) {
+            return mockingPo.deleteVariable(name);
+        });
+
+        this.When(/^I (enable|disable) echo for mock with name (.*)/, function (able, name) {
+            return mockingPo.mock(name).echo.click();
+        });
+
+        this.Then(/^echoing should be (enabled|disabled) for mock with name (.*)/, function (able, name) {
+            // no idea how I can check the server log for now check manually
+        });
+
+        this.When(/^I enable recording$/, function () {
+            return mockingPo.record.click();
+        });
+
+        this.When(/^I (show|hide) the recordings for mock with name (.*)$/, function (toggle, name) {
+            return mockingPo.mock(name).recordings[toggle].click();
+        });
+
+        this.Then(/^there should only be (\d+) recordings present for mock with name (.*)/, function (total, name) {
+            return expect(mockingPo.mock(name + '-recordings').recordings.records.count()).to.eventually.be.equal(parseInt(total));
+        });
+
+        this.Then(/^there should be no recordings present for mock with name (.*)/, function (name) {
+            return expect(mockingPo.mock(name + '-recordings').isPresent()).to.eventually.be.false;
+        });
+
+        this.Then(/^I delay the response for mock with name (.*) for (\d+) milliseconds$/, function (name, delay) {
+            return mockingPo.mock(name).delay.clear().sendKeys(parseInt(delay)).then(function () {
+                return browser.sleep(1000).then(function () {
+                    browser.ignoreSynchronization = true;
+                }); // debounce delay
             });
-        });
-
-        this.Then(/^there should be no recordings present$/, function (callback) {
-            expect(po.recordings(1).count()).to.eventually.be.equal(0).and.notify(callback);
         });
     };
 })();

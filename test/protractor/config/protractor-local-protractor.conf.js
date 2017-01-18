@@ -9,7 +9,7 @@ config.params = {
 };
 
 config.specs = [
-    '../**/protractor.feature'
+    '../**/protractor/*.feature'
 ];
 
 config.multiCapabilities = [
@@ -36,5 +36,15 @@ config.onPrepare = function () {
     global.ngApimock = require('../../../.tmp/some-other-dir/protractor.mock.js');
     global.chai = chai;
     global.expect = chai.expect;
+};
+
+config.cucumberOpts = {
+    require: [
+        process.cwd() + '/test/protractor/step_definitions/testPage.steps.js',
+        process.cwd() + '/test/protractor/step_definitions/protractor.steps.js',
+        process.cwd() + '/test/protractor/support/*.js',
+        process.cwd() + '/test/protractor/config/protractor-cucumber-junit-reporter.js',
+    ],
+    format: 'summary'
 };
 exports.config = config;

@@ -9,7 +9,7 @@ config.params = {
 };
 
 config.specs = [
-    '../**/interface.feature'
+    '../**/interface/*.feature'
 ];
 
 config.multiCapabilities = [{
@@ -36,6 +36,16 @@ config.multiCapabilities = [{
 config.onPrepare = function () {
     global.chai = chai;
     global.expect = chai.expect;
+};
+
+config.cucumberOpts = {
+    require: [
+        process.cwd() + '/test/protractor/step_definitions/testPage.steps.js',
+        process.cwd() + '/test/protractor/step_definitions/interface.steps.js',
+        process.cwd() + '/test/protractor/support/*.js',
+        process.cwd() + '/test/protractor/config/protractor-cucumber-junit-reporter.js',
+    ],
+    format: 'summary'
 };
 
 exports.config = config;

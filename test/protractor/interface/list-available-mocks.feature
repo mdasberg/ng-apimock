@@ -14,7 +14,7 @@ Feature: List all the available mocks
     And a mock with name update has marked successful as its default scenario
 
   Scenario: Show available mocks
-    Given we open the mocking interface
+    Given I open the mocking interface
     Then the following scenario's should be selected:
       | name     | scenario        |
       | download | binary-download |

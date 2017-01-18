@@ -1,111 +1,58 @@
 (function () {
-    'use strict';
-
-    var fs = require('fs');
-
     module.exports = function () {
-        this.Given(/^I open the test page$/, function (callback) {
-            browser.get('/index.html').then(callback);
+        var fs = require('fs-extra'),
+            path = require('path'),
+            responses = {
+                list: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-list.json')).responses,
+                update: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-post.json')).responses,
+                download: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-download.json')).responses
+            };
+
+        this.Given(/^a mock with name (.*) has marked (.*) as its default scenario$/, function (name, scenario) {
+            return expect(responses[name][scenario]['default']).to.be.true;
         });
 
-        this.When(/^I select scenario (.*) for getAllTodos$/, function (scenario, callback) {
-            var scenarioName = scenario === 'null' ? 'passThrough' : scenario;
-            ngApimock.selectScenario('getAllTodos', scenarioName).then(callback)
+        this.Given(/^a mock with name (.*) has no scenario marked as default$/, function (name) {
+            expect(Object.keys(responses[name]).filter(function (scenario) {
+                return responses[name][scenario].default || false;
+            }).length).to.equal(0);
         });
 
-        this.When(/^I refresh the data$/, function (callback) {
-            element(by.buttonText('refresh')).click().then(callback);
+        this.When(/^I select (.*) for mock with name (.*)$/, function (scenario, name) {
+            return ngApimock.selectScenario(name, scenario);
         });
 
-        this.When(/^And I refresh using JSONP the data$/, function (callback) {
-            element(by.buttonText('refresh with jsonp callback')).click().then(callback);
+        this.When(/^I reset the scenario's to defaults$/, function () {
+            return ngApimock.setAllScenariosToDefault();
         });
 
-        this.Then(/^the data from the get response should be (.*)$/, function (data, callback) {
-            expect(element(by.binding('ctrl.data')).getText()).to.eventually.equal(data).and.notify(callback);
+        this.When(/^I reset the scenario's to passThroughs$/, function () {
+            return ngApimock.setAllScenariosToPassThrough();
         });
 
-        this.Then(/^the error from the get response should be (.*)/, function (error, callback) {
-            var expected = (error === 'undefined') ? '' : error;
-            expect(element(by.binding('ctrl.error')).getText()).to.eventually.equal(expected).and.notify(callback)
+        this.When(/^I add variable (.*) with value (.*)$/, function (name, value) {
+            return ngApimock.setGlobalVariable(name, value);
         });
 
-        this.When(/^I select scenario (.*) for updateTodo$/, function (scenario, callback) {
-            var scenarioName = scenario === 'null' ? 'passThrough' : scenario;
-            ngApimock.selectScenario('updateTodo', scenarioName).then(callback);
+        this.When(/^I update variable (.*) with value (.*)$/, function (name, value) {
+            return ngApimock.setGlobalVariable(name, value);
         });
 
-        this.When(/^I post the data$/, function (callback) {
-            element(by.buttonText('post me')).click().then(callback);
+        this.When(/^I delete variable (.*)$/, function (name) {
+            return ngApimock.deleteGlobalVariable(name);
         });
 
-        this.Then(/^the data from the post response should be (.*)$/, function (data, callback) {
-            expect(element(by.binding('ctrl.postedData')).getText()).to.eventually.equal(data).and.notify(callback);
+        this.When(/^I (enable|disable) echo for mock with name (.*)/, function (able, name) {
+            return ngApimock.echoResponse(name, able === 'enable');
         });
 
-        this.Then(/^the error from the post response should be (.*)/, function (error, callback) {
-            var expected = (error === 'undefined') ? '' : error;
-            expect(element(by.binding('ctrl.postedError')).getText()).to.eventually.equal(expected).and.notify(callback)
+        this.Then(/^echoing should be (enabled|disabled) for mock with name (.*)/, function (able, name) {
+            // no idea how I can check the server log for now check manually
         });
 
-        this.When(/^I set all scenarios to default$/, function (callback) {
-            ngApimock.setAllScenariosToDefault().then(callback);
-        });
-
-        this.When(/^I set all scenarios to passThrough$/, function (callback) {
-            ngApimock.setAllScenariosToPassThrough().then(callback);
-        });
-
-        this.When(/^I set the global variable replaceMe with x$/, function (callback) {
-            ngApimock.setGlobalVariable('replaceMe', 'x').then(callback);
-        });
-
-        this.When(/^I delete the global variable replaceMe$/, function (callback) {
-            ngApimock.deleteGlobalVariable('replaceMe').then(callback);
-        });
-
-        this.When(/^I switch to the mocking page/, function (callback) {
-            browser.get('/mocking').then(callback);
-        });
-
-        this.When(/^I switch back to the mocking page$/, function (callback) {
-            browser.get('/mocking').then(callback);
-        });
-
-        this.When(/^I click download$/, function (callback) {
-            element(by.buttonText('download')).click().then(callback);
-        });
-
-        this.Then(/^a file should be downloaded$/, function (callback) {
-            browser.wait(function() {
-                return fs.existsSync(browser.params.default_directory + 'my.pdf') || browser.params.environment === 'TRAVIS';
-            }, 5000).then(function() {
-                callback();
-            });
-        });
-
-        this.Given(/^the used mock is delayed$/, function (callback) {
-            ngApimock.selectScenario('getAllTodos', 'some-meaningful-scenario-name', { delay: 2000 }).then(callback);
-        });
-
-        this.When(/^I click the button to get the data$/, function (callback) {
-            element(by.id('delayed-button')).click().then(callback);
-        });
-
-        this.Then(/^I see a loading warning$/, function (callback) {
-            expect(element(by.id('loading-message')).isPresent()).to.eventually.be.true.and.notify(callback);
-        });
-
-        this.When(/^the mock is released$/, function (callback) {
-            ngApimock.releaseMock('getAllTodos').then(callback);
-        });
-
-        this.Then(/^I don't see the loading warning$/, function (callback) {
-            expect(element(by.id('loading-message')).isPresent()).to.eventually.be.false.and.notify(callback);
-        });
-
-        this.Then(/^I see a success message$/, function (callback) {
-            expect(element(by.id('loading-success')).isPresent()).to.eventually.be.true.and.notify(callback);
+        this.Then(/^I delay the response for mock with name (.*) for (\d+) milliseconds$/, function (name, delay) {
+            browser.ignoreSynchronization = true;
+            return ngApimock.delayResponse(name, parseInt(delay));
         });
     };
 })();

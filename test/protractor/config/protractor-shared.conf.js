@@ -3,6 +3,8 @@ var child_process = require('child_process'),
     q = require('q'),
     server = child_process.spawn('node', ['test/example/server.js']);
 
+server.stdout.pipe(process.stdout);
+
 chai.use(require('chai-as-promised'));
 
 exports.config = {
@@ -24,14 +26,6 @@ exports.config = {
     },
     afterLaunch: function () {
         // nothing to do here
-    },
-    cucumberOpts: {
-        require: [
-            process.cwd() + '/test/protractor/step_definitions/*.steps.js',
-            process.cwd() + '/test/protractor/support/*.js',
-            process.cwd() + '/test/protractor/config/protractor-cucumber-junit-reporter.js',
-        ],
-        format: 'summary'
     }
 };
 
