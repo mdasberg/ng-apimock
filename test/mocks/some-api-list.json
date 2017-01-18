@@ -1,17 +1,17 @@
 {
   "expression": "online\/rest\/some\/api\/.*\/and\/.*",
   "method": "GET",
-  "name": "getAllTodos",
+  "name": "list",
   "isArray": true,
   "responses": {
-    "some-meaningful-scenario-name": {
+    "groceries": {
       "status": 200,
-      "data": [{"x":"%%replaceMe%%"}],
+      "data": [{"title":"buy %%numberOfApples%% apples"}, {"title": "buy"}],
       "headers": {"Content-type":"application/json"},
       "statusText": "text"
     },
-    "another-meaningful-scenario-name": {
-      "data": [{"a":"b"}]
+    "wishes": {
+      "data": [{"title":"Ferrari f40"}, {"title": "Koenigsegg One:1"}]
     },
     "internal-server-error": {
       "status":500
