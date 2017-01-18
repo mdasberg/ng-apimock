@@ -6,6 +6,7 @@
         var interval;
 
         vm.echoMock = echoMock;
+        vm.delayMock = delayMock;
         vm.toggleRecording = toggleRecording;
         vm.selectMock = selectMock;
         vm.defaultMocks = defaultMocks;
@@ -29,6 +30,8 @@
             mockService.get({}, function (response) {
                 vm.mocks = response.mocks;
                 vm.selections = response.selections;
+                vm.delays = response.delays;
+                vm.echos = response.echos;
                 vm.recordings = response.recordings;
                 vm.record = response.record;
                 if (vm.record) {
@@ -64,6 +67,19 @@
                 console.log(vm.mocks.find(function (m) {
                     return m.name === mock.name;
                 }).echo = echo);
+            });
+        }
+
+        /**
+         * Update the given Delay time.
+         * @param mock The mock.
+         * @param delay The delay.
+         */
+        function delayMock(mock, delay) {
+            mockService.update({'identifier': mock.identifier, 'delay': delay}, function () {
+                console.log(vm.mocks.find(function (m) {
+                    return m.name === mock.name;
+                }).delay = delay);
             });
         }
 

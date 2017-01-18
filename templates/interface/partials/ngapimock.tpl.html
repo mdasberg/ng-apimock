@@ -7,6 +7,7 @@
         <th>Method</th>
         <th>Name</th>
         <th>Scenario</th>
+        <th>Delay</th>
         <th>Echo</th>
         <th>Record&nbsp;<input type="checkbox" data-ng-model="$ctrl.record" data-ng-change="$ctrl.toggleRecording()"></th>
     </tr>
@@ -19,12 +20,11 @@
         <td><select name="{{::mock.expression.toString()}}$${{::mock.method}}" data-ng-options="k as k for (k, v) in mock.responses" data-ng-model="selected" data-ng-change="$ctrl.selectMock(mock, selected)">
             <option value="">passThrough</option>
         </select></td>
+        <td data-ng-init="delay = $ctrl.delays[mock.identifier];">
+            <input type="number" min="0" data-ng-model="delay" data-ng-value="delay" data-ng-model-options="{debounce: 500}" data-ng-change="$ctrl.delayMock(mock, delay)">
+        </td>
         <td>
-            <div data-ng-if="mock.method === 'POST'" data-ng-init="echo = !!mock.echo;">
-                <label>
-                    <input type="checkbox" data-ng-value="true" data-ng-model="echo" data-ng-change="$ctrl.echoMock(mock, echo)">
-                </label>
-            </div>
+            <input data-ng-if="mock.method === 'POST'" data-ng-init="echo = !!$ctrl.echos[mock.identifier];" type="checkbox" data-ng-value="true" data-ng-model="echo" data-ng-change="$ctrl.echoMock(mock, echo)">
         </td>
         <td>
             <div>
@@ -60,7 +60,7 @@
     </tbody>
     <tfoot>
     <tr>
-        <td colspan="5" class="text-right">
+        <td colspan="7" class="text-right">
             <button data-ng-click="$ctrl.defaultMocks()">Reset to defaults</button>
             <button data-ng-click="$ctrl.passThroughMocks()">All to passThrough</button>
         </td>
@@ -92,3 +92,5 @@
     </tr>
     </tfoot>
 </table>
+
+element.all(by.repeater('mock in $ctrl.mocks')).filter(function(mock)
