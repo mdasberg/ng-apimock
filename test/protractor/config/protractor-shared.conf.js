@@ -1,6 +1,4 @@
 var child_process = require('child_process'),
-    chai = require('chai'),
-    q = require('q'),
     server = child_process.spawn('node', ['test/example/server.js']);
 
 server.stdout.pipe(process.stdout);
