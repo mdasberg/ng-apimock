@@ -68,7 +68,6 @@ export abstract class UpdateMockHandler implements Handler {
                     } else if (this.isEchoRequest(data)) {
                         this.handleEcho(registry, data.identifier, data.echo, ngApimockId);
                     } else if (this.isDelayResponseRequest(data)) {
-                        console.log('hier')
                         this.handleDelay(registry, data.identifier, data.delay, ngApimockId);
                     }
                 } else {

@@ -15,7 +15,7 @@
         vm.updateVariable = updateVariable;
         vm.deleteVariable = deleteVariable;
 
-        vm.$onInit = function() {
+        vm.$onInit = function () {
             fetchMocks();
             fetchVariables();
 
@@ -64,9 +64,9 @@
          */
         function echoMock(mock, echo) {
             mockService.update({'identifier': mock.identifier, 'echo': echo}, function () {
-                console.log(vm.mocks.find(function (m) {
+                vm.mocks.find(function (m) {
                     return m.name === mock.name;
-                }).echo = echo);
+                }).echo = echo;
             });
         }
 
@@ -77,17 +77,15 @@
          */
         function delayMock(mock, delay) {
             mockService.update({'identifier': mock.identifier, 'delay': delay}, function () {
-                console.log(vm.mocks.find(function (m) {
+                vm.mocks.find(function (m) {
                     return m.name === mock.name;
-                }).delay = delay);
+                }).delay = delay;
             });
         }
 
         /** Toggle the recording. */
         function toggleRecording() {
-            console.log('hier')
             mockService.toggleRecord({}, function (response) {
-                console.log(response);
                 vm.record = response.record;
                 if (vm.record) {
                     interval = $interval(refreshMocks, 5000);
@@ -127,7 +125,7 @@
 
         /** Adds the given variable. */
         function addVariable() {
-            variableService.addOrUpdate(vm.variable, function() {
+            variableService.addOrUpdate(vm.variable, function () {
                 vm.variables[vm.variable.key] = vm.variable.value;
                 vm.variable = {
                     key: undefined,

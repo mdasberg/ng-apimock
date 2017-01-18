@@ -5,8 +5,6 @@ import {RecordResponseHandler} from "../recordResponseHandler";
 export class RuntimeRecordResponseHandler extends RecordResponseHandler {
     /** @inheritDoc */
     record(registry: Registry, ngApimockId?: string): void {
-        console.log(registry.record);
-       registry.record = !registry.record;
-        console.log(registry.record);
+        registry.record = !registry.record;
     }
 }
