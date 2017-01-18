@@ -138,25 +138,17 @@ The interface looks like this:
 ### Howto use for your protractor tests.
 As you are building an [AngularJS](https://angularjs.org/) application you will probably use [Protractor](https://angular.github.io/protractor/#/) for testing your UI.
 
-Protractor provides the ability to inject a mock module in your application by adding the following to your protractor test.
-
+In order to use ngApimock in your protractor tests, require it in your protractor configuration like this:
 ```js
-describe('Some test', function () {
-    browser.addMockModule('modName', function() {
-        angular.module('modName', []).value('foo', 'bar');
-    });
-});
+exports.config = {
+    onPrepare: function () {
+        global.ngApimock = require('.tmp/mocking/protractor.mock.js');
+    }
+};
 ```
-
-To serve the mock data from the json files that we created for running our application locally with mock data, you can replace the block above with this
-
+and from that point on you can use it in your tests 
 ```js
 describe('Some test', function () {
-    var ngApimock = require('.tmp/mocking/protractor.mock'); // or the path/to/protractor.mock.js
-    ngApimock.selectScenario(require('path/to/mocks/some.json'), 'nok'); // nok is the name of the scenario    
-    ngApimock.selectScenario('name attribute in mock.json', 'ok'); // ok is the name of the scenario
-    ngApimock.setGlobalVariable('someKey', 'someValue'); // add or update a global variable which will be used to replace in the response data.
-
     it('should do something', function() {
         ngApimock.selectScenario('name of some api', 'another'); // at runtime you can change a scenario
     });
@@ -164,8 +156,8 @@ describe('Some test', function () {
    
 ```
 
-By default all the scenario's marked as default will be returned if the expression matches. So you only need to add ngApimock.selectScenario in case your test need
-other scenario data to be returned.
+By default all the scenario's marked as default will be returned if the expression matches. So you only need to add ngApimock.selectScenario in case your test needs
+another scenario response to be returned.
 
 NgApimock also works when running multiple tests concurrent, by using the protract session id of the test. 
 This ensures that changing a scenario in one test, will not effect another test. 
@@ -173,18 +165,13 @@ This ensures that changing a scenario in one test, will not effect another test.
 ### Available functions
 All these functions are protractor promises, so they can be chained.
 
-#### selectScenario(json, scenarionName, options)
+#### selectScenario(json|name, scenarioName, options)
 Selects the given scenario (when calling this function without a scenario or with 'passThrough' as scenario name, the call will be passed through to the actual backend)
 
 ##### Supported options
-###### hold 
-When set to true the subsequent mock-calls will not be immediately returned, but stored in a session. Use `releaseMock(mockName)` (see below) to trigger the mock call to finish.
-Very usefull for testing loading states of your UI.
+###### delay: number
+The number of milliseconds that the response will be hold before it is returned.
   
-#### releaseMock(mockName)
-Release a mock the was hold using the options object in `selectScenario` (see above)
-Trying to release a mock the was not hold will result in a error and failing test.
-
 #### setAllScenariosToDefault()
 Resets all mocks to the default scenarios
 
