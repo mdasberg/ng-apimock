@@ -13,7 +13,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr data-ng-repeat-start="mock in $ctrl.mocks track by mock.identifier" data-ng-init="selected = $ctrl.selections[mock.identifier]">
+    <tr data-ng-repeat-start="mock in $ctrl.mocks track by mock.identifier" data-ng-init="selected = $ctrl.selections[mock.identifier]" identifier="{{::mock.name}}">
         <td data-ng-bind="::mock.expression.toString()"></td>
         <td data-ng-bind="::mock.method"></td>
         <td data-ng-bind="::mock.name"></td>
@@ -35,7 +35,7 @@
             </div>
         </td>
     </tr>
-    <tr data-ng-repeat-end data-ng-if="mock.openDetails">
+    <tr data-ng-repeat-end data-ng-if="mock.openDetails" identifier="{{::mock.name}}-recordings">
         <td colspan="6">
             <table class="table table-striped table-bordered table-hover">
                 <tr><th>Date/time</th><th>Path</th><th>Method</th><th>Statuscode</th><th>Request/Response</th></tr>
