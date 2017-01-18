@@ -10,13 +10,17 @@ export class RuntimeUpdateMockHandler extends UpdateMockHandler {
     }
 
     /** @inheritDoc */
-    handleScenarioSelection(registry: Registry, identifier: string, scenario: string, delay: number): void {
+    handleScenarioSelection(registry: Registry, identifier: string, scenario: string): void {
         registry.selections[identifier] = scenario;
-        // @todo implement delay option for protractor.
     }
 
     /** @inheritDoc */
-    handleEchoToggling(mock: Mock, toggle: boolean): void {
-        mock.echo = toggle;
+    handleDelay(registry: Registry, identifier: string, delay: number): void {
+        registry.delays[identifier] = delay;
+    }
+
+    /** @inheritDoc */
+    handleEcho(registry: Registry, identifier: string, echo: boolean): void {
+        registry.echos[identifier] = echo;
     }
 }

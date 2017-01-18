@@ -18,8 +18,8 @@ import {RuntimeGetVariablesHandler} from "./api/variables/runtime/getVariablesHa
 import {ProtractorGetVariablesHandler} from "./api/variables/protractor/getVariablesHandler";
 import {RuntimeDeleteVariableHandler} from "./api/variables/runtime/deleteVariableHandler";
 import {ProtractorDeleteVariableHandler} from "./api/variables/protractor/deleteVariableHandler";
-import {RuntimeNgApimockHandler} from "./runtimeNgApimockHandler";
-import {ProtractorNgApimockHandler} from "./protractorNgApimockHandler";
+import {RuntimeNgApimockHandler} from "./runtime/ngApimockHandler";
+import {ProtractorNgApimockHandler} from "./protractor/ngApimockHandler";
 
 (function () {
     "use strict";
@@ -64,8 +64,6 @@ import {ProtractorNgApimockHandler} from "./protractorNgApimockHandler";
     function ngApimockRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function): void {
         const ngapimockId = _ngApimockId(request.headers),
             type = ngapimockId !== undefined ? 'protractor' : 'runtime';
-
-        console.log(request.url + ' - ' + type + ' - ' + ngapimockId);
 
         if (request.url === '/ngapimock/mocks/record' && request.method === httpMethods.PUT) {
             handlers[type].recordResponseHandler.handleRequest(request, response, next, registry, ngapimockId);

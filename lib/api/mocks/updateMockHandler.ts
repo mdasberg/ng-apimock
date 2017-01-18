@@ -19,18 +19,27 @@ export abstract class UpdateMockHandler implements Handler {
      * Handle the scenario selection.
      * @param registry The registry.
      * @param identifier The mock identifier.
-     * @param delay The delay in millis.
      * @param ngApimockId The ngApimock id.
      */
-    abstract handleScenarioSelection(registry: Registry, identifier: string, scenario: string, delay: number, ngApimockId?: string): void;
+    abstract handleScenarioSelection(registry: Registry, identifier: string, scenario: string, ngApimockId?: string): void;
 
     /**
      * Handle the echo toggling.
-     * @param mock The mock.
-     * @param toggle Echo indicator.
+     * @param registry The registry.
+     * @param identifier The mock identifier.
+     * @param echo Echo indicator.
      * @param ngApimockId The ngApimock id.
      */
-    abstract handleEchoToggling(mock: Mock, toggle: boolean, ngApimockId?: string): void;
+    abstract handleEcho(registry: Registry, identifier: string, echo: boolean, ngApimockId?: string): void;
+
+    /**
+     * Handle the delay.
+     * @param registry The registry.
+     * @param identifier The mock identifier.
+     * @param delay The delay in millis.
+     * @param ngApimockId The ngApimock id.
+     */
+    abstract handleDelay(registry: Registry, identifier: string, delay: number, ngApimockId?: string): void;
 
     /**
      * @inheritDoc
@@ -40,6 +49,7 @@ export abstract class UpdateMockHandler implements Handler {
      * The following updates are available:
      * - select a scenario
      * - toggle echo state
+     * - delay the mock response
      */
     handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
         request.on('data', (rawData: string) => {
@@ -47,16 +57,19 @@ export abstract class UpdateMockHandler implements Handler {
             try {
                 const match = registry.mocks.filter(_mock => _mock.identifier === data.identifier)[0];
                 if (match !== undefined) {
-                    if (this.isScenarioSelection(data)) {
+                    if (this.isScenarioSelectionRequest(data)) {
                         if (this.isPassThroughScenario(data.scenario)) {
                             this.handlePassThroughScenario(registry, data.identifier, ngApimockId);
                         } else if (match.responses[data.scenario]) {
-                            this.handleScenarioSelection(registry, data.identifier, data.scenario, data.delay, ngApimockId);
+                            this.handleScenarioSelection(registry, data.identifier, data.scenario, ngApimockId);
                         } else {
                             throw new Error('No scenario matching name [' + data.scenario + '] found');
                         }
-                    } else if (this.isToggleEcho(data)) {
-                        this.handleEchoToggling(match, data.echo, ngApimockId);
+                    } else if (this.isEchoRequest(data)) {
+                        this.handleEcho(registry, data.identifier, data.echo, ngApimockId);
+                    } else if (this.isDelayResponseRequest(data)) {
+                        console.log('hier')
+                        this.handleDelay(registry, data.identifier, data.delay, ngApimockId);
                     }
                 } else {
                     throw new Error('No mock matching identifier [' + data.identifier + '] found');
@@ -76,7 +89,7 @@ export abstract class UpdateMockHandler implements Handler {
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isScenarioSelection(data: any): boolean {
+    isScenarioSelectionRequest(data: any): boolean {
         return data.scenario !== undefined;
     }
 
@@ -85,8 +98,17 @@ export abstract class UpdateMockHandler implements Handler {
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isToggleEcho(data: any): boolean {
+    isEchoRequest(data: any): boolean {
         return data.echo !== undefined;
+    }
+
+    /**
+     * Indicates if the given request wants to delay a response.
+     * @param data The request data.
+     * @returns {boolean} indicator The indicator.
+     */
+    isDelayResponseRequest(data: any): boolean {
+        return data.delay !== undefined;
     }
 
     /**

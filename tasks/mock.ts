@@ -10,8 +10,6 @@ export class Mock {
     expression: string;
     // the http method (GET, POST, PUT, DELETE)
     method: string;
-    // indicates if the response should be echoed
-    echo: boolean;
     // the available responses
     responses: {[key:string]: MockResponse};
 }

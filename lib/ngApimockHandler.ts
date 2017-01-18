@@ -27,6 +27,24 @@ export abstract class NgApimockHandler implements Handler {
     abstract getVariables(registry: Registry, ngApimockId?: string): {};
 
     /**
+     * Gets the echo indicator.
+     * @param registry The registry.
+     * @param identifier The mock identifier.
+     * @param ngApimockId The ngApimock id.
+     * @return indicator The echo indicator.
+     */
+    abstract getEcho(registry: Registry, identifier: string, ngApimockId: string): boolean;
+
+    /**
+     * Gets the delay in millis.
+     * @param registry The registry.
+     * @param identifier The mock identifier.
+     * @param ngApimockId The ngApimock id.
+     * @return delay The delay.
+     */
+    abstract getDelay(registry: Registry, identifier: string, ngApimockId: string): number;
+
+    /**
      * @inheritDoc
      *
      * Handler that takes care of request.
@@ -41,18 +59,21 @@ export abstract class NgApimockHandler implements Handler {
         let payload: string;
 
         if (match) {
+            const selection = this.getSelection(registry, match.identifier, ngApimockId),
+                variables = this.getVariables(registry, ngApimockId),
+                mockResponse = match.responses[selection];
+
             request.on('data', (rawData: string) => {
                 payload = rawData.toString();
+
+                if (mockResponse !== undefined) {
+                    if (!!this.getEcho(registry, match.identifier, ngApimockId)) {
+                        console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
+                    }
+                }
             });
 
-            const selection = this.getSelection(registry, match.identifier, ngApimockId),
-                variables = this.getVariables(registry, ngApimockId);
-
-            const mockResponse = match.responses[selection];
             if (mockResponse !== undefined) {
-                if (!!match.echo) {
-                    console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
-                }
 
                 const statusCode = mockResponse.status || 200,
                     jsonCallbackName = this.getJsonCallbackName(request.url);
@@ -61,7 +82,7 @@ export abstract class NgApimockHandler implements Handler {
 
                 if (this.isBinaryResponse(mockResponse)) {
                     headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_BINARY;
-                    chunk = fs.readFileSync(mockResponse.file).toString('utf8');
+                    chunk = fs.readFileSync(mockResponse.file);
                 } else {
                     headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_APPLICATION_JSON;
                     chunk = this.updateData(mockResponse.data, variables, (match.isArray ? [] : {}));
@@ -71,6 +92,7 @@ export abstract class NgApimockHandler implements Handler {
                     chunk = jsonCallbackName + '(' + chunk + ')';
                 }
 
+                this.delay(this.getDelay(registry,match.identifier, ngApimockId));
                 response.writeHead(statusCode, headers);
                 response.end(chunk);
 
@@ -129,6 +151,18 @@ export abstract class NgApimockHandler implements Handler {
     }
 
     /**
+     * Delay the response for the given amount of milliseconds.
+     * @param ms The number of milliseconds.
+     */
+    delay(ms: number): void {
+        let curr = new Date().getTime();
+        ms += curr;
+        while (curr < ms) {
+            curr = new Date().getTime();
+        }
+    }
+
+    /**
      * Indicates if the given response is a binary response.
      * @param response The response
      * @return {boolean} indicator The indicator.
@@ -183,9 +217,9 @@ export abstract class NgApimockHandler implements Handler {
      * @param registry The registry.
      * @param identifier The identifier.
      */
-    storeRecording(payload: string, chunk: string, request: http.IncomingMessage, statusCode: number, registry: Registry, identifier: string) {
+    storeRecording(payload: string, chunk: string|Buffer, request: http.IncomingMessage, statusCode: number, registry: Registry, identifier: string) {
         const result = {
-            data: chunk,
+            data: typeof chunk === "string" ? chunk : chunk.toString('utf8'),
             payload: payload,
             datetime: new Date().getTime(),
             method: request.method,

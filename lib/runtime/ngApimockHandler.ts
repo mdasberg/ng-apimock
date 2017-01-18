@@ -1,5 +1,5 @@
-import {NgApimockHandler} from "./ngApimockHandler";
-import {Registry} from "./registry";
+import {NgApimockHandler} from "../ngApimockHandler";
+import {Registry} from "../registry";
 
 /** Handler for a request for runtime. */
 export class RuntimeNgApimockHandler extends NgApimockHandler {
@@ -11,6 +11,16 @@ export class RuntimeNgApimockHandler extends NgApimockHandler {
     /** @inheritDoc */
     getVariables(registry: Registry, ngApimockId?: string): {} {
         return registry.variables;
+    }
+
+    /** @inheritDoc */
+    getEcho(registry: Registry, identifier: string): boolean {
+        return registry.echos[identifier];
+    }
+
+    /** @inheritDoc */
+    getDelay(registry: Registry, identifier: string): number {
+        return registry.delays[identifier];
     }
 
 }

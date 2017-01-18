@@ -11,7 +11,8 @@ export module helper {
                 registry.sessions[ngApimockId] = {
                     selections: JSON.parse(JSON.stringify(registry.defaults)),
                     variables: {},
-                    delays: {}
+                    delays: {},
+                    echos: {}
                 };
             }
         }
