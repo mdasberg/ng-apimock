@@ -1,3 +1,9 @@
+<a name="1.2.1"></a>
+# 1.2.1 (2017-10-19)
+
+## Bugfix
+- Fix reset to default and set to passthrough when no api call was done before
+
 <a name="1.2.0"></a>
 # 1.2.0 (2017-10-19)
 

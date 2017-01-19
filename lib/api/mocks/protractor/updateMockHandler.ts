@@ -19,11 +19,13 @@ export class ProtractorUpdateMockHandler extends UpdateMockHandler{
 
     /** @inheritDoc */
     handleDelay(registry: Registry, identifier: string, delay: number, ngApimockId?: string): void {
+        helper.protractor.addSessionIfNonExisting(registry, ngApimockId);
         registry.sessions[ngApimockId].delays[identifier] = delay;
     }
 
     /** @inheritDoc */
     handleEcho(registry: Registry, identifier: string, echo: boolean, ngApimockId?: string): void {
+        helper.protractor.addSessionIfNonExisting(registry, ngApimockId);
         registry.sessions[ngApimockId].echos[identifier] = echo;
     }
 
