@@ -43,7 +43,7 @@
         });
 
         this.When(/^I (enable|disable) echo for mock with name (.*)/, function (able, name) {
-            return ngApimock.echoResponse(name, able === 'enable');
+            return ngApimock.echoRequest(name, able === 'enable');
         });
 
         this.Then(/^echoing should be (enabled|disabled) for mock with name (.*)/, function (able, name) {

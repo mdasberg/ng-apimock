@@ -165,12 +165,14 @@ This ensures that changing a scenario in one test, will not effect another test.
 ### Available functions
 All these functions are protractor promises, so they can be chained.
 
-#### selectScenario(json|name, scenarioName, options)
+#### selectScenario(name, scenarioName, options)
 Selects the given scenario (when calling this function without a scenario or with 'passThrough' as scenario name, the call will be passed through to the actual backend)
 
-##### Supported options
-###### delay: number
-The number of milliseconds that the response will be hold before it is returned.
+#### delayResponse(name, delay)
+Sets the delay time in milliseconds for the mock so the response will be delayed.
+
+#### echoRequest(name, indicator)
+Sets the indicator which enables / disables the request logging (only post request should be logged)
   
 #### setAllScenariosToDefault()
 Resets all mocks to the default scenarios

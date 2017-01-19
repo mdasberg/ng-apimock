@@ -65,14 +65,14 @@
     /**
      * Sets the given echo indicator for the mock matching the identifier.
      * @param {Object | String} data The data object containing all the information for an expression or the name of the mock.
-     * @param {boolean} echo The indicator echo response.
+     * @param {boolean} echo The indicator echo request.
      * @return {Promise} the promise.
      */
-    function echoResponse(data, echo) {
+    function echoRequest(data, echo) {
         return _execute('PUT', '/mocks', {
             identifier: _getIdentifier(data),
             echo: echo || false
-        }, 'Could not echo the response');
+        }, 'Could not echo the request');
     }
 
     /**
@@ -210,7 +210,7 @@
     module.exports = {
         selectScenario: selectScenario,
         delayResponse: delayResponse,
-        echoResponse: echoResponse,
+        echoRequest: echoRequest,
 
         setAllScenariosToDefault: setAllScenariosToDefault,
         setAllScenariosToPassThrough: setAllScenariosToPassThrough,
