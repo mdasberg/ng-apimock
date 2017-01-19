@@ -8,7 +8,11 @@ install:
 before_script:
 - npm install
 script:
-- npm run-script travis
+- npm run-script build
+- npm run-script verify
+- npm run-script travis-protractor
+- npm run-script travis-interface
+
 addons:
   sauce_connect: true
 env:

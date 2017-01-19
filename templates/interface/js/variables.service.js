@@ -7,16 +7,25 @@
             get: {
                 method: 'GET',
                 cache: true,
-                isArray: false
+                isArray: false,
+                headers: {
+                    ngapimockid: undefined
+                }
             },
             addOrUpdate: {
                 method: 'PUT',
-                isArray: false
+                isArray: false,
+                headers: {
+                    ngapimockid: undefined
+                }
             },
             delete: {
                 url: '/ngapimock/variables/:key',
                 method: 'DELETE',
-                isArray: false
+                isArray: false,
+                headers: {
+                    ngapimockid: undefined
+                }
             }
         });
     }

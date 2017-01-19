@@ -1,7 +1,7 @@
 {
   "expression": "online\/rest\/some\/api\/.*\/and\/.*",
   "method": "POST",
-  "name": "updateTodo",
+  "name": "update",
   "responses": {
     "successful": {
       "status": 200,

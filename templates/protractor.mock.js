@@ -17,6 +17,7 @@
         angular.module('ngApimock').run(NgApimockHeader)
     };
 
+    /** Make sure that angular uses the ngapimock identifier for the requests. */
     browser.getProcessedConfig().then(function (config) {
         if (config.useAllAngular2AppRoots) {
             // angular 2 does not have addMockModule support @see https://github.com/angular/protractor/issues/3092
@@ -35,24 +36,165 @@
 
 
     /**
-     * The selectScenario function stores the relevant information from the given data that
-     * matches the given scenario.
-     *
-     * #1 determine identifier
-     * #2 call api
+     * Selects the given scenario for the mock matching the identifier.
      *
      * @param {Object | String} data The data object containing all the information for an expression or the name of the mock.
      * @param scenario The scenario that is selected to be returned when the api is called.
-     * @param {Object} options Currently only supports 'hold' property to delay response of a mock call
+     * @return {Promise} the promise.
      */
-    function selectScenario(data, scenario, options) {
-        var deferred = protractor.promise.defer(), hold;
+    function selectScenario(data, scenario) {
+        return _execute('PUT', '/mocks', {
+            identifier: _getIdentifier(data),
+            scenario: scenario || null
+        }, 'Could not select scenario [' + scenario + ']');
+    }
 
-        if (options && options.hold) {
-            browser.ignoreSynchronization = true;
-            hold = options.hold;
+    /**
+     * Sets the given delay time in milliseconds for the mock matching the identifier.
+     * @param {Object | String} data The data object containing all the information for an expression or the name of the mock.
+     * @param {number} delay The delay time in milliseconds.
+     * @return {Promise} the promise.
+     */
+    function delayResponse(data, delay) {
+        return _execute('PUT', '/mocks', {
+            identifier: _getIdentifier(data),
+            delay: delay || 0
+        }, 'Could not delay the response');
+    }
+
+    /**
+     * Sets the given echo indicator for the mock matching the identifier.
+     * @param {Object | String} data The data object containing all the information for an expression or the name of the mock.
+     * @param {boolean} echo The indicator echo request.
+     * @return {Promise} the promise.
+     */
+    function echoRequest(data, echo) {
+        return _execute('PUT', '/mocks', {
+            identifier: _getIdentifier(data),
+            echo: echo || false
+        }, 'Could not echo the request');
+    }
+
+    /**
+     * Selects the default scenario for each mock.
+     * @return {Promise} the promise.
+     */
+    function setAllScenariosToDefault() {
+        return _execute('PUT', '/mocks/defaults', undefined, 'Could not set scenarios to default');
+    }
+
+    /**
+     * Selects passThrough scenario for each mock.
+     * @return {Promise} the promise.
+     */
+    function setAllScenariosToPassThrough() {
+        return _execute('PUT', '/mocks/passthroughs', undefined, 'Could not set scenarios to passthroughs');
+    }
+
+    /**
+     * Add or Updates the given global key/value pair so it is accessible for when the response will returned.
+     * @param key The key.
+     * @param value The value.
+     * @return {Promise} the promise.
+     */
+    function setGlobalVariable(key, value) {
+        return _execute('PUT', '/variables', {
+            key: key,
+            value: value
+        }, 'Could not add or update variable key [' + key + ' with value [' + value + ']');
+    }
+
+    /**
+     * The deleteGlobalVariable function removes the global key/value pair.
+     * @param key The key.
+     * @return {Promise} the promise.
+     */
+    function deleteGlobalVariable(key) {
+        return _execute('DELETE', '/variables/' + key, undefined, 'Could not delete variable with key [' + key + ']');
+    }
+
+    /**
+     * Executes the api call with the provided information.
+     * @param httpMethod The http method.
+     * @param urlSuffix The url suffix.
+     * @param options The options object.
+     * @param errorMessage The error message.
+     * @return {Promise} The promise.
+     * @private
+     */
+    function _execute(httpMethod, urlSuffix, options, errorMessage) {
+        var deferred = protractor.promise.defer(),
+            opts = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngapimockid': ngapimockid
+                }
+            };
+
+        if (options !== undefined) {
+            opts.json = options;
         }
-        // #1
+
+        var response = request(httpMethod, baseUrl + urlSuffix, opts);
+
+        if (response.statusCode !== 200) {
+            deferred.reject(errorMessage);
+        } else {
+            deferred.fulfill();
+        }
+        return deferred.promise;
+    }
+
+
+    /**
+     * Adds the angular mock module that makes it possible to use the mocks.
+     * @deprecated
+     */
+    function addMockModule() {
+        console.log('addMockModule is no longer supported as of version 1.0.0, and will be removed in future versions');
+    }
+
+    /**
+     * Removes the angular mock module that makes it possible to use the mocks.
+     * @deprecated
+     */
+    function removeMockModule() {
+        console.log('removeMockModule is no longer supported as of version 1.0.0, and will be removed in future versions');
+    }
+
+    /**
+     * Resets the scenarios..
+     * @deprecated Use setAllScenariosToDefault or setAllScenariosToPassThrough
+     */
+    function resetScenarios() {
+        console.log('resetScenarios is no longer supported as of version 1.0.2, and will be removed in future versions.' +
+            ' Use setAllScenariosToDefault or setAllScenariosToPassThrough');
+    }
+
+    /**
+     * Resets the global variables to {}.
+     * @deprecated
+     */
+    function resetGlobalVariables() {
+        console.log('resetGlobalVariables is no longer supported as of version 1.0.0, and will be removed in future versions');
+    }
+
+    /**
+     * Releases a hold mock.
+     * @deprecated Use delayResponse.
+     */
+    function releaseMock() {
+        console.log('releaseMock is no longer supported as of version 1.2.*, and will be removed in future versions.' +
+            ' Use delay option instead.');
+    }
+
+    /**
+     * Gets the identifier from the provided data object.
+     * @param data The data object.
+     * @return {string} identifier The identifier.
+     * @private
+     */
+    function _getIdentifier(data) {
         var identifier;
         if (typeof data === 'string') { // name of the mock
             identifier = data;
@@ -61,172 +203,26 @@
         } else {
             identifier = data.expression + '$$' + data.method;
         }
-        // #2
-        var response = request('PUT', baseUrl + '/mocks', {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            },
-            json: {
-                identifier: identifier,
-                scenario: scenario || null,
-                hold: hold
-            }
-        });
-
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not select scenario [' + scenario + ']');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
-    }
-
-    /**
-     * release a mock that was hold in the selectScenario function
-     * This feature only works when using named mocks (i.e. it does not work by expression
-     * Also releasing is independent of the selected scenario
-     * @param {String} name The name of the mock
-     */
-    function releaseMock(name) {
-        browser.ignoreSynchronization = false;
-        var deferred = protractor.promise.defer();
-        var response = request('POST', baseUrl + '/mocks/release', {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            },
-            json: {
-                identifier: name
-            }
-        });
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not release mock with name [' + name + ']');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
-    }
-
-    /** The setAllScenariosToDefault function sets all the scenarios to default. */
-    function setAllScenariosToDefault() {
-        var deferred = protractor.promise.defer();
-        var response = request('PUT', baseUrl + '/mocks/defaults', {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            }
-        });
-
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not set scenarios to default');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
-    }
-
-    /** The setAllScenariosToPassThrough function sets all the scenarios to passthrough. */
-    function setAllScenariosToPassThrough() {
-        var deferred = protractor.promise.defer();
-        var response = request('PUT', baseUrl + '/mocks/passthroughs', {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            }
-        });
-
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not set scenarios to passthroughs');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
-    }
-
-    /** The resetScenarios function resets the selected mocks. */
-    function resetScenarios() {
-        console.log('resetScenarios is no longer supported as of version 1.0.2, and will be removed in future versions.' +
-            ' Use setAllScenariosToDefault or setAllScenariosToPassThrough');
-    }
-
-    /**
-     * The setGlobalVariable function stores the global key/value pair so it is accessible for when the response
-     * will returned.
-     * @param key The key.
-     * @param value The value.
-     */
-    function setGlobalVariable(key, value) {
-        var deferred = protractor.promise.defer();
-        var response = request('PUT', baseUrl + '/variables', {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            },
-            json: {
-                key: key,
-                value: value
-            }
-        });
-
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not add or update variable key [' + key + ' with value [' + value + ']');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
-    }
-
-    /**
-     * The deleteGlobalVariable function removes the global key/value pair.
-     * @param key The key.
-     */
-    function deleteGlobalVariable(key) {
-        var deferred = protractor.promise.defer();
-        var response = request('DELETE', baseUrl + '/variables/' + key, {
-            headers: {
-                'Content-Type': 'application/json',
-                'ngapimockid': ngapimockid
-            }
-        });
-
-        if (response.statusCode !== 200) {
-            deferred.reject('Could not delete variable with key [' + key + ']');
-        } else {
-            deferred.fulfill();
-        }
-        return deferred.promise;
-    }
-
-    /** The resetGlobalVariables function resets the provided variables to {}. */
-    function resetGlobalVariables() {
-        console.log('resetGlobalVariables is no longer supported as of version 1.0.0, and will be removed in future versions');
-    }
-
-    /**
-     * The addMockModule function creates an angular mock module with all the selected scenario's with $httpBackend.
-     * This module is then added as a protractor mock module to your application.
-     */
-    function addMockModule() {
-        console.log('addMockModule is no longer supported as of version 1.0.0, and will be removed in future versions');
-    }
-
-    /** The removeMockModule function removes the angular mock module. */
-    function removeMockModule() {
-        console.log('removeMockModule is no longer supported as of version 1.0.0, and will be removed in future versions');
+        return identifier;
     }
 
     /** This Protractor mock allows you to specify which scenario from your json api files you would like to use for your tests. */
     module.exports = {
         selectScenario: selectScenario,
+        delayResponse: delayResponse,
+        echoRequest: echoRequest,
+
+        setAllScenariosToDefault: setAllScenariosToDefault,
+        setAllScenariosToPassThrough: setAllScenariosToPassThrough,
+
+        setGlobalVariable: setGlobalVariable,
+        deleteGlobalVariable: deleteGlobalVariable,
+
+        // deprecated
         releaseMock: releaseMock,
         addMockModule: addMockModule,
         removeMockModule: removeMockModule,
-        setAllScenariosToDefault: setAllScenariosToDefault,
-        setAllScenariosToPassThrough: setAllScenariosToPassThrough,
         resetScenarios: resetScenarios,
-        setGlobalVariable: setGlobalVariable,
-        resetGlobalVariables: resetGlobalVariables,
-        deleteGlobalVariable: deleteGlobalVariable
+        resetGlobalVariables: resetGlobalVariables
     }
 })();

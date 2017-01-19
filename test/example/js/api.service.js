@@ -4,7 +4,7 @@
     function Api($resource, $window, $document, $sce) {
         return $resource('/online/rest/some/api/:x/and/:y', {
             x: '@x',
-            y: '@y'
+            y: '@y',
         }, {
             fetch: {
                 method: 'GET',
@@ -12,10 +12,9 @@
             },
             fetchAsJsonP: {
                 method: 'JSONP',
-                isArray: true,
-                params: {callback: 'JSON_CALLBACK'}
+                isArray: true
             },
-            update: {
+            post: {
                 method: 'POST',
                 isArray: false
             },

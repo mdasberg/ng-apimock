@@ -1,3 +1,16 @@
+<a name="1.2.0"></a>
+# 1.2.0 (2017-10-19)
+
+## Changes
+- Core has been rewritten in Typescript
+
+## Feature
+- Add delayResponse option which makes it possible to delay a response for the given amount of milliseconds.
+- Add echoRequest option which makes it possible to echo a http post request .
+
+## Breaking change
+- Removed releaseMock and hold option as they required a page to be reloaded when testing a delayed call (replaced by the delayResponse option).
+
 <a name="1.1.13"></a>
 # 1.1.13 (2016-11-26)
 

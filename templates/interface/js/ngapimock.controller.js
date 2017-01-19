@@ -6,6 +6,7 @@
         var interval;
 
         vm.echoMock = echoMock;
+        vm.delayMock = delayMock;
         vm.toggleRecording = toggleRecording;
         vm.selectMock = selectMock;
         vm.defaultMocks = defaultMocks;
@@ -14,7 +15,7 @@
         vm.updateVariable = updateVariable;
         vm.deleteVariable = deleteVariable;
 
-        vm.$onInit = function() {
+        vm.$onInit = function () {
             fetchMocks();
             fetchVariables();
 
@@ -29,6 +30,9 @@
             mockService.get({}, function (response) {
                 vm.mocks = response.mocks;
                 vm.selections = response.selections;
+                vm.delays = response.delays;
+                vm.echos = response.echos;
+                vm.recordings = response.recordings;
                 vm.record = response.record;
                 if (vm.record) {
                     interval = $interval(refreshMocks, 5000);
@@ -60,9 +64,22 @@
          */
         function echoMock(mock, echo) {
             mockService.update({'identifier': mock.identifier, 'echo': echo}, function () {
-                console.log(vm.mocks.find(function (m) {
+                vm.mocks.find(function (m) {
                     return m.name === mock.name;
-                }).echo = echo);
+                }).echo = echo;
+            });
+        }
+
+        /**
+         * Update the given Delay time.
+         * @param mock The mock.
+         * @param delay The delay.
+         */
+        function delayMock(mock, delay) {
+            mockService.update({'identifier': mock.identifier, 'delay': delay}, function () {
+                vm.mocks.find(function (m) {
+                    return m.name === mock.name;
+                }).delay = delay;
             });
         }
 
@@ -108,7 +125,7 @@
 
         /** Adds the given variable. */
         function addVariable() {
-            variableService.addOrUpdate(vm.variable, function() {
+            variableService.addOrUpdate(vm.variable, function () {
                 vm.variables[vm.variable.key] = vm.variable.value;
                 vm.variable = {
                     key: undefined,

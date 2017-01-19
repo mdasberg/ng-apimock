@@ -12,6 +12,9 @@ logs
 *.log
 npm-debug.log*
 
+#yarn
+yarn.lock
+
 # Runtime data
 pids
 *.pid
@@ -22,6 +25,9 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+
+# Test results
+results
 
 # nyc test coverage
 .nyc_output
