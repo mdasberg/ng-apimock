@@ -48,11 +48,14 @@ export class Processor {
      */
     generateMockingInterface = (directory: string): void => {
         /** Check if the plugin has a different version of angular as the application. */
-        const nmd = !fs.existsSync(path.join(Processor.PNMD, 'angular')) ?
+        const anmd = !fs.existsSync(path.join(Processor.PNMD, 'angular')) ?
                 path.join(process.cwd(), 'node_modules') :
                 Processor.PNMD,
-            angularJs = path.join(nmd, 'angular', 'angular.min.js'),
-            angularResource = path.join(nmd, 'angular-resource', 'angular-resource.min.js');
+            arnmd = !fs.existsSync(path.join(Processor.PNMD, 'angular-resource')) ?
+                path.join(process.cwd(), 'node_modules') :
+                Processor.PNMD,
+            angularJs = path.join(anmd, 'angular', 'angular.min.js'),
+            angularResource = path.join(arnmd, 'angular-resource', 'angular-resource.min.js');
 
         // copy the interface files
         glob.sync('**/*', {cwd: Processor.PTID, root: '/'}).forEach(function (file) {
