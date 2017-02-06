@@ -1,11 +1,17 @@
+<a name="1.2.2"></a>
+# 1.2.2 (2017-02-06)
+
+## Bugfix
+- Fix angular-resource not found when using angular application that does not have a dependency on angular-resource
+
 <a name="1.2.1"></a>
-# 1.2.1 (2017-10-19)
+# 1.2.1 (2017-01-19)
 
 ## Bugfix
 - Fix reset to default and set to passthrough when no api call was done before
 
 <a name="1.2.0"></a>
-# 1.2.0 (2017-10-19)
+# 1.2.0 (2017-01-19)
 
 ## Changes
 - Core has been rewritten in Typescript
