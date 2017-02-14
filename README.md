@@ -30,7 +30,7 @@ In order to use the available mocks, you need to call the run function with this
 ```js
 ngApimock.run({
   "src": "test/mocks", 
-  "outpuDir": "path/to/outputDir", 
+  "outputDir": "path/to/outputDir", 
   "done": function() { 
   // async
   }
