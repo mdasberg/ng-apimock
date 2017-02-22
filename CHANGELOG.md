@@ -1,3 +1,9 @@
+<a name="1.2.3"></a>
+# 1.2.3 (2017-02-22)
+
+## Bugfix
+- Fix addCookie fails with protractor 5.0.0 and above 
+
 <a name="1.2.2"></a>
 # 1.2.2 (2017-02-06)
 
