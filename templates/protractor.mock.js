@@ -25,7 +25,14 @@
             require('hooker').hook(browser, 'get', {
                 post: function (result) {
                     return result.then(function () {
-                        return browser.manage().addCookie('ngapimockid', ngapimockid);
+                        // Since protractor 5.0.0 the addCookie is an object, see
+                        // https://github.com/angular/protractor/blob/master/CHANGELOG.md#500
+                        try {
+                            return browser.manage().addCookie({name: "ngapimockid", value: ngapimockid});
+                        } catch (error) {
+                            // Fallback protractor < 5.0.0
+                            return browser.manage().addCookie('ngapimockid', ngapimockid);
+                        }
                     });
                 }
             });

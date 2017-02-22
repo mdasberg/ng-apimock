@@ -10,3 +10,10 @@ tsconfig.json
 
 #travis
 .travis.yml
+
+#project
+.idea
+_config.yml
+.npmignore
+yarn.lock
+.tmp/
