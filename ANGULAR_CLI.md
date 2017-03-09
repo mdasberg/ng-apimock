@@ -77,3 +77,6 @@ needs to be changed to
 }
 ```
  
+ 
+Your mocks are now proxied to http://localhost:3000.
+The web interface of ng-apimock is now available through http://localhost:3000/mocking
