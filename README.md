@@ -162,6 +162,24 @@ another scenario response to be returned.
 NgApimock also works when running multiple tests concurrent, by using the protract session id of the test. 
 This ensures that changing a scenario in one test, will not effect another test. 
 
+### Using Angular 2 or higher with Protractor?
+If you are using Angular 2 or higher in combination with Protractor you will need to add the following to you configuration.
+
+**Protractor 4**
+```js
+exports.config = {
+    useAllAngular2AppRoots: true
+};
+```
+**Protractor 5 or higher**
+```js
+exports.config = {
+    ngApimockOpts: {
+        angularVersion: 2  // {number} provide major version of Angular
+    }
+};
+```
+
 ### Available functions
 All these functions are protractor promises, so they can be chained.
 

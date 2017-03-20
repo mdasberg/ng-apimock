@@ -19,7 +19,10 @@
 
     /** Make sure that angular uses the ngapimock identifier for the requests. */
     browser.getProcessedConfig().then(function (config) {
-        if (config.useAllAngular2AppRoots) {
+        // As of protractor 5.0.0 the flag config.useAllAngular2AppRoots has been deprecated, to let protractor tell
+        // ngApimock that Angular 2 is used a custom object needs to be provided with the angular version in it
+        // See: https://github.com/angular/protractor/blob/master/CHANGELOG.md#features-2
+        if (config.useAllAngular2AppRoots || ('ngApimockOpts' in config && config.ngApimockOpts.angularVersion > 1)) {
             // angular 2 does not have addMockModule support @see https://github.com/angular/protractor/issues/3092
             // fallback to cookie
             require('hooker').hook(browser, 'get', {
