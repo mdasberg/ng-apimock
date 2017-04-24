@@ -2,7 +2,7 @@
     'use strict';
 
     var ngapimockid = require('uuid').v4(),
-        request = require('sync-request'),
+        request = require('then-request'),
         baseUrl = require('url-join')(browser.baseUrl, 'ngapimock');
 
     var ProtractorMock = function () {
@@ -142,13 +142,13 @@
             opts.json = options;
         }
 
-        var response = request(httpMethod, baseUrl + urlSuffix, opts);
-
-        if (response.statusCode !== 200) {
-            deferred.reject(errorMessage);
-        } else {
-            deferred.fulfill();
-        }
+        request(httpMethod, baseUrl + urlSuffix, opts).done(function (res) {
+            if(res.statusCode !== 200) {
+                deferred.reject(errorMessage);
+            } else {
+                deferred.fulfill();
+            }
+        });
         return deferred.promise;
     }
 
