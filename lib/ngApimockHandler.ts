@@ -205,7 +205,7 @@ export abstract class NgApimockHandler implements Handler {
             return false;
         }
         return url_parts.query.callback;
-    };
+    }
 
     /**
      * Stores the recording with the given mock.
