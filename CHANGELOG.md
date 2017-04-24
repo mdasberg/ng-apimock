@@ -1,3 +1,10 @@
+<a name="1.2.4"></a>
+# 1.2.4 (2017-04-24)
+
+## Changes
+- Add protractor 5 support (useAllAngular2AppRoots was removed in ptor 5, you can now use ngApimockOpts.angularVersion)
+- Underneat protractor.mock now uses then-request instead of sync-request
+
 <a name="1.2.3"></a>
 # 1.2.3 (2017-02-22)
 
