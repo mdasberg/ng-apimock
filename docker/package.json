@@ -1,0 +1,8 @@
+{
+  "name": "ng-apimock-docker",
+  "version": "1.2.4",
+  "dependencies": {
+    "ng-apimock": "1.2.4",
+    "express": "4.15.2"
+  }
+}

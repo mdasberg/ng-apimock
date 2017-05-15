@@ -17,3 +17,7 @@ _config.yml
 .npmignore
 yarn.lock
 .tmp/
+
+#docker
+dockerize.js
+docker
