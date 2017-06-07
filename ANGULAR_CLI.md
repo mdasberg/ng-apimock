@@ -59,7 +59,12 @@ Create a **proxy.config.json** file and copy paste the snippet below:
     "target": "http://localhost:3000",
     "secure": false,
     "logLevel": "debug"
-  }
+  },
+  "/ngapimock/*": {
+     "target": "http://localhost:3000",
+     "secure": false,
+     "logLevel": "debug"
+   }
  }
  ```
  
