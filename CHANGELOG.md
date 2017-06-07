@@ -1,3 +1,9 @@
+<a name="1.2.5"></a>
+# 1.2.5 (2017-06-07)
+
+## Bugfix
+- Fix dependency problem when uuid is required by another dependency 
+
 <a name="1.2.4"></a>
 # 1.2.4 (2017-04-24)
 
