@@ -1,9 +1,10 @@
 (function () {
     'use strict';
 
-    var ngapimockid = require('uuid').v4(),
-        request = require('then-request'),
-        baseUrl = require('url-join')(browser.baseUrl, 'ngapimock');
+    var path = require('path');
+    var ngapimockid = _require('uuid').v4();
+    var request = _require('then-request');
+    var baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
 
     var ProtractorMock = function () {
         function NgApimockHeader($http, ngApimockInstance) {
@@ -146,7 +147,7 @@
         }
 
         request(httpMethod, baseUrl + urlSuffix, opts).done(function (res) {
-            if(res.statusCode !== 200) {
+            if (res.statusCode !== 200) {
                 deferred.reject(errorMessage);
             } else {
                 deferred.fulfill();
@@ -214,6 +215,22 @@
             identifier = data.expression + '$$' + data.method;
         }
         return identifier;
+    }
+
+    /**
+     * Require the module by first looking under ng-apimock/node_modules and then in the base path.
+     * @param dependency The dependency.
+     * @return {*} result The result
+     * @private
+     */
+    function _require(dependency) {
+        var result;
+        try {
+            result = require(path.join('ng-apimock', 'node_modules', dependency));
+        } catch (ex) {
+            result = require(dependency)
+        }
+        return result;
     }
 
     /** This Protractor mock allows you to specify which scenario from your json api files you would like to use for your tests. */
