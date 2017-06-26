@@ -16,6 +16,7 @@
         beforeEach(function () {
             log = {
                 ok: [],
+                warn: [],
                 error: []
             };
 
@@ -28,6 +29,9 @@
         });
         hooker.hook(console, "info", function () {
             log.ok.push(arguments[0]);
+        });
+        hooker.hook(console, "warn", function() {
+            log.warn.push(argments[0]);
         });
         hooker.hook(console, "error", function () {
             log.error.push(arguments[0]);
@@ -59,7 +63,7 @@
             try {
                 ngApimock.run({
                     outputDir: SOME_OTHER_DIR,
-                    src: 'test/mocks',
+                    src: 'test/mocks/api',
                     done: done
                 });
             } catch (e) {
@@ -89,7 +93,7 @@
         it('should generate everything in the default directory', function () {
             try {
                 ngApimock.run({
-                    src: 'test/mocks',
+                    src: 'test/mocks/api'
                 });
             } catch (e) {
                 fail();
@@ -109,6 +113,19 @@
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'variables.service.js')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'css' + path.sep + 'main.css')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'protractor.mock.js')).toBeTruthy();
+            }
+        });
+
+        it('should show warnings for duplicate mock identifiers', function () {
+            try {
+                ngApimock.run({
+                    src: 'test/mocks/error-duplicate'
+                });
+            } catch (e) {
+                fail();
+            } finally {
+                expect(log.warn.length).toBe(1);
+                expect(log.warn[0]).toBe('Mock with identifier "duplicate" already exists. Overwriting existing mock.');
             }
         });
     });

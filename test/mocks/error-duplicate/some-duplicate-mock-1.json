@@ -1,0 +1,7 @@
+{
+  "expression": "online\/rest\/some\/api\/.*\/and\/.*",
+  "method": "POST",
+  "name": "duplicate",
+  "responses": {
+  }
+}

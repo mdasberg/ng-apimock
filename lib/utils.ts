@@ -95,6 +95,7 @@ import {ProtractorNgApimockHandler} from "./protractor/ngApimockHandler";
                 index = registry.mocks.indexOf(match);
 
             if (index > -1) { // exists so update
+                console.warn(`Mock with identifier "${mock.identifier}" already exists. Overwriting existing mock.`);
                 registry.mocks[index] = mock;
             } else { // add
                 registry.mocks.push(mock);
