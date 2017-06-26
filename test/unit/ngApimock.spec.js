@@ -31,7 +31,7 @@
             log.ok.push(arguments[0]);
         });
         hooker.hook(console, "warn", function() {
-            log.warn.push(argments[0]);
+            log.warn.push(arguments[0]);
         });
         hooker.hook(console, "error", function () {
             log.error.push(arguments[0]);

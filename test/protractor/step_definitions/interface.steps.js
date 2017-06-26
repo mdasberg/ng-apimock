@@ -4,9 +4,9 @@
             path = require('path'),
             MockingPO = require('./../po/mocking.po'),
             responses = {
-                list: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-list.json')).responses,
-                update: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-post.json')).responses,
-                download: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'some-api-download.json')).responses
+                list: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'api', 'some-api-list.json')).responses,
+                update: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'api', 'some-api-post.json')).responses,
+                download: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'api', 'some-api-download.json')).responses
             },
             mockingPo = new MockingPO();
 
