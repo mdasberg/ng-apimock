@@ -103,9 +103,10 @@ export abstract class NgApimockHandler implements Handler {
                 // remove the recording header to stop recording after this call succeeds
                 if (registry.record && !request.headers.record) {
                     const headers = request.headers,
+                        host = <string>headers.host,
                         options = {
-                            host: headers.host.split(':')[0],
-                            port: headers.host.split(':')[1],
+                            host: host.split(':')[0],
+                            port: Number(host.split(':')[1]),
                             path: request.url,
                             method: request.method,
                             headers: headers
