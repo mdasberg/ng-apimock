@@ -16,6 +16,7 @@
         beforeEach(function () {
             log = {
                 ok: [],
+                warn: [],
                 error: []
             };
 
@@ -28,6 +29,9 @@
         });
         hooker.hook(console, "info", function () {
             log.ok.push(arguments[0]);
+        });
+        hooker.hook(console, "warn", function() {
+            log.warn.push(argments[0]);
         });
         hooker.hook(console, "error", function () {
             log.error.push(arguments[0]);
@@ -120,8 +124,8 @@
             } catch (e) {
                 fail();
             } finally {
-                expect(log.error.length).toBe(1);
-                expect(log.error[0]).toBe('Mock with identifier "duplicate" already exists. Overwriting existing mock.');
+                expect(log.warn.length).toBe(1);
+                expect(log.warn[0]).toBe('Mock with identifier "duplicate" already exists. Overwriting existing mock.');
             }
         });
     });
