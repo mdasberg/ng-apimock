@@ -179,9 +179,9 @@ Feature: Change responses
     Given I open the test page
     And I switch to mocking interface
     And I select groceries for mock with name list
-    And I delay the response for mock with name list for 1000 milliseconds
+    And I delay the response for mock with name list for 2000 milliseconds
     And I switch to test page
     When I refresh
     Then the loading warning is visible
-    When I wait a 1000 milliseconds
+    When I wait a 2000 milliseconds
     Then the loading message is visible
