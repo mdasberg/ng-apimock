@@ -59,7 +59,7 @@
             try {
                 ngApimock.run({
                     outputDir: SOME_OTHER_DIR,
-                    src: 'test/mocks',
+                    src: 'test/mocks/api',
                     done: done
                 });
             } catch (e) {
@@ -89,7 +89,7 @@
         it('should generate everything in the default directory', function () {
             try {
                 ngApimock.run({
-                    src: 'test/mocks',
+                    src: 'test/mocks/api'
                 });
             } catch (e) {
                 fail();
@@ -109,6 +109,19 @@
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'js' + path.sep + 'variables.service.js')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'css' + path.sep + 'main.css')).toBeTruthy();
                 expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'protractor.mock.js')).toBeTruthy();
+            }
+        });
+
+        it('should show warnings for duplicate mock identifiers', function () {
+            try {
+                ngApimock.run({
+                    src: 'test/mocks/error-duplicate'
+                });
+            } catch (e) {
+                fail();
+            } finally {
+                expect(log.error.length).toBe(1);
+                expect(log.error[0]).toBe('Mock with identifier "duplicate" already exists. Overwriting existing mock.');
             }
         });
     });
