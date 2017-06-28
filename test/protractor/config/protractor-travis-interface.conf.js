@@ -7,7 +7,9 @@ config.sauceKey = process.env.SAUCE_ACCESS_KEY;
 
 config.params = {
     environment: 'TRAVIS',
-    default_directory: '/tmp/'
+    default_directory: '/tmp/',
+    testDir: 'test',
+    resultsDir: 'results'
 };
 
 config.specs = [
