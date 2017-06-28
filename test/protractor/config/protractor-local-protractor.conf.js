@@ -6,7 +6,9 @@ config.seleniumAddress = 'http://localhost:4444/wd/hub';
 
 config.params = {
     environment: 'LOCAL',
-    default_directory: '/tmp/'
+    default_directory: '/tmp/',
+    testDir: 'test',
+    resultsDir: 'results'
 };
 
 config.specs = [

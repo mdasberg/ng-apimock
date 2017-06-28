@@ -74,6 +74,7 @@
     "protractor": "5.1.2",
     "protractor-cucumber-framework": "3.1.1",
     "serve-static": "1.12.3",
+    "shortid": "^2.2.8",
     "tslint": "5.4.3",
     "tslint-eslint-rules": "4.1.1",
     "typescript": "2.3.4",
