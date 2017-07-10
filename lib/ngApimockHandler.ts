@@ -93,7 +93,7 @@ abstract class NgApimockHandler implements Handler {
                 }
 
                 const mockDelay = this.getDelay(registry, match.identifier, ngApimockId);
-                let _delay = mockDelay === null|| mockDelay === undefined ? mockResponse.delay : mockDelay;
+                const _delay = mockDelay === null || mockDelay === undefined ? mockResponse.delay : mockDelay;
 
                 this.delay(_delay);
                 response.writeHead(statusCode, headers);
