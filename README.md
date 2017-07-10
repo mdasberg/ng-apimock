@@ -59,7 +59,8 @@ There are a couple of rules to follow.
       "headers": {}, // optional - defaults to {}
       "data": {}, // optional
       "file": "path/to/file.ext" // optional, when provided don't forget the matching content-type header as it will result in a file download instead of data
-      "statusText": "" // optional
+      "statusText": "", // optional
+      "delay": 2000 // optional - defaults to no delay when provided this delay will only be used for this response
     },
     "some-other-meaningful-scenario-name": {
       "data": {}
@@ -187,7 +188,7 @@ All these functions are protractor promises, so they can be chained.
 Selects the given scenario (when calling this function without a scenario or with 'passThrough' as scenario name, the call will be passed through to the actual backend)
 
 #### delayResponse(name, delay)
-Sets the delay time in milliseconds for the mock so the response will be delayed.
+Sets the delay time in milliseconds for the mock so the response will be delayed. The delay set here superseeds the delay defined in the response mock.
 
 #### echoRequest(name, indicator)
 Sets the indicator which enables / disables the request logging (only post request should be logged)
