@@ -92,7 +92,10 @@ abstract class NgApimockHandler implements Handler {
                     chunk = jsonCallbackName + '(' + chunk + ')';
                 }
 
-                this.delay(this.getDelay(registry, match.identifier, ngApimockId));
+                const mockDelay = this.getDelay(registry, match.identifier, ngApimockId);
+                let _delay = mockDelay === null|| mockDelay === undefined ? mockResponse.delay : mockDelay;
+
+                this.delay(_delay);
                 response.writeHead(statusCode, headers);
                 response.end(chunk);
 

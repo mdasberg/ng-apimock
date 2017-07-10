@@ -137,8 +137,18 @@ Feature: Change responses
   Scenario: Delay the response
     Given I open the test page
     And I select groceries for mock with name list
-    And I delay the response for mock with name list for 2000 milliseconds
-    When I refresh
+    When I delay the response for mock with name list for 2000 milliseconds
+    And I refresh
     Then the loading warning is visible
     When I wait a 2000 milliseconds
+    Then the loading message is visible
+
+  ### use the scenario delay
+  Scenario: Delay the response from the mock
+    Given I open the test page
+    And I select other for mock with name list
+    When I delay the response for mock with name list for 2000 milliseconds
+    And I refresh
+    Then the loading warning is visible
+    When I wait a 4000 milliseconds
     Then the loading message is visible

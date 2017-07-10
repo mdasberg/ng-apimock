@@ -13,6 +13,10 @@
     "wishes": {
       "data": [{"title":"Ferrari f40"}, {"title": "Koenigsegg One:1"}]
     },
+    "other": {
+      "data": [{"title":"Red-bull RB13"}],
+      "delay": 4000
+    },
     "internal-server-error": {
       "status":500
     }

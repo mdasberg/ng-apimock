@@ -22,9 +22,11 @@ class Processor {
      */
     processMocks(directory: string): Mock[] {
         const mocks: Mock[] = [];
-        glob.sync('**/*.json', { cwd: directory, root: '/' }).forEach(function (file) {
-            mocks.push(fs.readJsonSync(path.join(directory, file)));
-        });
+        glob.sync('**/*.json', {
+            cwd: directory,
+            root: '/'
+        }).forEach((file) =>
+            mocks.push(fs.readJsonSync(path.join(directory, file))));
         return mocks;
     }
 
@@ -58,9 +60,8 @@ class Processor {
             angularResource = path.join(arnmd, 'angular-resource', 'angular-resource.min.js');
 
         // copy the interface files
-        glob.sync('**/*', { cwd: Processor.PTID, root: '/' }).forEach(function (file) {
-            fs.copySync(path.join(Processor.PTID, file), path.join(directory, file));
-        });
+        glob.sync('**/*', { cwd: Processor.PTID, root: '/' }).forEach((file) =>
+            fs.copySync(path.join(Processor.PTID, file), path.join(directory, file)));
 
         fs.copySync(angularJs, path.join(directory, 'js', 'angular.min.js'));
         fs.copySync(angularResource, path.join(directory, 'js', 'angular-resource.min.js'));

@@ -34,8 +34,10 @@
                 return expect(actual).to.eventually.equal(expected);
             })));
 
-        world.When(/^I select (.*) for mock with name (.*)$/, (scenario, name) =>
-            mockingPo.mock(name).scenario.sendKeys(scenario));
+        world.When(/^I select (.*) for mock with name (.*)$/, (scenario, name) => {
+            console.log('scenario', scenario);
+            return mockingPo.mock(name).scenario.sendKeys(scenario);
+        });
 
         world.When(/^I reset the scenario's to defaults$/, () => mockingPo.resetsToDefaults.click());
 
