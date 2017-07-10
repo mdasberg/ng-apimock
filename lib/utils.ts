@@ -1,28 +1,31 @@
-import {Mock} from "../tasks/mock";
-import * as http from "http";
-import {Registry} from "./registry";
-import {httpMethods} from "./http";
-import {ProtractorUpdateMockHandler} from "./api/mocks/protractor/updateMockHandler";
-import {RuntimeUpdateMockHandler} from "./api/mocks/runtime/updateMockHandler";
-import {ProtractorGetMocksHandler} from "./api/mocks/protractor/getMocksHandler";
-import {RuntimeGetMocksHandler} from "./api/mocks/runtime/getMocksHandler";
-import {RuntimeResetMocksToDefaultsHandler} from "./api/mocks/runtime/resetMocksToDefaultsHandler";
-import {ProtractorResetMocksToDefaultsHandler} from "./api/mocks/protractor/resetMocksToDefaultsHandler";
-import {ProtractorSetMocksToPassThroughsHandler} from "./api/mocks/protractor/setMocksToPassThroughsHandler";
-import {RuntimeSetMocksToPassThroughsHandler} from "./api/mocks/runtime/setMocksToPassThroughsHandler";
-import {RuntimeRecordResponseHandler} from "./api/mocks/runtime/recordResponseHandler";
-import {ProtractorRecordResponseHandler} from "./api/mocks/protractor/recordResponseHandler";
-import {ProtractorAddOrUpdateVariableHandler} from "./api/variables/protractor/addOrUpdateVariableHandler";
-import {RuntimeAddOrUpdateVariableHandler} from "./api/variables/runtime/addOrUpdateVariableHandler";
-import {RuntimeGetVariablesHandler} from "./api/variables/runtime/getVariablesHandler";
-import {ProtractorGetVariablesHandler} from "./api/variables/protractor/getVariablesHandler";
-import {RuntimeDeleteVariableHandler} from "./api/variables/runtime/deleteVariableHandler";
-import {ProtractorDeleteVariableHandler} from "./api/variables/protractor/deleteVariableHandler";
-import {RuntimeNgApimockHandler} from "./runtime/ngApimockHandler";
-import {ProtractorNgApimockHandler} from "./protractor/ngApimockHandler";
+import Mock from '../tasks/mock';
+import * as http from 'http';
+import {httpMethods} from './http';
+import ProtractorGetMocksHandler from './api/mocks/protractor/getMocksHandler';
+import RuntimeGetMocksHandler from './api/mocks/runtime/getMocksHandler';
+import ProtractorSetMocksToPassThroughsHandler from './api/mocks/protractor/setMocksToPassThroughsHandler';
+import ProtractorRecordResponseHandler from './api/mocks/protractor/recordResponseHandler';
+import ProtractorResetMocksToDefaultsHandler from './api/mocks/protractor/resetMocksToDefaultsHandler';
+import RuntimeResetMocksToDefaultsHandler from './api/mocks/runtime/resetMocksToDefaultsHandler';
+import RuntimeSetMocksToPassThroughsHandler from './api/mocks/runtime/setMocksToPassThroughsHandler';
+import RuntimeRecordResponseHandler from './api/mocks/runtime/recordResponseHandler';
+import Registry from './registry';
+import ProtractorUpdateMockHandler from './api/mocks/protractor/updateMockHandler';
+import RuntimeUpdateMockHandler from './api/mocks/runtime/updateMockHandler';
+import ProtractorDeleteVariableHandler from './api/variables/protractor/deleteVariableHandler';
+import ProtractorNgApimockHandler from './protractor/ngApimockHandler';
+import ProtractorAddOrUpdateVariableHandler from './api/variables/protractor/addOrUpdateVariableHandler';
+import ProtractorGetVariablesHandler from './api/variables/protractor/getVariablesHandler';
+import RuntimeAddOrUpdateVariableHandler from './api/variables/runtime/addOrUpdateVariableHandler';
+import RuntimeGetVariablesHandler from './api/variables/runtime/getVariablesHandler';
+import RuntimeDeleteVariableHandler from './api/variables/runtime/deleteVariableHandler';
+import RuntimeNgApimockHandler from './runtime/ngApimockHandler';
+import DELETE = httpMethods.DELETE;
+import PUT = httpMethods.PUT;
+import GET = httpMethods.GET;
 
 (function () {
-    "use strict";
+    'use strict';
 
     (module).exports = {
         ngApimockRequest: ngApimockRequest,
@@ -65,21 +68,21 @@ import {ProtractorNgApimockHandler} from "./protractor/ngApimockHandler";
         const ngapimockId = _ngApimockId(request.headers),
             type = ngapimockId !== undefined ? 'protractor' : 'runtime';
 
-        if (request.url === '/ngapimock/mocks/record' && request.method === httpMethods.PUT) {
+        if (request.url === '/ngapimock/mocks/record' && request.method === PUT) {
             handlers[type].recordResponseHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (request.url === '/ngapimock/mocks' && request.method === httpMethods.GET) {
+        } else if (request.url === '/ngapimock/mocks' && request.method === GET) {
             handlers[type].getMocksHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (request.url === '/ngapimock/mocks' && request.method === httpMethods.PUT) {
+        } else if (request.url === '/ngapimock/mocks' && request.method === PUT) {
             handlers[type].updateMockHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (request.url === '/ngapimock/mocks/defaults' && request.method === httpMethods.PUT) {
+        } else if (request.url === '/ngapimock/mocks/defaults' && request.method === PUT) {
             handlers[type].resetMocksToDefaultsHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (request.url === '/ngapimock/mocks/passthroughs' && request.method === httpMethods.PUT) {
+        } else if (request.url === '/ngapimock/mocks/passthroughs' && request.method === PUT) {
             handlers[type].setMocksToPassThroughsHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (request.url === '/ngapimock/variables' && request.method === httpMethods.GET) {
+        } else if (request.url === '/ngapimock/variables' && request.method === GET) {
             handlers[type].getVariablesHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (request.url === '/ngapimock/variables' && request.method === httpMethods.PUT) {
+        } else if (request.url === '/ngapimock/variables' && request.method === PUT) {
             handlers[type].addOrUpdateVariableHandler.handleRequest(request, response, next, registry, ngapimockId);
-        } else if (new RegExp('/ngapimock/variables/.*').exec(request.url) !== null && request.method === httpMethods.DELETE) {
+        } else if (new RegExp('/ngapimock/variables/.*').exec(request.url) !== null && request.method === DELETE) {
             handlers[type].deleteVariableHandler.handleRequest(request, response, next, registry, ngapimockId);
         } else {
             handlers[type].ngApimockHandler.handleRequest(request, response, next, registry, ngapimockId);
@@ -95,7 +98,7 @@ import {ProtractorNgApimockHandler} from "./protractor/ngApimockHandler";
                 index = registry.mocks.indexOf(match);
 
             if (index > -1) { // exists so update
-                console.warn(`Mock with identifier "${mock.identifier}" already exists. Overwriting existing mock.`);
+                console.warn(`Mock with identifier '${mock.identifier}' already exists. Overwriting existing mock.`);
                 registry.mocks[index] = mock;
             } else { // add
                 registry.mocks.push(mock);
@@ -136,7 +139,7 @@ import {ProtractorNgApimockHandler} from "./protractor/ngApimockHandler";
         return cookies && cookies
                 .split(';')
                 .map(cookie => {
-                    let parts = cookie.split('=');
+                    const parts = cookie.split('=');
                     return {
                         key: parts.shift().trim(),
                         value: decodeURI(parts.join('='))

@@ -1,5 +1,6 @@
-import {Registry} from "../registry";
-export module helper {
+import Registry from '../registry';
+
+module helper {
     export module protractor {
         /**
          * Adds a session to the registry for the given ngApimockId if there isn't any.
@@ -17,5 +18,6 @@ export module helper {
             }
         }
     }
-
 }
+
+export default helper;

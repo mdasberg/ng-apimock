@@ -1,8 +1,8 @@
-import {NgApimockHandler} from "../ngApimockHandler";
-import {Registry} from "../registry";
+import NgApimockHandler from '../ngApimockHandler';
+import Registry from '../registry';
 
 /** Handler for a request for runtime. */
-export class RuntimeNgApimockHandler extends NgApimockHandler {
+class RuntimeNgApimockHandler extends NgApimockHandler {
     /** @inheritDoc */
     getSelection(registry: Registry, identifier: string, ngApimockId: string): string {
         return registry.selections[identifier];
@@ -22,5 +22,6 @@ export class RuntimeNgApimockHandler extends NgApimockHandler {
     getDelay(registry: Registry, identifier: string): number {
         return registry.delays[identifier];
     }
-
 }
+
+export default RuntimeNgApimockHandler;

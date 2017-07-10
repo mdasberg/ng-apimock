@@ -1,10 +1,10 @@
-import * as http from "http";
-import {Handler} from "../../handler";
-import {Registry} from "../../registry";
-import {httpHeaders} from "../../http";
+import * as http from 'http';
+import {httpHeaders} from '../../http';
+import Handler from '../../handler';
+import Registry from '../../registry';
 
 /** Abstract Handler for adding and updating variables. */
-export abstract class AddOrUpdateVariableHandler implements Handler {
+abstract class AddOrUpdateVariableHandler implements Handler {
 
     /**
      * Handle add or update variable.
@@ -21,7 +21,8 @@ export abstract class AddOrUpdateVariableHandler implements Handler {
      *
      * Handler that takes care of adding and updating variables.
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
+                  ngApimockId: string): void {
         request.on('data', (rawData: string) => {
             const data = JSON.parse(rawData);
 
@@ -35,8 +36,10 @@ export abstract class AddOrUpdateVariableHandler implements Handler {
                 response.end();
             } catch (e) {
                 response.writeHead(409, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
-                response.end(JSON.stringify(e, ["message"]));
+                response.end(JSON.stringify(e, ['message']));
             }
         });
     }
 }
+
+export default AddOrUpdateVariableHandler;

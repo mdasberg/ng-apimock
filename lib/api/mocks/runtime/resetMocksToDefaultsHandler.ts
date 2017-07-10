@@ -1,8 +1,8 @@
-import {Registry} from "../../../registry";
-import {ResetMocksToDefaultsHandler} from "../resetMocksToDefaultsHandler";
+import ResetMocksToDefaultsHandler from '../resetMocksToDefaultsHandler';
+import Registry from '../../../registry';
 
 /** Handler that takes care of resetting the mocks to defaults for runtime. */
-export class RuntimeResetMocksToDefaultsHandler extends ResetMocksToDefaultsHandler {
+class RuntimeResetMocksToDefaultsHandler extends ResetMocksToDefaultsHandler {
     /** @inheritDoc */
     resetToDefaults(registry: Registry): void {
         registry.selections = JSON.parse(JSON.stringify(registry.defaults));
@@ -13,3 +13,5 @@ export class RuntimeResetMocksToDefaultsHandler extends ResetMocksToDefaultsHand
         return registry.selections;
     }
 }
+
+export default  RuntimeResetMocksToDefaultsHandler;

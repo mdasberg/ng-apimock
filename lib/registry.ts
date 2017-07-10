@@ -1,20 +1,21 @@
-import {Mock} from "../tasks/mock";
-export class Registry {
+import Mock from '../tasks/mock';
+
+class Registry {
     mocks: Mock[];
-    defaults: {[key: string]: string};
+    defaults: { [key: string]: string };
     sessions: {
         [key: string]: {
-            selections: {[key: string]: string};
-            variables: {[key: string]: string};
-            delays: {[key: string]: number};
-            echos: {[key: string]: boolean};
+            selections: { [key: string]: string };
+            variables: { [key: string]: string };
+            delays: { [key: string]: number };
+            echos: { [key: string]: boolean };
         }
     };
-    selections: {[key: string]: string};
-    variables: {[key: string]: string};
-    recordings: {[key: string]: Recording[]};
-    delays: {[key: string]: number};
-    echos: {[key: string]: boolean};
+    selections: { [key: string]: string };
+    variables: { [key: string]: string };
+    recordings: { [key: string]: Recording[] };
+    delays: { [key: string]: number };
+    echos: { [key: string]: boolean };
     record: boolean;
 
     constructor() {
@@ -39,3 +40,5 @@ export class Recording {
     url: string;
     statusCode: number;
 }
+
+export default Registry;

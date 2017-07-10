@@ -1,10 +1,9 @@
-import {Registry} from "../../../registry";
-import {UpdateMockHandler} from "../updateMockHandler";
-import {Mock} from "../../../../tasks/mock";
-import {helper} from "../../helper";
+import helper from '../../helper';
+import Registry from '../../../registry';
+import UpdateMockHandler from '../updateMockHandler';
 
 /** Handler that takes care of updating the mock configuration for protractor. */
-export class ProtractorUpdateMockHandler extends UpdateMockHandler{
+class ProtractorUpdateMockHandler extends UpdateMockHandler {
     /** @inheritDoc */
     handlePassThroughScenario(registry: Registry, identifier: string, ngApimockId: string): void {
         helper.protractor.addSessionIfNonExisting(registry, ngApimockId);
@@ -28,5 +27,6 @@ export class ProtractorUpdateMockHandler extends UpdateMockHandler{
         helper.protractor.addSessionIfNonExisting(registry, ngApimockId);
         registry.sessions[ngApimockId].echos[identifier] = echo;
     }
-
 }
+
+export default ProtractorUpdateMockHandler;

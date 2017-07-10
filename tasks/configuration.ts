@@ -1,4 +1,4 @@
-export class Configuration {
+interface Configuration {
     // the directory containing the mocks
     src: string;
     // callback function
@@ -6,3 +6,5 @@ export class Configuration {
     // the output directory
     outputDir: string;
 }
+
+export default Configuration;

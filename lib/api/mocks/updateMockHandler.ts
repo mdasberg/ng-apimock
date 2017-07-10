@@ -1,11 +1,10 @@
-import * as http from "http";
-import {Handler} from "../../handler";
-import {Registry} from "../../registry";
-import {httpHeaders} from "../../http";
-import {Mock} from "../../../tasks/mock";
+import * as http from 'http';
+import {httpHeaders} from '../../http';
+import Registry from '../../registry';
+import Handler from '../../handler';
 
 /** Abstract Handler for Updating mock state. */
-export abstract class UpdateMockHandler implements Handler {
+abstract class UpdateMockHandler implements Handler {
 
     /**
      * Handle the passthrough selection.
@@ -51,7 +50,8 @@ export abstract class UpdateMockHandler implements Handler {
      * - toggle echo state
      * - delay the mock response
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
+                  ngApimockId: string): void {
         request.on('data', (rawData: string) => {
             const data = JSON.parse(rawData);
             try {
@@ -77,7 +77,7 @@ export abstract class UpdateMockHandler implements Handler {
                 response.end();
             } catch (e) {
                 response.writeHead(409, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
-                response.end(JSON.stringify(e, ["message"]));
+                response.end(JSON.stringify(e, ['message']));
             }
         });
     }
@@ -88,7 +88,7 @@ export abstract class UpdateMockHandler implements Handler {
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isScenarioSelectionRequest(data: any): boolean {
+    private isScenarioSelectionRequest(data: any): boolean {
         return data.scenario !== undefined;
     }
 
@@ -97,7 +97,7 @@ export abstract class UpdateMockHandler implements Handler {
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isEchoRequest(data: any): boolean {
+    private isEchoRequest(data: any): boolean {
         return data.echo !== undefined;
     }
 
@@ -106,7 +106,7 @@ export abstract class UpdateMockHandler implements Handler {
      * @param data The request data.
      * @returns {boolean} indicator The indicator.
      */
-    isDelayResponseRequest(data: any): boolean {
+    private isDelayResponseRequest(data: any): boolean {
         return data.delay !== undefined;
     }
 
@@ -115,7 +115,9 @@ export abstract class UpdateMockHandler implements Handler {
      * @param scenario The scenario.
      * @returns {boolean} indicator The indicator.
      */
-    isPassThroughScenario(scenario: string): boolean {
+    private isPassThroughScenario(scenario: string): boolean {
         return scenario === null || scenario === 'passThrough';
     }
 }
+
+export default UpdateMockHandler;

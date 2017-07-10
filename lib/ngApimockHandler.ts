@@ -1,13 +1,13 @@
-import * as http from "http";
-import * as fs from "fs-extra";
-import * as url from "url";
-import {Handler} from "./handler";
-import {Registry} from "./registry";
-import {Mock} from "../tasks/mock";
-import {httpHeaders} from "./http";
+import * as http from 'http';
+import * as fs from 'fs-extra';
+import * as url from 'url';
+import Mock from '../tasks/mock';
+import {httpHeaders} from './http';
+import Registry from './registry';
+import Handler from './handler';
 
 /** Abstract Handler for a request. */
-export abstract class NgApimockHandler implements Handler {
+abstract class NgApimockHandler implements Handler {
     MAX_RECORDINGS_PER_MOCK = 2;
 
     /**
@@ -53,7 +53,8 @@ export abstract class NgApimockHandler implements Handler {
      * - a normal api call
      * - a record call
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
+                  ngApimockId: string): void {
         // #1
         const match = this.getMatchingMock(registry.mocks, request.url, request.method);
         let payload: string;
@@ -68,16 +69,15 @@ export abstract class NgApimockHandler implements Handler {
 
                 if (mockResponse !== undefined) {
                     if (!!this.getEcho(registry, match.identifier, ngApimockId)) {
-                        console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
+                        console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ',
+                            payload);
                     }
                 }
             });
 
             if (mockResponse !== undefined) {
-
-                const statusCode = mockResponse.status || 200,
-                    jsonCallbackName = this.getJsonCallbackName(request.url);
-
+                const statusCode = mockResponse.status || 200;
+                const jsonCallbackName = this.getJsonCallbackName(request.url);
                 let headers, chunk;
 
                 if (this.isBinaryResponse(mockResponse)) {
@@ -92,7 +92,7 @@ export abstract class NgApimockHandler implements Handler {
                     chunk = jsonCallbackName + '(' + chunk + ')';
                 }
 
-                this.delay(this.getDelay(registry,match.identifier, ngApimockId));
+                this.delay(this.getDelay(registry, match.identifier, ngApimockId));
                 response.writeHead(statusCode, headers);
                 response.end(chunk);
 
@@ -102,22 +102,23 @@ export abstract class NgApimockHandler implements Handler {
             } else {
                 // remove the recording header to stop recording after this call succeeds
                 if (registry.record && !request.headers.record) {
-                    const headers = request.headers,
-                        host = <string>headers.host,
-                        options = {
-                            host: host.split(':')[0],
-                            port: Number(host.split(':')[1]),
-                            path: request.url,
-                            method: request.method,
-                            headers: headers
-                        };
+                    const headers = request.headers;
+                    const host = <string>headers.host;
+                    const options = {
+                        host: host.split(':')[0],
+                        port: Number(host.split(':')[1]),
+                        path: request.url,
+                        method: request.method,
+                        headers: headers
+                    };
 
                     headers.record = 'off';
 
                     const req = http.request(options, (res: http.IncomingMessage) => {
                         res.setEncoding('utf8');
                         res.on('data', (chunk: Buffer) => {
-                            this.storeRecording(payload, chunk.toString('utf8'), request, res.statusCode, registry, match.identifier);
+                            this.storeRecording(payload, chunk.toString('utf8'), request, res.statusCode, registry,
+                                match.identifier);
                             response.end(chunk);
                         });
                     });
@@ -155,7 +156,7 @@ export abstract class NgApimockHandler implements Handler {
      * Delay the response for the given amount of milliseconds.
      * @param ms The number of milliseconds.
      */
-    delay(ms: number): void {
+    private delay(ms: number): void {
         let curr = new Date().getTime();
         ms += curr;
         while (curr < ms) {
@@ -168,7 +169,7 @@ export abstract class NgApimockHandler implements Handler {
      * @param response The response
      * @return {boolean} indicator The indicator.
      */
-    isBinaryResponse(response: any): boolean {
+    private isBinaryResponse(response: any): boolean {
         return response.file !== undefined;
     }
 
@@ -179,14 +180,14 @@ export abstract class NgApimockHandler implements Handler {
      * @param defaults The defaults.
      * @return updatedData The updated data.
      */
-    updateData(data: any, variables: {[key: string]: string}, defaults: any): string {
+    private updateData(data: any, variables: { [key: string]: string }, defaults: any): string {
         let _data: string;
 
         if (data !== undefined) {
             _data = JSON.stringify(data);
             Object.keys(variables).forEach(function (key) {
                 if (variables.hasOwnProperty(key)) {
-                    _data = _data.replace(new RegExp("%%" + key + "%%", "g"), variables[key]);
+                    _data = _data.replace(new RegExp('%%' + key + '%%', 'g'), variables[key]);
                 }
             });
         } else {
@@ -200,7 +201,7 @@ export abstract class NgApimockHandler implements Handler {
      * @param requestUrl The request url.
      * @returns {string|boolean} callbackName Either the name or false.
      */
-    getJsonCallbackName(requestUrl: string): string|boolean {
+    private getJsonCallbackName(requestUrl: string): string | boolean {
         const url_parts = url.parse(requestUrl, true);
         if (!url_parts.query || !url_parts.query.callback) {
             return false;
@@ -217,9 +218,10 @@ export abstract class NgApimockHandler implements Handler {
      * @param registry The registry.
      * @param identifier The identifier.
      */
-    storeRecording(payload: string, chunk: string|Buffer, request: http.IncomingMessage, statusCode: number, registry: Registry, identifier: string) {
+    private storeRecording(payload: string, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number,
+                           registry: Registry, identifier: string) {
         const result = {
-            data: typeof chunk === "string" ? chunk : chunk.toString('utf8'),
+            data: typeof chunk === 'string' ? chunk : chunk.toString('utf8'),
             payload: payload,
             datetime: new Date().getTime(),
             method: request.method,
@@ -235,3 +237,5 @@ export abstract class NgApimockHandler implements Handler {
         registry.recordings[identifier].push(result);
     }
 }
+
+export default NgApimockHandler;

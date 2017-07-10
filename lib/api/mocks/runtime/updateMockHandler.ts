@@ -1,9 +1,8 @@
-import {Registry} from "../../../registry";
-import {UpdateMockHandler} from "../updateMockHandler";
-import {Mock} from "../../../../tasks/mock";
+import Registry from '../../../registry';
+import UpdateMockHandler from '../updateMockHandler';
 
 /** Handler that takes care of updating the mock configuration for runtime. */
-export class RuntimeUpdateMockHandler extends UpdateMockHandler {
+class RuntimeUpdateMockHandler extends UpdateMockHandler {
     /** @inheritDoc */
     handlePassThroughScenario(registry: Registry, identifier: string): void {
         delete registry.selections[identifier];
@@ -24,3 +23,5 @@ export class RuntimeUpdateMockHandler extends UpdateMockHandler {
         registry.echos[identifier] = echo;
     }
 }
+
+export default RuntimeUpdateMockHandler;

@@ -1,10 +1,10 @@
-import * as http from "http";
-import {Handler} from "../../handler";
-import {Registry} from "../../registry";
-import {httpHeaders} from "../../http";
+import * as http from 'http';
+import {httpHeaders} from '../../http';
+import Handler from '../../handler';
+import Registry from '../../registry';
 
 /** Abstract Handler for setting the mocks to passThroughs. */
-export abstract class SetMocksToPassThroughsHandler implements Handler {
+abstract class SetMocksToPassThroughsHandler implements Handler {
 
     /**
      * Sets the selections to passThroughs.
@@ -27,7 +27,8 @@ export abstract class SetMocksToPassThroughsHandler implements Handler {
      *
      * Handler that takes care of setting the mocks to passThroughs.
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
+                  ngApimockId: string): void {
         this.setToPassThroughs(registry, ngApimockId);
         const selections: {} = this.getSelections(registry, ngApimockId);
 
@@ -39,3 +40,5 @@ export abstract class SetMocksToPassThroughsHandler implements Handler {
         ));
     }
 }
+
+export default SetMocksToPassThroughsHandler;

@@ -1,10 +1,10 @@
-import * as http from "http";
-import {Handler} from "../../handler";
-import {Registry} from "../../registry";
-import {httpHeaders} from "../../http";
+import * as http from 'http';
+import {httpHeaders} from '../../http';
+import Handler from '../../handler';
+import Registry from '../../registry';
 
 /** Abstract Handler for Resetting mocks to defaults. */
-export abstract class ResetMocksToDefaultsHandler implements Handler {
+abstract class ResetMocksToDefaultsHandler implements Handler {
 
     /**
      * Resets the selections to defaults.
@@ -27,7 +27,8 @@ export abstract class ResetMocksToDefaultsHandler implements Handler {
      *
      * Handler that takes care of resetting the mocks to defaults.
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
+                  ngApimockId: string): void {
         this.resetToDefaults(registry, ngApimockId);
         const selections: {} = this.getSelections(registry, ngApimockId);
 
@@ -39,3 +40,5 @@ export abstract class ResetMocksToDefaultsHandler implements Handler {
         ));
     }
 }
+
+export default ResetMocksToDefaultsHandler;

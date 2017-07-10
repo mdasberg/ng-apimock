@@ -1,10 +1,10 @@
-import * as http from "http";
-import {Handler} from "../../handler";
-import {Registry} from "../../registry";
-import {httpHeaders} from "../../http";
+import * as http from 'http';
+import {httpHeaders} from '../../http';
+import Handler from '../../handler';
+import Registry from '../../registry';
 
 /** Abstract Handler for getting all the variables. */
-export abstract class GetVariablesHandler implements Handler {
+abstract class GetVariablesHandler implements Handler {
 
     /**
      * Gets the variables.
@@ -20,10 +20,13 @@ export abstract class GetVariablesHandler implements Handler {
      *
      * Handler that takes care of adding and updating variables.
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry, ngApimockId: string): void {
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
+                  ngApimockId: string): void {
         const variables = this.getVariables(registry, ngApimockId);
 
         response.writeHead(200, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
         response.end(JSON.stringify(variables));
     }
 }
+
+export default GetVariablesHandler;

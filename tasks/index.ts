@@ -1,17 +1,16 @@
-import * as async from "async";
-import {Processor} from "./processor";
-import {Mock} from "./mock";
-import {Configuration} from "./configuration";
-
-'use strict';
-
+import * as async from 'async';
+import Mock from './mock';
+import Configuration from './configuration';
+import Processor from './processor';
 
 (module).exports = function () {
-    const processor = new Processor(),
-        defaults = {
-            destination: '.tmp/mocks/'
-        },
-        utils = require('../lib/utils.js');
+    'use strict';
+
+    const processor = new Processor();
+    const defaults = {
+        destination: '.tmp/mocks/'
+    };
+    const utils = require('../lib/utils.js');
 
     return {
         run: function (configuration: Configuration) {
@@ -28,7 +27,7 @@ import {Configuration} from "./configuration";
             const config = {
                 source: configuration.src,
                 done: configuration.done !== undefined ? configuration.done : () => {
-                    },
+                },
                 destination: configuration.outputDir !== undefined ? configuration.outputDir : defaults.destination
             };
 

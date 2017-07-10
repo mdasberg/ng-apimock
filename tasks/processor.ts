@@ -1,10 +1,10 @@
-import {Mock} from "./mock";
-import * as glob from "glob";
-import * as fs from "fs-extra";
-import * as path from "path";
+import Mock from './mock';
+import * as glob from 'glob';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 /** Registry represents a group of phases grouped under one name. */
-export class Processor {
+class Processor {
     // the current working directory for this plugin
     static PCWD: string = path.resolve(__dirname, '..');
     // the node_modules directory for this plugin
@@ -20,9 +20,9 @@ export class Processor {
      * @param {string} directory The directory containing the mocks.
      * @returns {Mock[]} mocks The mocks.
      */
-    processMocks = (directory: string): Mock[] => {
+    processMocks(directory: string): Mock[] {
         const mocks: Mock[] = [];
-        glob.sync('**/*.json', {cwd: directory, root: '/'}).forEach(function (file) {
+        glob.sync('**/*.json', { cwd: directory, root: '/' }).forEach(function (file) {
             mocks.push(fs.readJsonSync(path.join(directory, file)));
         });
         return mocks;
@@ -32,7 +32,7 @@ export class Processor {
      * Generates the protractor.mock.js file in the given output directory.
      * @param {string} directory The output directory
      */
-    generateProtractorMock = (directory: string): void => {
+    generateProtractorMock(directory: string): void {
         fs.copySync(path.join(Processor.PTD, 'protractor.mock.js'), path.join(directory, 'protractor.mock.js'));
     }
 
@@ -46,7 +46,7 @@ export class Processor {
      * #1 copy the interface to the output directory
      * #2 copy the dependencies to the output directory
      */
-    generateMockingInterface = (directory: string): void => {
+    generateMockingInterface(directory: string): void {
         /** Check if the plugin has a different version of angular as the application. */
         const anmd = !fs.existsSync(path.join(Processor.PNMD, 'angular')) ?
                 path.join(process.cwd(), 'node_modules') :
@@ -58,7 +58,7 @@ export class Processor {
             angularResource = path.join(arnmd, 'angular-resource', 'angular-resource.min.js');
 
         // copy the interface files
-        glob.sync('**/*', {cwd: Processor.PTID, root: '/'}).forEach(function (file) {
+        glob.sync('**/*', { cwd: Processor.PTID, root: '/' }).forEach(function (file) {
             fs.copySync(path.join(Processor.PTID, file), path.join(directory, file));
         });
 
@@ -66,3 +66,5 @@ export class Processor {
         fs.copySync(angularResource, path.join(directory, 'js', 'angular-resource.min.js'));
     }
 }
+
+export default Processor;

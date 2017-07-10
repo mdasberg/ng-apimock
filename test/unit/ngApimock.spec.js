@@ -125,7 +125,7 @@
                 fail();
             } finally {
                 expect(log.warn.length).toBe(1);
-                expect(log.warn[0]).toBe('Mock with identifier "duplicate" already exists. Overwriting existing mock.');
+                expect(log.warn[0]).toBe('Mock with identifier \'duplicate\' already exists. Overwriting existing mock.');
             }
         });
     });
