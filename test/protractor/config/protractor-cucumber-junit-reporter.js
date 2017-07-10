@@ -1,18 +1,23 @@
-var fs = require('fs-extra');
-var junit = require('cucumberjs-junitxml');
-var path = require('path');
-var shortid = require('shortid');
+const fs = require('fs-extra');
+const junit = require('cucumberjs-junitxml');
+const path = require('path');
+const shortid = require('shortid');
 
-var testResult = [];
+const testResult = [];
 
-var reporterHooks = function () {
-    var FAILED = 'failed';
+function ReporterHooks() {
+    const FAILED = 'failed';
+    const reporter = this;
+
+    reporter.registerHandler('BeforeFeature', beforeFeature);
+    reporter.registerHandler('BeforeScenario', beforeScenario);
+    reporter.registerHandler('StepResult', stepResult);
+    reporter.registerHandler('AfterFeatures', afterFeatures);
 
     // save feature output
-    this.registerHandler('BeforeFeature', function (feature, callback) {
-        var currentFeatureId = feature.getName().replace(/ /g, '-');
-
-        var featureOutput = {
+    function beforeFeature(feature, callback) {
+        const currentFeatureId = feature.getName().replace(/ /g, '-');
+        const featureOutput = {
             id: currentFeatureId,
             fileName: path.basename(feature.getUri()),
             filePath: path.relative(path.resolve(browser.params.testDir), path.basename(feature.getUri())),
@@ -26,12 +31,12 @@ var reporterHooks = function () {
 
         testResult.push(featureOutput);
         callback();
-    });
+    }
 
     // save scenario output
-    this.registerHandler('BeforeScenario', function (scenario, callback) {
-        var currentScenarioId = testResult[testResult.length - 1].id + ';' + scenario.getName().replace(/ /g, '-');
-        var scenarioOutput = {
+    function beforeScenario(scenario, callback) {
+        const currentScenarioId = testResult[testResult.length - 1].id + ';' + scenario.getName().replace(/ /g, '-');
+        const scenarioOutput = {
             id: currentScenarioId,
             name: scenario.getName(),
             description: scenario.getDescription(),
@@ -42,12 +47,13 @@ var reporterHooks = function () {
 
         testResult[testResult.length - 1].elements.push(scenarioOutput);
         callback();
-    });
+    }
+
 
     // save steps output
-    this.registerHandler('StepResult', function (stepResult, callback) {
-        var step = stepResult.getStep();
-        var keyword = step.getKeyword();
+    function stepResult(stepResult, callback) {
+        const step = stepResult.getStep();
+        const keyword = step.getKeyword();
 
         if (keyword.trim() !== 'After' && keyword.trim() !== 'Before') { // Do not log Before and After
             const stepResultOutput = {
@@ -62,7 +68,6 @@ var reporterHooks = function () {
                 match: {}
             };
 
-
             if (stepResultOutput.result.status === undefined || stepResultOutput.result.status === FAILED) {
                 stepResultOutput.result.status = FAILED;
                 const failureMessage = stepResult.getFailureException();
@@ -76,20 +81,20 @@ var reporterHooks = function () {
             testResult[rlen].elements[testResult[rlen].elements.length - 1].steps.push(stepResultOutput);
         }
         callback();
-    });
+    }
 
     // output testResult
-    this.registerHandler('AfterFeatures', function (payload, callback) {
+    function afterFeatures(payload, callback) {
         // We might not run all tests. only try to write results if we now they are there!
         if (testResult.length > 0) {
             browser.getCapabilities().then(function (capability) {
-                var browserName = capability.get('browserName');
-                var xml = junit(JSON.stringify(testResult), {indent: '    '});
-                var outputFileName = 'results-' + shortid.generate() + '-' + testResult[testResult.length - 1].fileName + '.xml';
-                var destination = path.join(path.join(browser.params.resultsDir, browserName), outputFileName);
+                const browserName = capability.get('browserName');
+                const xml = junit(JSON.stringify(testResult), {indent: '    '});
+                const outputFileName = 'results-' + shortid.generate() + '-' + testResult[testResult.length - 1].fileName + '.xml';
+                const destination = path.join(path.join(browser.params.resultsDir, browserName), outputFileName);
 
                 fs.ensureFileSync(destination);
-                var file = fs.openSync(destination, 'w+');
+                const file = fs.openSync(destination, 'w+');
                 fs.writeSync(file, xml);
                 callback();
             });
@@ -97,7 +102,7 @@ var reporterHooks = function () {
             callback();
         }
 
-    });
-};
+    }
+}
 
-module.exports = reporterHooks;
+module.exports = ReporterHooks;

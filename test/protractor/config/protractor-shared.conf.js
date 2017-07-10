@@ -1,5 +1,5 @@
-var child_process = require('child_process'),
-    server = child_process.spawn('node', ['test/example/server.js']);
+const child_process = require('child_process');
+const server = child_process.spawn('node', ['test/example/server.js']);
 
 server.stdout.pipe(process.stdout);
 
@@ -25,6 +25,4 @@ exports.config = {
     }
 };
 
-process.on('exit', function () {
-    server.kill();
-});
+process.on('exit', () => server.kill());

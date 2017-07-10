@@ -5,8 +5,9 @@
      * Test page object.
      * @constructor
      */
-    var TestPO = function () {
-        this.list = {
+    function TestPO() {
+        var po = this;
+        po.list = {
             data: element(by.binding('$ctrl.list.data')),
             error: element(by.binding('$ctrl.list.error')),
             refresh: element(by.buttonText('refresh')),
@@ -14,18 +15,18 @@
             loading: element(by.name('loading'))
         };
 
-        this.update = {
+        po.update = {
             button: element(by.buttonText('post me')),
             data: element(by.binding('$ctrl.update.data')),
             error: element(by.binding('$ctrl.update.error'))
         };
 
-        this.download = {
+        po.download = {
             button: element(by.buttonText('download'))
         };
 
-        this.switch = element(by.id('mocking'));
-    };
+        po.switch = element(by.id('mocking'));
+    }
 
     module.exports = TestPO;
 })();

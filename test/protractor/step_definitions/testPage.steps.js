@@ -1,92 +1,78 @@
-(function () {
+(() => {
     'use strict';
 
-    module.exports = function () {
-        var fs = require('fs-extra'),
-            path = require('path'),
-            TestPO = require('./../po/test.po'),
-            responses = {
-                list: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'api', 'some-api-list.json')).responses,
-                update: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'api', 'some-api-post.json')).responses,
-                download: fs.readJsonSync(path.join(process.cwd(), 'test', 'mocks', 'api', 'some-api-download.json')).responses
-            },
-            passThroughResponses = {
-                list: [{a: "b"}],
-                update: {c: "d"}
-            },
-            testPo = new TestPO();
+    function TestPage() {
+        const fs = require('fs-extra');
+        const path = require('path');
+        const testPo = new (require('./../po/test.po'))();
+        const mocksDirectory = path.join(process.cwd(), 'test', 'mocks', 'api');
+        const responses = {
+            list: fs.readJsonSync(path.join(mocksDirectory, 'some-api-list.json')).responses,
+            update: fs.readJsonSync(path.join(mocksDirectory, 'some-api-post.json')).responses,
+            download: fs.readJsonSync(path.join(mocksDirectory, 'some-api-download.json')).responses
+        };
+        const passThroughResponses = {
+            list: [{a: "b"}],
+            update: {c: "d"}
+        };
 
-        this.When(/^I open the test page$/, function () {
-            return browser.get('/index.html');
-        });
+        const world = this;
 
-        this.Then(/^I switch to mocking interface$/, function () {
-            return testPo.switch.click().then(function () {
-                browser.getAllWindowHandles().then(function (handles) {
-                    browser.driver.switchTo().window(handles[1]);
-                });
-            });
-        });
+        world.When(/^I open the test page$/, () => browser.get('/index.html'));
 
-        this.Then(/^the (?!passThrough)(.*) response should be returned for mock with name (.*)$/, function (scenario, name) {
-            return expect(testPo[name].data.getText()).to.eventually.equal(JSON.stringify(responses[name][scenario].data));
-        });
+        world.Then(/^I switch to mocking interface$/, () =>
+            testPo.switch.click()
+                .then(() => browser.getAllWindowHandles()
+                    .then((handles) => browser.driver.switchTo().window(handles[1]))));
 
-        this.Then(/^the (?!passThrough)(.*) response should be returned with interpolated value (.*) for key (.*) for mock with name (.*)$/, function (scenario, interpolatedValue, interpolatedKey, name) {
-            return testPo[name].data.getText().then(function (text) {
-                expect(text.indexOf('%%' + interpolatedKey + '%%')).to.equal(-1);
-                return expect(text.indexOf(interpolatedValue)).to.be.above(-1);
-            });
-        });
+        world.Then(/^the (?!passThrough)(.*) response should be returned for mock with name (.*)$/, (scenario, name) =>
+            expect(testPo[name].data.getText()).to.eventually.equal(JSON.stringify(responses[name][scenario].data)));
 
-        this.Then(/^the passThrough response should be returned for mock with name (.*)$/, function (name) {
-            return expect(testPo[name].data.getText()).to.eventually.equal(JSON.stringify(passThroughResponses[name]));
-        });
+        world.Then(/^the (?!passThrough)(.*) response should be returned with interpolated value (.*) for key (.*) for mock with name (.*)$/, (scenario, interpolatedValue, interpolatedKey, name) =>
+            testPo[name].data.getText()
+                .then((text) => {
+                    expect(text.indexOf('%%' + interpolatedKey + '%%')).to.equal(-1);
+                    expect(text.indexOf(interpolatedValue)).to.be.above(-1);
+                }));
 
-        this.Then(/^the (.*) response should be downloaded for mock with name (.*)$/, function (scenario, name) {
-            return browser.wait(function () {
+        world.Then(/^the passThrough response should be returned for mock with name (.*)$/, (name) =>
+            expect(testPo[name].data.getText()).to.eventually.equal(JSON.stringify(passThroughResponses[name])));
+
+        world.Then(/^the (.*) response should be downloaded for mock with name (.*)$/, (scenario, name) =>
+            browser.wait(() => {
                 if (fs.existsSync(browser.params.default_directory + 'my.pdf')) {
-                    var actual = fs.readFileSync(browser.params.default_directory + 'my.pdf'),
-                        expected = fs.readFileSync(responses[name][scenario].file);
+                    const actual = fs.readFileSync(browser.params.default_directory + 'my.pdf');
+                    const expected = fs.readFileSync(responses[name][scenario].file);
                     return actual.equals(expected);
                 } else {
                     return browser.params.environment === 'TRAVIS'
                 }
-            }, 5000);
-        });
+            }, 5000));
 
-        this.Then(/^the status code should be (.*) for mock with name (.*)$/, function (statusCode, name) {
-            return expect(testPo[name].error.getText()).to.eventually.equal(statusCode === 'undefined' ? '' : statusCode);
-        });
+        world.Then(/^the status code should be (.*) for mock with name (.*)$/, (statusCode, name) =>
+            expect(testPo[name].error.getText()).to.eventually.equal(statusCode === 'undefined' ? '' : statusCode));
 
-        this.When(/^I post data$/, function () {
-            return testPo.update.button.click();
-        });
+        world.When(/^I post data$/, () => testPo.update.button.click());
 
-        this.When(/^I download the pdf$/, function () {
+        world.When(/^I download the pdf$/, () => {
             fs.removeSync(browser.params.default_directory + 'my.pdf');
             return testPo.download.button.click();
         });
 
-        this.When(/^I refresh$/, function () {
-            return testPo.list.refresh.click();
-        });
+        world.When(/^I refresh$/, () => testPo.list.refresh.click());
 
-        this.When(/^I refresh using jsonp$/, function () {
-            return testPo.list.refreshJsonp.click();
-        });
+        world.When(/^I refresh using jsonp$/, () => testPo.list.refreshJsonp.click());
 
-        this.Then(/^the loading warning is visible$/, function () {
-            return expect(testPo.list.loading.getText()).to.eventually.equal('loading');
-        });
+        world.Then(/^the loading warning is visible$/, () =>
+            expect(testPo.list.loading.getText()).to.eventually.equal('loading'));
 
-        this.When(/^I wait a (\d+) milliseconds$/, function (wait) {
-            return browser.sleep(wait);
-        });
+        world.When(/^I wait a (\d+) milliseconds$/, (wait) => browser.sleep(wait));
 
-        this.Then(/^the loading message is visible$/, function () {
+        world.Then(/^the loading message is visible$/, () => {
             browser.ignoreSynchronization = false;
             return expect(testPo.list.loading.getText()).to.eventually.equal('finished');
         });
-    };
+    }
+
+    module.exports = TestPage;
 })();

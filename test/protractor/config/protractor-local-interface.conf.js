@@ -1,5 +1,5 @@
-var config = require('./protractor-shared.conf').config;
-var chai = require('chai');
+const config = require('./protractor-shared.conf').config;
+const chai = require('chai');
 chai.use(require('chai-as-promised'));
 
 config.seleniumAddress = 'http://localhost:4444/wd/hub';
@@ -35,9 +35,10 @@ config.multiCapabilities = [
     }
 ];
 
-config.onPrepare = function () {
+config.onPrepare = () => {
     global.chai = chai;
     global.expect = chai.expect;
+    browser.driver.manage().window().maximize();
 };
 
 config.cucumberOpts = {
