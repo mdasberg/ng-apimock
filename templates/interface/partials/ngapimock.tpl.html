@@ -13,14 +13,19 @@
     </tr>
     </thead>
     <tbody>
-    <tr data-ng-repeat-start="mock in $ctrl.mocks track by mock.identifier" data-ng-init="selected = $ctrl.selections[mock.identifier]" identifier="{{::mock.name}}">
-        <td data-ng-bind="::mock.expression.toString()"></td>
-        <td data-ng-bind="::mock.method"></td>
-        <td data-ng-bind="::mock.name"></td>
-        <td><select name="{{::mock.expression.toString()}}$${{::mock.method}}" data-ng-options="k as k for (k, v) in mock.responses" data-ng-model="selected" data-ng-change="$ctrl.selectMock(mock, selected)">
+    <tr data-ng-repeat-start="mock in $ctrl.mocks track by mock.identifier"
+        data-ng-init="selected = mock.responses[$ctrl.selections[mock.identifier]]; delay = $ctrl.delays[mock.identifier] || selected.delay;"
+        identifier="{{::mock.name}}">
+        <td><span data-ng-bind="::mock.expression.toString()"></span></td>
+        <td><span data-ng-bind="::mock.method"></span></td>
+        <td><span data-ng-bind="::mock.name"></span></td>
+        <td><select name="{{::mock.expression.toString()}}$${{::mock.method}}"
+                    data-ng-options="response.name for response in mock.responses"
+                    data-ng-model="selected"
+                    data-ng-change="$ctrl.selectMock(mock, selected.name); delay = $ctrl.delays[mock.identifier] || selected.delay;">
             <option value="">passThrough</option>
         </select></td>
-        <td data-ng-init="delay = $ctrl.delays[mock.identifier];">
+        <td>
             <input type="number" min="0" data-ng-model="delay" data-ng-value="delay" data-ng-model-options="{debounce: 500}" data-ng-change="$ctrl.delayMock(mock, delay)">
         </td>
         <td>

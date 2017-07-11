@@ -28,7 +28,12 @@
         /** Fetch all the mocks and make them available. */
         function fetchMocks() {
             mockService.get({}, function (response) {
-                vm.mocks = response.mocks;
+                vm.mocks = response.mocks.map(function(mock){
+                    Object.keys(mock.responses).forEach(function(response) {
+                        mock.responses[response].name = response;
+                    });
+                    return mock;
+                });
                 vm.selections = response.selections;
                 vm.delays = response.delays;
                 vm.echos = response.echos;
@@ -64,9 +69,7 @@
          */
         function echoMock(mock, echo) {
             mockService.update({'identifier': mock.identifier, 'echo': echo}, function () {
-                vm.mocks.find(function (m) {
-                    return m.name === mock.name;
-                }).echo = echo;
+                vm.echos[mock.identifier] = echo;
             });
         }
 
@@ -77,9 +80,7 @@
          */
         function delayMock(mock, delay) {
             mockService.update({'identifier': mock.identifier, 'delay': delay}, function () {
-                vm.mocks.find(function (m) {
-                    return m.name === mock.name;
-                }).delay = delay;
+                vm.delays[mock.identifier] = delay;
             });
         }
 
