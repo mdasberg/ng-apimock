@@ -2,30 +2,29 @@ const fs = require('fs-extra');
 const junit = require('cucumberjs-junitxml');
 const path = require('path');
 const shortid = require('shortid');
-
+const {defineSupportCode} = require('cucumber');
 const testResult = [];
 
-function ReporterHooks() {
+defineSupportCode(function({registerHandler}) {
     const FAILED = 'failed';
-    const reporter = this;
 
-    reporter.registerHandler('BeforeFeature', beforeFeature);
-    reporter.registerHandler('BeforeScenario', beforeScenario);
-    reporter.registerHandler('StepResult', stepResult);
-    reporter.registerHandler('AfterFeatures', afterFeatures);
+    registerHandler('BeforeFeature', beforeFeature);
+    registerHandler('BeforeScenario', beforeScenario);
+    registerHandler('StepResult', stepResult);
+    registerHandler('AfterFeatures', afterFeatures);
 
     // save feature output
     function beforeFeature(feature, callback) {
-        const currentFeatureId = feature.getName().replace(/ /g, '-');
+        const currentFeatureId = feature.name.replace(/ /g, '-');
         const featureOutput = {
             id: currentFeatureId,
-            fileName: path.basename(feature.getUri()),
-            filePath: path.relative(path.resolve(browser.params.testDir), path.basename(feature.getUri())),
-            name: feature.getName(),
-            description: feature.getDescription(),
-            line: feature.getLine(),
-            keyword: feature.getKeyword(),
-            uri: feature.getUri(),
+            fileName: path.basename(feature.uri),
+            filePath: path.relative(path.resolve(browser.params.testDir), path.basename(feature.uri)),
+            name: feature.name,
+            description: feature.description,
+            line: feature.line,
+            keyword: feature.keyword,
+            uri: feature.uri,
             elements: []
         };
 
@@ -35,13 +34,13 @@ function ReporterHooks() {
 
     // save scenario output
     function beforeScenario(scenario, callback) {
-        const currentScenarioId = testResult[testResult.length - 1].id + ';' + scenario.getName().replace(/ /g, '-');
+        const currentScenarioId = testResult[testResult.length - 1].id + ';' + scenario.name.replace(/ /g, '-');
         const scenarioOutput = {
             id: currentScenarioId,
-            name: scenario.getName(),
-            description: scenario.getDescription(),
-            line: scenario.getLine(),
-            keyword: scenario.getKeyword(),
+            name: scenario.name,
+            description: scenario.description,
+            line: scenario.line,
+            keyword: scenario.keyword,
             steps: []
         };
 
@@ -52,17 +51,17 @@ function ReporterHooks() {
 
     // save steps output
     function stepResult(stepResult, callback) {
-        const step = stepResult.getStep();
-        const keyword = step.getKeyword();
+        const step = stepResult.step;
+        const keyword = step.keyword;
 
         if (keyword.trim() !== 'After' && keyword.trim() !== 'Before') { // Do not log Before and After
             const stepResultOutput = {
-                name: step.getName(),
-                line: step.getLine(),
+                name: step.name,
+                line: step.line,
                 keyword: keyword,
                 result: {
-                    status: stepResult.getStatus(),
-                    duration: stepResult.getDuration(),
+                    status: stepResult.status,
+                    duration: stepResult.duration,
                     error_message: undefined
                 },
                 match: {}
@@ -70,11 +69,11 @@ function ReporterHooks() {
 
             if (stepResultOutput.result.status === undefined || stepResultOutput.result.status === FAILED) {
                 stepResultOutput.result.status = FAILED;
-                const failureMessage = stepResult.getFailureException();
+                const failureMessage = stepResult.failureException;
                 if (failureMessage) {
                     stepResultOutput.result.error_message = (failureMessage.stack || failureMessage);
                 }
-                stepResultOutput.result.duration = stepResult.getDuration();
+                stepResultOutput.result.duration = stepResult.duration;
             }
 
             const rlen = testResult.length - 1;
@@ -101,8 +100,5 @@ function ReporterHooks() {
         } else {
             callback();
         }
-
     }
-}
-
-module.exports = ReporterHooks;
+});
