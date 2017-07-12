@@ -44,6 +44,7 @@
     "angular-mocks": "1.6.5",
     "angular-resource": "1.6.5",
     "async": "2.5.0",
+    "chokidar": "^1.7.0",
     "fs-extra": "3.0.1",
     "glob": "7.1.2",
     "hooker": "0.2.3",
@@ -62,6 +63,7 @@
   ],
   "devDependencies": {
     "@types/async": "2.0.40",
+    "@types/chokidar": "^1.7.0",
     "@types/connect": "3.4.30",
     "@types/fs-extra": "3.0.3",
     "@types/glob": "5.0.30",

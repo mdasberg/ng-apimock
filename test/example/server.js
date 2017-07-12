@@ -4,8 +4,9 @@ var connect = require('connect'),
     ngApimockUtil = require(path.join(process.cwd(), 'lib/utils')),
     ngApimock = require(path.join(process.cwd(), 'tasks/index.js'))();
 
-ngApimock.run({src: 'test/mocks', outputDir: '.tmp/some-other-dir'});
-
+let configuration = {src: 'test/mocks', outputDir: '.tmp/some-other-dir'};
+ngApimock.run(configuration);
+ngApimock.watch(configuration.src);
 var app = connect();
 
 app.use(ngApimockUtil.ngApimockRequest);

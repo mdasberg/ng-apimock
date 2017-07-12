@@ -29,7 +29,8 @@ import GET = httpMethods.GET;
 
     (module).exports = {
         ngApimockRequest: ngApimockRequest,
-        registerMocks: registerMocks
+        registerMocks: registerMocks,
+        updateMock: updateMock
     };
 
     const registry: Registry = new Registry(),
@@ -89,27 +90,41 @@ import GET = httpMethods.GET;
         }
     }
 
+    /**
+     * Registers the given mocks.
+     * @param mocks The mocks.
+     */
     function registerMocks(mocks: Mock[]) {
-        mocks.forEach(mock => {
-            mock.identifier = (mock.name ? mock.name : mock.expression.toString() + '$$' + mock.method);
+        mocks.forEach(mock =>
+            _handleMock(mock, `Mock with identifier '%s' already exists. Overwriting existing mock.`));
+    }
 
-            // #1
-            const match = registry.mocks.filter(_mock => mock.identifier === _mock.identifier)[0],
-                index = registry.mocks.indexOf(match);
+    /**
+     * Update the given mock.
+     * @param mock The mock.
+     */
+    function updateMock(mock: Mock):void {
+        _handleMock(mock, `Mock with identifier '%s' already exists. Updating existing mock.`);
+    }
 
-            if (index > -1) { // exists so update
-                console.warn(`Mock with identifier '${mock.identifier}' already exists. Overwriting existing mock.`);
-                registry.mocks[index] = mock;
-            } else { // add
-                registry.mocks.push(mock);
-            }
+    function _handleMock(mock: Mock, warning: string) {
+        mock.identifier = (mock.name ? mock.name : mock.expression.toString() + '$$' + mock.method);
 
-            const _default = Object.keys(mock.responses).filter(key => !!mock.responses[key]['default'])[0];
-            if (_default !== undefined) {
-                registry.defaults[mock.identifier] = _default;
-                registry.selections[mock.identifier] = _default;
-            }
-        });
+        const match = registry.mocks.filter(_mock => mock.identifier === _mock.identifier)[0],
+            index = registry.mocks.indexOf(match);
+
+        if (index > -1) { // exists so update
+            console.warn(warning, mock.identifier);
+            registry.mocks[index] = mock;
+        } else { // add
+            registry.mocks.push(mock);
+        }
+
+        const _default = Object.keys(mock.responses).filter(key => !!mock.responses[key]['default'])[0];
+        if (_default !== undefined) {
+            registry.defaults[mock.identifier] = _default;
+            registry.selections[mock.identifier] = _default;
+        }
     }
 
     /**
