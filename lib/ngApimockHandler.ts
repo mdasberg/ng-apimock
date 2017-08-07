@@ -78,7 +78,8 @@ abstract class NgApimockHandler implements Handler {
             if (mockResponse !== undefined) {
                 const statusCode = mockResponse.status || 200;
                 const jsonCallbackName = this.getJsonCallbackName(request.url);
-                let headers, chunk;
+                let headers: { [key: string]: string };
+                let chunk: Buffer | string;
 
                 if (this.isBinaryResponse(mockResponse)) {
                     headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_BINARY;
@@ -95,12 +96,19 @@ abstract class NgApimockHandler implements Handler {
                 const mockDelay = this.getDelay(registry, match.identifier, ngApimockId);
                 const _delay = mockDelay === null || mockDelay === undefined ? mockResponse.delay : mockDelay;
 
-                this.delay(_delay);
-                response.writeHead(statusCode, headers);
-                response.end(chunk);
+                const sendResponse = () => {
+                    response.writeHead(statusCode, headers);
+                    response.end(chunk);
 
-                if (registry.record) {
-                    this.storeRecording(payload, chunk, request, statusCode, registry, match.identifier);
+                    if (registry.record) {
+                        this.storeRecording(payload, chunk, request, statusCode, registry, match.identifier);
+                    }
+                };
+
+                if (_delay) {
+                    setTimeout(sendResponse, _delay);
+                } else {
+                    sendResponse();
                 }
             } else {
                 // remove the recording header to stop recording after this call succeeds
@@ -153,18 +161,6 @@ abstract class NgApimockHandler implements Handler {
 
             return expressionMatches && methodMatches;
         })[0];
-    }
-
-    /**
-     * Delay the response for the given amount of milliseconds.
-     * @param ms The number of milliseconds.
-     */
-    private delay(ms: number): void {
-        let curr = new Date().getTime();
-        ms += curr;
-        while (curr < ms) {
-            curr = new Date().getTime();
-        }
     }
 
     /**
