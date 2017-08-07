@@ -4,6 +4,8 @@ node_js:
   - "6"
   - "7"
   - "8"
+addons:
+  sauce_connect: true
 install:
 - npm install
 before_script:
@@ -14,8 +16,6 @@ script:
 - npm run-script travis-protractor
 - npm run-script travis-interface
 
-addons:
-  sauce_connect: true
 env:
   global:
   - secure: o78qkywiMOb2q2eXPWX7KVLT6e9WqnRq91pUfAbF8lOoqIOr2wMD5Tc2ii7gsifBaeDTZctT6vUacYyqybykaNx49qx3X1IlR+I8fjDB3zMVIsG3ltfunpl5GUbsiC/RMcrsbI34grWOGtwZmk1/XXs4oKOWl3ti7KwFjpqfihV6nCVi9C6CxRS+9CnnssjUyE/ggegYqVMC7CId576x2WBvgAi+iuuAFMQOtqqS0E8uoN7EXMvtHYHDkWvGRz3mu3MRjAHBcI4OWypt07tvtGuk/hKbgbC6xLlswJ8WVTpFaRHiC+FXx5trAOfk+hSkyH+ZGzeK14dMMpuSXvYmsNrBJpOeN5KnCkmarAa3hzDp9yMQ9MWfvCw3bNs0xyGB+SD7eqP403RKlmYVPKxMAjoozASpqiUEqfRRSpNXtLVw3hJSYbivoB2Oas4/tbCk9fGGixBOY3HO25/qyE1LZ9mPDxXzIqIrVZ/aiTMCAxD7Ed4zvEVV5KC7OdcwRxMd5uP+ovR2hyf1CnS857B11LXGFVQ7JTdH72m3QWZU3bGXZAGgy8yg429+RNTZk43bOaQrvkjvKEx8540TFRtqioveHFXanIZEnmkwzs+4+27cyJF925zpkZtK/vvu6TUsjhSjkXcv0lvYx013/FlwE+aKAhlg3e59gLxoQCBU8bQ=
