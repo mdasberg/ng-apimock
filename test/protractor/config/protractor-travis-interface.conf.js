@@ -45,7 +45,6 @@ config.onPrepare = () => {
 
 config.cucumberOpts = {
     require: [
-        process.cwd() + '/test/protractor/config/cucumber.default.js',
         process.cwd() + '/test/protractor/step_definitions/testPage.steps.js',
         process.cwd() + '/test/protractor/step_definitions/interface.steps.js',
         process.cwd() + '/test/protractor/support/*.js',

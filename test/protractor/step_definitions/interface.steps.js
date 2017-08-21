@@ -1,7 +1,10 @@
 (() => {
     const {defineSupportCode} = require('cucumber');
 
-    defineSupportCode(function({Given, When, Then}) {
+    defineSupportCode(function({Given, When, Then, setDefaultTimeout}) {
+
+        setDefaultTimeout(60 * 1000);
+
         const fs = require('fs-extra');
         const path = require('path');
         const mockingPo = new (require('./../po/mocking.po'))();
