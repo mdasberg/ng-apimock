@@ -6,7 +6,7 @@
   "responses": {
     "groceries": {
       "status": 200,
-      "data": [{"title":"buy %%numberOfApples%% apples"}, {"title": "buy"}],
+      "data": [{"title":"buy %%numberOfApples%% apples from %%who%%"}, {"title": "buy"}],
       "headers": {"Content-type":"application/json"},
       "statusText": "text"
     },

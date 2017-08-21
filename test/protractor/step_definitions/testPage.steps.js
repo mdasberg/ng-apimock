@@ -1,6 +1,7 @@
 (() => {
     const {defineSupportCode} = require('cucumber');
 
+
     defineSupportCode(function ({When, Then}) {
         const fs = require('fs-extra');
         const path = require('path');

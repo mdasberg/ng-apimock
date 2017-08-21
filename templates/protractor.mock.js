@@ -1,12 +1,12 @@
 (function () {
     'use strict';
 
-    var path = require('path');
-    var ngapimockid = _require('uuid').v4();
-    var request = _require('then-request');
-    var baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
+    const path = require('path');
+    const ngapimockid = _require('uuid').v4();
+    const request = _require('then-request');
+    const baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
 
-    var ProtractorMock = function () {
+    const ProtractorMock = function () {
         function NgApimockHeader($http, ngApimockInstance) {
             $http.defaults.headers.common['ngapimockid'] = ngApimockInstance.ngapimockid;
         }
@@ -116,6 +116,19 @@
     }
 
     /**
+     * Add or Updates the given global key/value pairs so it is accessible for when the response will returned.
+     * @param variables The variables.
+     * @return {Promise} the promise.
+     */
+    function setGlobalVariables(variables) {
+        return _execute('PUT', '/variables', {
+            key: 'variables',
+            value: variables
+        }, 'Could not add or update variables');
+    }
+
+
+    /**
      * The deleteGlobalVariable function removes the global key/value pair.
      * @param key The key.
      * @return {Promise} the promise.
@@ -134,7 +147,7 @@
      * @private
      */
     function _execute(httpMethod, urlSuffix, options, errorMessage) {
-        var deferred = protractor.promise.defer(),
+        const deferred = protractor.promise.defer(),
             opts = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +219,7 @@
      * @private
      */
     function _getIdentifier(data) {
-        var identifier;
+        let identifier;
         if (typeof data === 'string') { // name of the mock
             identifier = data;
         } else if (data.name) { // the data containing the name of the mock
@@ -224,7 +237,7 @@
      * @private
      */
     function _require(dependency) {
-        var result;
+        let result;
         try {
             result = require(path.join('ng-apimock', 'node_modules', dependency));
         } catch (ex) {
@@ -243,6 +256,7 @@
         setAllScenariosToPassThrough: setAllScenariosToPassThrough,
 
         setGlobalVariable: setGlobalVariable,
+        setGlobalVariables: setGlobalVariables,
         deleteGlobalVariable: deleteGlobalVariable,
 
         // deprecated
