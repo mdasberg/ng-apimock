@@ -1,3 +1,15 @@
+<a name="1.4.0"></a>
+# 1.4.0 (2017-08-21)
+
+## Feature
+- Add Watch mockdata change functionality
+- Add functionality for adding and updating global variables as an object 
+- Add default delay per scenario functionality
+
+## Bugfix   
+- Handle a request after it is ended.
+- Synchronous (busy waiting loop) delays 
+
 <a name="1.3.0"></a>
 # 1.3.0 (2017-07-11)
 
