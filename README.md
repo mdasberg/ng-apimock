@@ -211,7 +211,7 @@ Resets all mocks to use passthroughs
 #### setGlobalVariable(key, value)
 Adds or updates the global key/value pair 
 
-#### setGlobalVariable(variables)
+#### setGlobalVariables(variables)
 Adds or updates the global key/value pairs  ie. {'some':'value', 'another': 'value'}  
 
 #### deleteGlobalVariable(key)
