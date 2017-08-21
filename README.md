@@ -40,6 +40,15 @@ ngApimock.run({
 
 The run function will process the mock data provided in the configuration and make it accessible for connect as middleware.
 
+In order to watch for changes, you need to call the watch function with this line of Javascript:
+
+```js
+ngApimock.watch("test/mocks");
+
+```
+
+The watch function will watch for changes in the mock directory and update accordingly.
+
 ### Howto write mocks
 There are a couple of rules to follow.
 

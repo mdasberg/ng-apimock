@@ -1,7 +1,8 @@
 (() => {
     const {defineSupportCode} = require('cucumber');
 
-    defineSupportCode(function({Given, When, Then}) {
+
+    defineSupportCode(function ({When, Then}) {
         const fs = require('fs-extra');
         const path = require('path');
         const testPo = new (require('./../po/test.po'))();

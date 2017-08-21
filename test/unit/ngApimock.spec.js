@@ -31,13 +31,12 @@
         hooker.hook(console, "info", function () {
             log.ok.push(arguments[0]);
         });
-        hooker.hook(console, "warn", function () {
-            log.warn.push(arguments[0]);
+        hooker.hook(console, "warn", function() {
+            log.warn.push(arguments);
         });
         hooker.hook(console, "error", function () {
             log.error.push(arguments[0]);
         });
-
 
         it('should fail when no configuration has been provided in the configuration', function () {
             try {
@@ -86,8 +85,6 @@
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'css' + path.sep + 'main.css')).toBeTruthy();
                 expect(fsExtra.existsSync(SOME_OTHER_DIR + path.sep + 'protractor.mock.js')).toBeTruthy();
                 expect(done).toHaveBeenCalled();
-
-
             }
         });
 
@@ -126,7 +123,8 @@
                 fail();
             } finally {
                 expect(log.warn.length).toBe(1);
-                expect(log.warn[0]).toBe('Mock with identifier \'duplicate\' already exists. Overwriting existing mock.');
+                expect(log.warn[0]['0']).toBe('Mock with identifier \'%s\' already exists. Overwriting existing mock.');
+                expect(log.warn[0]['1']).toBe('duplicate');
             }
         });
     });
