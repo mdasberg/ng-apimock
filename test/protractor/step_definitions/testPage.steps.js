@@ -1,7 +1,7 @@
 (() => {
-    'use strict';
+    const {defineSupportCode} = require('cucumber');
 
-    function TestPage() {
+    defineSupportCode(function ({When, Then}) {
         const fs = require('fs-extra');
         const path = require('path');
         const testPo = new (require('./../po/test.po'))();
@@ -16,29 +16,27 @@
             update: {c: "d"}
         };
 
-        const world = this;
+        When(/^I open the test page$/, () => browser.get('/index.html'));
 
-        world.When(/^I open the test page$/, () => browser.get('/index.html'));
-
-        world.Then(/^I switch to mocking interface$/, () =>
+        Then(/^I switch to mocking interface$/, () =>
             testPo.switch.click()
                 .then(() => browser.getAllWindowHandles()
                     .then((handles) => browser.driver.switchTo().window(handles[1]))));
 
-        world.Then(/^the (?!passThrough)(.*) response should be returned for mock with name (.*)$/, (scenario, name) =>
+        Then(/^the (?!passThrough)(.*) response should be returned for mock with name (.*)$/, (scenario, name) =>
             expect(testPo[name].data.getText()).to.eventually.equal(JSON.stringify(responses[name][scenario].data)));
 
-        world.Then(/^the (?!passThrough)(.*) response should be returned with interpolated value (.*) for key (.*) for mock with name (.*)$/, (scenario, interpolatedValue, interpolatedKey, name) =>
+        Then(/^the (?!passThrough)(.*) response should be returned with interpolated value (.*) for key (.*) for mock with name (.*)$/, (scenario, interpolatedValue, interpolatedKey, name) =>
             testPo[name].data.getText()
                 .then((text) => {
                     expect(text.indexOf('%%' + interpolatedKey + '%%')).to.equal(-1);
                     expect(text.indexOf(interpolatedValue)).to.be.above(-1);
                 }));
 
-        world.Then(/^the passThrough response should be returned for mock with name (.*)$/, (name) =>
+        Then(/^the passThrough response should be returned for mock with name (.*)$/, (name) =>
             expect(testPo[name].data.getText()).to.eventually.equal(JSON.stringify(passThroughResponses[name])));
 
-        world.Then(/^the (.*) response should be downloaded for mock with name (.*)$/, (scenario, name) =>
+        Then(/^the (.*) response should be downloaded for mock with name (.*)$/, (scenario, name) =>
             browser.wait(() => {
                 if (fs.existsSync(browser.params.default_directory + 'my.pdf')) {
                     const actual = fs.readFileSync(browser.params.default_directory + 'my.pdf');
@@ -49,30 +47,28 @@
                 }
             }, 5000));
 
-        world.Then(/^the status code should be (.*) for mock with name (.*)$/, (statusCode, name) =>
+        Then(/^the status code should be (.*) for mock with name (.*)$/, (statusCode, name) =>
             expect(testPo[name].error.getText()).to.eventually.equal(statusCode === 'undefined' ? '' : statusCode));
 
-        world.When(/^I post data$/, () => testPo.update.button.click());
+        When(/^I post data$/, () => testPo.update.button.click());
 
-        world.When(/^I download the pdf$/, () => {
+        When(/^I download the pdf$/, () => {
             fs.removeSync(browser.params.default_directory + 'my.pdf');
             return testPo.download.button.click();
         });
 
-        world.When(/^I refresh$/, () => testPo.list.refresh.click());
+        When(/^I refresh$/, () => testPo.list.refresh.click());
 
-        world.When(/^I refresh using jsonp$/, () => testPo.list.refreshJsonp.click());
+        When(/^I refresh using jsonp$/, () => testPo.list.refreshJsonp.click());
 
-        world.Then(/^the loading warning is visible$/, () =>
+        Then(/^the loading warning is visible$/, () =>
             expect(testPo.list.loading.getText()).to.eventually.equal('loading'));
 
-        world.When(/^I wait a (\d+) milliseconds$/, (wait) => browser.sleep(wait));
+        When(/^I wait a (\d+) milliseconds$/, (wait) => browser.sleep(wait));
 
-        world.Then(/^the loading message is visible$/, () => {
+        Then(/^the loading message is visible$/, () => {
             browser.ignoreSynchronization = false;
             return expect(testPo.list.loading.getText()).to.eventually.equal('finished');
         });
-    }
-
-    module.exports = TestPage;
+    });
 })();

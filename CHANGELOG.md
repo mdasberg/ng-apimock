@@ -1,3 +1,9 @@
+<a name="1.3.0"></a>
+# 1.3.0 (2017-07-11)
+
+## Feature
+- Add functionality to add a delay by default per response 
+
 <a name="1.2.5"></a>
 # 1.2.5 (2017-06-07)
 

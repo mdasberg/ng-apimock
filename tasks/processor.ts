@@ -1,7 +1,7 @@
-import Mock from './mock';
 import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import Mock from './mock';
 
 /** Registry represents a group of phases grouped under one name. */
 class Processor {
@@ -13,7 +13,6 @@ class Processor {
     static PTD: string = path.join(Processor.PCWD, 'templates');
     // the templates interface directory for this plugin
     static PTID = path.join(Processor.PTD, 'interface');
-
 
     /**
      * Processes all the mocks that are present in the given directory.

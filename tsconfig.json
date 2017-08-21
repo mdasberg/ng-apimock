@@ -25,10 +25,11 @@
       "node_modules"
     ],
     "types": [
-      "node",
-      "glob",
       "async",
-      "fs-extra"
+      "chokidar",
+      "fs-extra",
+      "glob",
+      "node"
     ]
   },
   "include": [
