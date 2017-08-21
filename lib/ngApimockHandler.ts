@@ -61,10 +61,10 @@ abstract class NgApimockHandler implements Handler {
         let payload: string;
 
         if (match) {
-            const selection = this.getSelection(registry, match.identifier, ngApimockId),
-                variables = this.getVariables(registry, ngApimockId),
-                mockResponse = match.responses[selection],
-                requestDataChunks: Array<Buffer> = [];
+            const selection = this.getSelection(registry, match.identifier, ngApimockId);
+            const variables = this.getVariables(registry, ngApimockId);
+            const mockResponse = match.responses[selection];
+            const requestDataChunks: Buffer[] = [];
 
             request.on('data', (rawData: Buffer) => {
                 requestDataChunks.push(rawData);
@@ -72,6 +72,7 @@ abstract class NgApimockHandler implements Handler {
 
             request.on('end', () => {
                 payload = Buffer.concat(requestDataChunks).toString();
+
                 if (mockResponse !== undefined) {
                     if (this.getEcho(registry, match.identifier, ngApimockId)) {
                         console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
@@ -79,7 +80,8 @@ abstract class NgApimockHandler implements Handler {
 
                     const statusCode = mockResponse.status || 200;
                     const jsonCallbackName = this.getJsonCallbackName(request.url);
-                    let headers, chunk;
+                    let headers: { [key: string]: string };
+                    let chunk: Buffer | string;
 
                     if (this.isBinaryResponse(mockResponse)) {
                         headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_BINARY;
@@ -96,12 +98,19 @@ abstract class NgApimockHandler implements Handler {
                     const mockDelay = this.getDelay(registry, match.identifier, ngApimockId);
                     const _delay = mockDelay === null || mockDelay === undefined ? mockResponse.delay : mockDelay;
 
-                    this.delay(_delay);
-                    response.writeHead(statusCode, headers);
-                    response.end(chunk);
+                    const sendResponse = () => {
+                        response.writeHead(statusCode, headers);
+                        response.end(chunk);
 
-                    if (registry.record) {
-                        this.storeRecording(payload, chunk, request, statusCode, registry, match.identifier);
+                        if (registry.record) {
+                            this.storeRecording(payload, chunk, request, statusCode, registry, match.identifier);
+                        }
+                    };
+
+                    if (_delay) {
+                        setTimeout(sendResponse, _delay);
+                    } else {
+                        sendResponse();
                     }
                 } else {
                     // remove the recording header to stop recording after this call succeeds
@@ -155,18 +164,6 @@ abstract class NgApimockHandler implements Handler {
 
             return expressionMatches && methodMatches;
         })[0];
-    }
-
-    /**
-     * Delay the response for the given amount of milliseconds.
-     * @param ms The number of milliseconds.
-     */
-    private delay(ms: number): void {
-        let curr = new Date().getTime();
-        ms += curr;
-        while (curr < ms) {
-            curr = new Date().getTime();
-        }
     }
 
     /**
