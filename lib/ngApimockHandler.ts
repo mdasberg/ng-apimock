@@ -13,6 +13,7 @@ abstract class NgApimockHandler implements Handler {
     /**
      * Gets the selection.
      * @param registry The registry.
+     * @param identifier The mock identifier.
      * @param ngApimockId The ngApimock id.
      * @return selection The selection.
      */
@@ -60,80 +61,90 @@ abstract class NgApimockHandler implements Handler {
         let payload: string;
 
         if (match) {
-            const selection = this.getSelection(registry, match.identifier, ngApimockId),
-                variables = this.getVariables(registry, ngApimockId),
-                mockResponse = match.responses[selection];
+            const selection = this.getSelection(registry, match.identifier, ngApimockId);
+            const variables = this.getVariables(registry, ngApimockId);
+            const mockResponse = match.responses[selection];
+            const requestDataChunks: Buffer[] = [];
 
-            request.on('data', (rawData: string) => {
-                payload = rawData.toString();
+            request.on('data', (rawData: Buffer) => {
+                requestDataChunks.push(rawData);
+            });
+
+            request.on('end', () => {
+                payload = Buffer.concat(requestDataChunks).toString();
 
                 if (mockResponse !== undefined) {
-                    if (!!this.getEcho(registry, match.identifier, ngApimockId)) {
-                        console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ',
-                            payload);
+                    if (this.getEcho(registry, match.identifier, ngApimockId)) {
+                        console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
+                    }
+
+                    const statusCode = mockResponse.status || 200;
+                    const jsonCallbackName = this.getJsonCallbackName(request.url);
+                    let headers: { [key: string]: string };
+                    let chunk: Buffer | string;
+
+                    if (this.isBinaryResponse(mockResponse)) {
+                        headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_BINARY;
+                        chunk = fs.readFileSync(mockResponse.file);
+                    } else {
+                        headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_APPLICATION_JSON;
+                        chunk = this.updateData(mockResponse.data, variables, (match.isArray ? [] : {}));
+                    }
+
+                    if (jsonCallbackName !== false) {
+                        chunk = jsonCallbackName + '(' + chunk + ')';
+                    }
+
+                    const mockDelay = this.getDelay(registry, match.identifier, ngApimockId);
+                    const _delay = mockDelay === null || mockDelay === undefined ? mockResponse.delay : mockDelay;
+
+                    const sendResponse = () => {
+                        response.writeHead(statusCode, headers);
+                        response.end(chunk);
+
+                        if (registry.record) {
+                            this.storeRecording(payload, chunk, request, statusCode, registry, match.identifier);
+                        }
+                    };
+
+                    if (_delay) {
+                        setTimeout(sendResponse, _delay);
+                    } else {
+                        sendResponse();
+                    }
+                } else {
+                    // remove the recording header to stop recording after this call succeeds
+                    if (registry.record && !request.headers.record) {
+                        const headers = request.headers;
+                        const host = <string>headers.host;
+                        const options = {
+                            host: host.split(':')[0],
+                            port: Number(host.split(':')[1]),
+                            path: request.url,
+                            method: request.method,
+                            headers: headers
+                        };
+
+                        headers.record = 'off';
+
+                        const req = http.request(options, (res: http.IncomingMessage) => {
+                            res.setEncoding('utf8');
+                            res.on('data', (chunk: Buffer) => {
+                                this.storeRecording(payload, chunk.toString('utf8'), request, res.statusCode, registry,
+                                    match.identifier);
+                                response.end(chunk);
+                            });
+                        });
+
+                        req.on('error', function (e) {
+                            response.end(e);
+                        });
+                        req.end();
+                    } else {
+                        next();
                     }
                 }
             });
-
-            if (mockResponse !== undefined) {
-                const statusCode = mockResponse.status || 200;
-                const jsonCallbackName = this.getJsonCallbackName(request.url);
-                let headers, chunk;
-
-                if (this.isBinaryResponse(mockResponse)) {
-                    headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_BINARY;
-                    chunk = fs.readFileSync(mockResponse.file);
-                } else {
-                    headers = mockResponse.headers || httpHeaders.CONTENT_TYPE_APPLICATION_JSON;
-                    chunk = this.updateData(mockResponse.data, variables, (match.isArray ? [] : {}));
-                }
-
-                if (jsonCallbackName !== false) {
-                    chunk = jsonCallbackName + '(' + chunk + ')';
-                }
-
-                const mockDelay = this.getDelay(registry, match.identifier, ngApimockId);
-                const _delay = mockDelay === null || mockDelay === undefined ? mockResponse.delay : mockDelay;
-
-                this.delay(_delay);
-                response.writeHead(statusCode, headers);
-                response.end(chunk);
-
-                if (registry.record) {
-                    this.storeRecording(payload, chunk, request, statusCode, registry, match.identifier);
-                }
-            } else {
-                // remove the recording header to stop recording after this call succeeds
-                if (registry.record && !request.headers.record) {
-                    const headers = request.headers;
-                    const host = <string>headers.host;
-                    const options = {
-                        host: host.split(':')[0],
-                        port: Number(host.split(':')[1]),
-                        path: request.url,
-                        method: request.method,
-                        headers: headers
-                    };
-
-                    headers.record = 'off';
-
-                    const req = http.request(options, (res: http.IncomingMessage) => {
-                        res.setEncoding('utf8');
-                        res.on('data', (chunk: Buffer) => {
-                            this.storeRecording(payload, chunk.toString('utf8'), request, res.statusCode, registry,
-                                match.identifier);
-                            response.end(chunk);
-                        });
-                    });
-
-                    req.on('error', function (e) {
-                        response.end(e);
-                    });
-                    req.end();
-                } else {
-                    next();
-                }
-            }
         } else {
             next();
         }
@@ -153,18 +164,6 @@ abstract class NgApimockHandler implements Handler {
 
             return expressionMatches && methodMatches;
         })[0];
-    }
-
-    /**
-     * Delay the response for the given amount of milliseconds.
-     * @param ms The number of milliseconds.
-     */
-    private delay(ms: number): void {
-        let curr = new Date().getTime();
-        ms += curr;
-        while (curr < ms) {
-            curr = new Date().getTime();
-        }
     }
 
     /**
