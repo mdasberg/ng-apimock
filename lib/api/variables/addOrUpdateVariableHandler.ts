@@ -15,7 +15,6 @@ abstract class AddOrUpdateVariableHandler implements Handler {
      */
     abstract handleAddOrUpdateVariable(registry: Registry, key: string, value: string, ngApimockId?: string): void;
 
-
     /**
      * @inheritDoc
      *
@@ -23,8 +22,14 @@ abstract class AddOrUpdateVariableHandler implements Handler {
      */
     handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
                   ngApimockId: string): void {
-        request.on('data', (rawData: string) => {
-            const data = JSON.parse(rawData);
+        const requestDataChunks: Buffer[] = [];
+
+        request.on('data', (rawData: Buffer) => {
+            requestDataChunks.push(rawData);
+        });
+
+        request.on('end', () => {
+            const data = JSON.parse(Buffer.concat(requestDataChunks).toString());
 
             try {
                 if (data.key !== undefined && data.value !== undefined) {

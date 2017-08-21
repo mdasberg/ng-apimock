@@ -52,8 +52,14 @@ abstract class UpdateMockHandler implements Handler {
      */
     handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
                   ngApimockId: string): void {
-        request.on('data', (rawData: string) => {
-            const data = JSON.parse(rawData);
+        const requestDataChunks: Buffer[] = [];
+
+        request.on('data', (rawData: Buffer) => {
+            requestDataChunks.push(rawData);
+        });
+
+        request.on('end', () => {
+            const data = JSON.parse(Buffer.concat(requestDataChunks).toString());
             try {
                 const match = registry.mocks.filter(_mock => _mock.identifier === data.identifier)[0];
                 if (match !== undefined) {
