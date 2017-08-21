@@ -104,9 +104,11 @@ Feature: Change responses
     # Select a scenario that has a value that can be interpolated
     And I select groceries for mock with name list
     And I add variable numberOfApples with value 5
+    And I add variable who with value Bertie
     And I switch to test page
     And I refresh
     Then the groceries response should be returned with interpolated value 5 for key numberOfApples for mock with name list
+    Then the groceries response should be returned with interpolated value Bertie for key who for mock with name list
 
     # Verify after updating a variable
   Scenario: Update a global variable
@@ -116,9 +118,11 @@ Feature: Change responses
     # Select a scenario that has a value that can be interpolated
     And I select groceries for mock with name list
     And I update variable numberOfApples with value 6
+    And I update variable who with value Yvonne
     And I switch to test page
     And I refresh
     Then the groceries response should be returned with interpolated value 6 for key numberOfApples for mock with name list
+    Then the groceries response should be returned with interpolated value Yvonne for key who for mock with name list
 
    # Verify after deleting a variable
   Scenario: Delete a global variable
@@ -128,6 +132,7 @@ Feature: Change responses
     # Select a scenario that has a value that can be interpolated
     And I select groceries for mock with name list
     And I delete variable numberOfApples
+    And I delete variable who
     And I switch to test page
     And I refresh
     Then the groceries response should be returned for mock with name list

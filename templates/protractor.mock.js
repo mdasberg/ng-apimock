@@ -116,6 +116,19 @@
     }
 
     /**
+     * Add or Updates the given global key/value pairs so it is accessible for when the response will returned.
+     * @param variables The variables.
+     * @return {Promise} the promise.
+     */
+    function setGlobalVariables(variables) {
+        return _execute('PUT', '/variables', {
+            key: 'variables',
+            value: variables
+        }, 'Could not add or update variables');
+    }
+
+
+    /**
      * The deleteGlobalVariable function removes the global key/value pair.
      * @param key The key.
      * @return {Promise} the promise.
@@ -243,6 +256,7 @@
         setAllScenariosToPassThrough: setAllScenariosToPassThrough,
 
         setGlobalVariable: setGlobalVariable,
+        setGlobalVariables: setGlobalVariables,
         deleteGlobalVariable: deleteGlobalVariable,
 
         // deprecated

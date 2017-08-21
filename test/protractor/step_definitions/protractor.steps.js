@@ -1,7 +1,7 @@
 (() => {
     const {defineSupportCode} = require('cucumber');
 
-    defineSupportCode(function({Given, When, Then}) {
+    defineSupportCode(function ({Given, When, Then}) {
         // The step implementation
         const fs = require('fs-extra');
         const path = require('path');
@@ -34,8 +34,24 @@
         When(/^I add variable (.*) with value (.*)$/, (name, value) =>
             ngApimock.setGlobalVariable(name, value));
 
+        When('I add variables', function (table) {
+            let variables = {};
+            table.rows().forEach((row) => {
+                variables[row[0]] = row[1];
+            });
+            return ngApimock.setGlobalVariables(variables);
+        });
+
         When(/^I update variable (.*) with value (.*)$/, (name, value) =>
             ngApimock.setGlobalVariable(name, value));
+
+        When('I update variables', function (table) {
+            let variables = {};
+            table.rows().forEach((row) => {
+                variables[row[0]] = row[1];
+            });
+            return ngApimock.setGlobalVariables(variables);
+        });
 
         When(/^I delete variable (.*)$/, (name) =>
             ngApimock.deleteGlobalVariable(name));

@@ -33,7 +33,13 @@ abstract class AddOrUpdateVariableHandler implements Handler {
 
             try {
                 if (data.key !== undefined && data.value !== undefined) {
-                    this.handleAddOrUpdateVariable(registry, data.key, data.value, ngApimockId);
+                    if (data.key === 'variables' && typeof data.value === 'object') {
+                        Object.keys(data.value).forEach((key) => {
+                            this.handleAddOrUpdateVariable(registry, key, data.value[key], ngApimockId)
+                        });
+                    } else {
+                        this.handleAddOrUpdateVariable(registry, data.key, data.value, ngApimockId);
+                    }
                 } else {
                     throw new Error('A variable should have a key and value');
                 }
