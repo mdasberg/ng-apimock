@@ -96,7 +96,7 @@ import Processor from './processor';
      */
     function _processMock(file: string): void {
         try {
-            let mock: Mock = fs.readJsonSync(file);
+            const mock: Mock = fs.readJsonSync(file);
             utils.updateMock(mock);
         } catch (ex) {
             console.info(file, 'contains invalid json');

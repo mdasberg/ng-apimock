@@ -103,7 +103,7 @@ import GET = httpMethods.GET;
      * Update the given mock.
      * @param mock The mock.
      */
-    function updateMock(mock: Mock):void {
+    function updateMock(mock: Mock): void {
         _handleMock(mock, `Mock with identifier '%s' already exists. Updating existing mock.`);
     }
 

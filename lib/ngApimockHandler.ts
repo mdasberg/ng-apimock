@@ -153,13 +153,13 @@ abstract class NgApimockHandler implements Handler {
     /**
      * Get the mock matching the given request.
      * @param mocks The mocks.
-     * @param url The http request url.
+     * @param requestUrl The http request url.
      * @param method The http request method.
      * @returns matchingMock The matching mock.
      */
-    getMatchingMock(mocks: Mock[], url: string, method: string): Mock {
+    getMatchingMock(mocks: Mock[], requestUrl: string, method: string): Mock {
         return mocks.filter(_mock => {
-            const expressionMatches = new RegExp(_mock.expression).exec(url) !== null,
+            const expressionMatches = new RegExp(_mock.expression).exec(requestUrl) !== null,
                 methodMatches = _mock.method === method;
 
             return expressionMatches && methodMatches;
