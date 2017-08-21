@@ -1,17 +1,18 @@
-(function () {
+(() => {
     'use strict';
 
     /**
      * Tests for the ng-apimock plugin.
      */
     describe('ngApimock', function () {
-        var hooker = require('hooker'),
-            fsExtra = require('fs-extra'),
-            path = require('path'),
-            ngApimock = require('./../../tasks/index')(),
-            DEFAULT_OUTPUT_DIR = '.tmp/mocks',
-            SOME_OTHER_DIR = '.tmp/some-mock-dir',
-            log;
+        const hooker = require('hooker');
+        const fsExtra = require('fs-extra');
+        const path = require('path');
+        const ngApimock = require('./../../tasks/index')();
+        const DEFAULT_OUTPUT_DIR = '.tmp/mocks';
+        const SOME_OTHER_DIR = '.tmp/some-mock-dir';
+
+        let log;
 
         beforeEach(function () {
             log = {
@@ -30,7 +31,7 @@
         hooker.hook(console, "info", function () {
             log.ok.push(arguments[0]);
         });
-        hooker.hook(console, "warn", function() {
+        hooker.hook(console, "warn", function () {
             log.warn.push(arguments[0]);
         });
         hooker.hook(console, "error", function () {
@@ -57,8 +58,8 @@
         });
 
         it('should generate everything in the provided directory', function () {
-            var done = jasmine.createSpy('done'),
-                SOME_OTHER_DIR = '.tmp/some-mock-dir';
+            const done = jasmine.createSpy('done');
+            const SOME_OTHER_DIR = '.tmp/some-mock-dir';
 
             try {
                 ngApimock.run({

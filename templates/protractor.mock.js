@@ -1,12 +1,12 @@
 (function () {
     'use strict';
 
-    var path = require('path');
-    var ngapimockid = _require('uuid').v4();
-    var request = _require('then-request');
-    var baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
+    const path = require('path');
+    const ngapimockid = _require('uuid').v4();
+    const request = _require('then-request');
+    const baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
 
-    var ProtractorMock = function () {
+    const ProtractorMock = function () {
         function NgApimockHeader($http, ngApimockInstance) {
             $http.defaults.headers.common['ngapimockid'] = ngApimockInstance.ngapimockid;
         }
@@ -134,7 +134,7 @@
      * @private
      */
     function _execute(httpMethod, urlSuffix, options, errorMessage) {
-        var deferred = protractor.promise.defer(),
+        const deferred = protractor.promise.defer(),
             opts = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +206,7 @@
      * @private
      */
     function _getIdentifier(data) {
-        var identifier;
+        let identifier;
         if (typeof data === 'string') { // name of the mock
             identifier = data;
         } else if (data.name) { // the data containing the name of the mock
@@ -224,7 +224,7 @@
      * @private
      */
     function _require(dependency) {
-        var result;
+        let result;
         try {
             result = require(path.join('ng-apimock', 'node_modules', dependency));
         } catch (ex) {
