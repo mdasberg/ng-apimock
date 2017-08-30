@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function MockingController(mockService, variableService, $interval) {
+    function MockingController(mockService, variableService, $interval, $window) {
         var vm = this;
         var interval;
 
@@ -103,24 +103,22 @@
          * @param selection The selection.
          */
         function selectMock(mock, selection) {
-            mockService.update({'identifier': mock.identifier, 'scenario': selection}, function () {
+            mockService.update({'identifier': mock.identifier, 'scenario': selection || 'passThrough'}, function () {
                 vm.selections[mock.identifier] = selection;
             });
         }
 
         /** Reset all selections to default. */
         function defaultMocks() {
-            mockService.setAllToDefault({}, function (response) {
-                vm.mocks = response.mocks;
-                vm.selections = response.selections;
+            mockService.setAllToDefault({}, function () {
+                $window.location.reload();
             });
         }
 
         /** Reset all selections to passThrough. */
         function passThroughMocks() {
-            mockService.setAllToPassThrough({}, function (response) {
-                vm.mocks = response.mocks;
-                vm.selections = response.selections;
+            mockService.setAllToPassThrough({}, function () {
+                $window.location.reload();
             });
         }
 
@@ -161,7 +159,7 @@
         }
     }
 
-    MockingController.$inject = ['mockService', 'variableService', '$interval'];
+    MockingController.$inject = ['mockService', 'variableService', '$interval', '$window'];
 
     /**
      * @ngdoc controller
