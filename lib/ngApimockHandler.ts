@@ -70,10 +70,11 @@ abstract class NgApimockHandler implements Handler {
                 requestDataChunks.push(rawData);
             });
 
-            request.on('end', () => {
-                payload = Buffer.concat(requestDataChunks).toString();
 
-                if (mockResponse !== undefined) {
+            if (mockResponse !== undefined) {
+                request.on('end', () => {
+                    payload = Buffer.concat(requestDataChunks).toString();
+
                     if (this.getEcho(registry, match.identifier, ngApimockId)) {
                         console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
                     }
@@ -112,9 +113,13 @@ abstract class NgApimockHandler implements Handler {
                     } else {
                         sendResponse();
                     }
-                } else {
-                    // remove the recording header to stop recording after this call succeeds
-                    if (registry.record && !request.headers.record) {
+                });
+            } else {
+                // remove the recording header to stop recording after this call succeeds
+                if (registry.record && !request.headers.record) {
+                    request.on('end', () => {
+                        payload = Buffer.concat(requestDataChunks).toString();
+
                         const headers = request.headers;
                         const host = <string>headers.host;
                         const options = {
@@ -140,11 +145,11 @@ abstract class NgApimockHandler implements Handler {
                             response.end(e);
                         });
                         req.end();
-                    } else {
-                        next();
-                    }
+                    });
+                } else {
+                    next();
                 }
-            });
+            }
         } else {
             next();
         }
