@@ -1,3 +1,10 @@
+<a name="1.4.1"></a>
+# 1.4.1 (2017-08-31)
+
+## Bugfix
+- Fix timeouts issues for POST or PUT methods whn passThrough is selected (passTrough does not have to wait for the request end)
+- Fix interface issues when selecting passthrough or defaults
+
 <a name="1.4.0"></a>
 # 1.4.0 (2017-08-21)
 
