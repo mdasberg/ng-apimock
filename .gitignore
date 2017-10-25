@@ -53,3 +53,7 @@ jspm_packages
 
 # netbeans
 /nbproject
+
+# typescript
+**/*.d.ts
+**/*.js.map
