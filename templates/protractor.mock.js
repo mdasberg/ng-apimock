@@ -1,10 +1,22 @@
-(function () {
+(() => {
     'use strict';
 
     const path = require('path');
     const ngapimockid = _require('uuid').v4();
     const request = _require('then-request');
     const baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
+
+    let _handleRequest = function (httpMethod, urlSuffix, opts, errorMessage) {
+        const deferred = protractor.promise.defer();
+        request(httpMethod, baseUrl + urlSuffix, opts).done((res) => {
+            if (res.statusCode !== 200) {
+                deferred.reject(errorMessage);
+            } else {
+                deferred.fulfill();
+            }
+        });
+        return deferred.promise;
+    };
 
     const ProtractorMock = function () {
         function NgApimockHeader($http, ngApimockInstance) {
@@ -19,7 +31,7 @@
     };
 
     /** Make sure that angular uses the ngapimock identifier for the requests. */
-    browser.getProcessedConfig().then(function (config) {
+    browser.getProcessedConfig().then((config) => {
         // As of protractor 5.0.0 the flag config.useAllAngular2AppRoots has been deprecated, to let protractor tell
         // ngApimock that Angular 2 is used a custom object needs to be provided with the angular version in it
         // See: https://github.com/angular/protractor/blob/master/CHANGELOG.md#features-2
@@ -42,6 +54,16 @@
             });
         } else {
             browser.addMockModule('ngApimock', ProtractorMock, {'ngapimockid': ngapimockid})
+        }
+
+        if (config.SELENIUM_PROMISE_MANAGER === false) {
+            _handleRequest = function (httpMethod, urlSuffix, opts, errorMessage) {
+                return new Promise((resolve, reject) => {
+                    request(httpMethod, baseUrl + urlSuffix, opts).done((res) => {
+                        return res.statusCode === 200 ? resolve() : reject(errorMessage);
+                    });
+                });
+            }
         }
     });
 
@@ -147,26 +169,18 @@
      * @private
      */
     function _execute(httpMethod, urlSuffix, options, errorMessage) {
-        const deferred = protractor.promise.defer(),
-            opts = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngapimockid': ngapimockid
-                }
-            };
+        const opts = {
+            headers: {
+                'Content-Type': 'application/json',
+                'ngapimockid': ngapimockid
+            }
+        };
 
         if (options !== undefined) {
             opts.json = options;
         }
 
-        request(httpMethod, baseUrl + urlSuffix, opts).done(function (res) {
-            if (res.statusCode !== 200) {
-                deferred.reject(errorMessage);
-            } else {
-                deferred.fulfill();
-            }
-        });
-        return deferred.promise;
+        return _handleRequest(httpMethod, urlSuffix, opts, errorMessage);
     }
 
 
