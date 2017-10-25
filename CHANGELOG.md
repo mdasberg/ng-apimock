@@ -1,3 +1,9 @@
+<a name="1.4.2"></a>
+# 1.4.2 (2017-10-25)
+
+## Feature
+- Add support for disabled selenium promise manager
+
 <a name="1.4.1"></a>
 # 1.4.1 (2017-08-31)
 
