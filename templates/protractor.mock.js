@@ -52,8 +52,11 @@
                     });
                 }
             });
-        } else {
-            browser.addMockModule('ngApimock', ProtractorMock, {'ngapimockid': ngapimockid})
+        }
+
+        // Angular 2+ lacks addMockModule, but hybrid apps still need this
+        if (typeof browser.addMockModule === 'function') {
+            browser.addMockModule('ngApimock', ProtractorMock, { ngapimockid: ngapimockid });
         }
 
         if (config.SELENIUM_PROMISE_MANAGER === false) {
