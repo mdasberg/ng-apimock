@@ -164,7 +164,7 @@ abstract class NgApimockHandler implements Handler {
      */
     getMatchingMock(mocks: Mock[], requestUrl: string, method: string): Mock {
         return mocks.filter(_mock => {
-            const expressionMatches = new RegExp(_mock.expression).exec(requestUrl) !== null,
+            const expressionMatches = new RegExp(_mock.expression).exec(decodeURI(requestUrl)) !== null,
                 methodMatches = _mock.method === method;
 
             return expressionMatches && methodMatches;
@@ -209,7 +209,7 @@ abstract class NgApimockHandler implements Handler {
      * @returns {string|boolean} callbackName Either the name or false.
      */
     private getJsonCallbackName(requestUrl: string): string | boolean {
-        const url_parts = url.parse(requestUrl, true);
+        const url_parts: any = url.parse(requestUrl, true);
         if (!url_parts.query || !url_parts.query.callback) {
             return false;
         }
