@@ -1,3 +1,12 @@
+<a name="1.4.3"></a>
+# 1.4.3 (2017-12-12)
+
+## Feature
+- Add mock module when available (hybrid apps)
+
+## Bugfix
+- Fix ngApimockHandler to match expression on decoded url
+
 <a name="1.4.2"></a>
 # 1.4.2 (2017-10-25)
 

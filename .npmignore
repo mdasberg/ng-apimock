@@ -19,3 +19,6 @@ yarn.lock
 #docker
 dockerize.js
 docker
+
+# generated
+results
