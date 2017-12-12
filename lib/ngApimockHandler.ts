@@ -209,7 +209,7 @@ abstract class NgApimockHandler implements Handler {
      * @returns {string|boolean} callbackName Either the name or false.
      */
     private getJsonCallbackName(requestUrl: string): string | boolean {
-        const url_parts = url.parse(requestUrl, true);
+        const url_parts: any = url.parse(requestUrl, true);
         if (!url_parts.query || !url_parts.query.callback) {
             return false;
         }
