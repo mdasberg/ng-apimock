@@ -57,3 +57,7 @@ jspm_packages
 # typescript
 **/*.d.ts
 **/*.js.map
+
+# build artifacts
+lib/**/*.js
+tasks/*.js
