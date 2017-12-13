@@ -1,3 +1,9 @@
+<a name="1.4.4"></a>
+# 1.4.4 (2017-12-13)
+
+## Bugfix
+- Fix broken browser.addMockModule support for hybrid apps
+
 <a name="1.4.3"></a>
 # 1.4.3 (2017-12-12)
 

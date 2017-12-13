@@ -185,7 +185,8 @@ exports.config = {
 ```js
 exports.config = {
     ngApimockOpts: {
-        angularVersion: 2  // {number} provide major version of Angular
+        angularVersion: 2,  // {number} provide major version of Angular
+        hybrid: false // optional boolean which can be used for testing Angular apps within an AngularJs app.
     }
 };
 ```
