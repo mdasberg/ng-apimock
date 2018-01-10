@@ -1,10 +1,11 @@
 {
-  "expression": "online\/rest\/some\/api\/pdf",
+  "expression": "api\/pdf",
   "method": "GET",
   "name": "download",
   "responses": {
     "binary-download": {
       "default": true,
+      "delay": 1000,
       "file": "test/mocks/test.pdf",
       "headers": {
         "Content-type": "application/pdf"

@@ -1,5 +1,5 @@
 {
-  "expression": "online\/rest\/some\/api\/.*\/and\/.*",
+  "expression": "api\/.*\/and\/.*",
   "method": "POST",
   "name": "update",
   "responses": {
