@@ -25,6 +25,7 @@ class MocksProcessor {
      * @param {Config} config The config.
      */
     process(config: Config): void {
+        let counter = 0;
         glob.sync('**/*.json', {
             cwd: config.src,
             root: '/'
@@ -38,6 +39,7 @@ class MocksProcessor {
                 this.mocksState.mocks[index] = mock;
             } else { // add
                 this.mocksState.mocks.push(mock);
+                counter++;
             }
 
             const _default = Object.keys(mock.responses).find(key => !!mock.responses[key]['default']);
@@ -58,6 +60,8 @@ class MocksProcessor {
             this.mocksState.defaults[mock.name] = state;
             this.mocksState.global.mocks[mock.name] = JSON.parse(JSON.stringify(state));
         });
+
+        console.log(`Processed ${counter} unique mocks.`);
     }
 }
 
