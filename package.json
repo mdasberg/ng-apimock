@@ -32,7 +32,13 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
+    "prebuild": "rm -rf dist",
     "build": "tsc",
+
+
+
+
+
     "verify": "tslint -p tsconfig.json",
     "verify-type-check": "npm run verify -- --type-check",
     "local": "jasmine-node test/unit/*.spec.js && protractor test/protractor/config/protractor-local-interface.conf.js && protractor test/protractor/config/protractor-local-protractor.conf.js",
@@ -41,18 +47,21 @@
     "release": "npm publish && node dockerize.js && docker build --file=docker/Dockerfile docker -t mdasberg/ng-apimock && docker push mdasberg/ng-apimock"
   },
   "dependencies": {
-    "angular": "1.6.6",
-    "angular-mocks": "1.6.6",
-    "angular-resource": "1.6.6",
-    "async": "2.5.0",
-    "chokidar": "^1.7.0",
-    "fs-extra": "4.0.1",
+    "angular": "1.6.8",
+    "angular-mocks": "1.6.8",
+    "angular-resource": "1.6.8",
+    "async": "2.6.0",
+    "chokidar": "2.0.0",
+    "fs-extra": "5.0.0",
     "glob": "7.1.2",
     "hooker": "0.2.3",
+    "inversify": "4.9.0",
     "lodash": "4.17.4",
     "path": "0.12.7",
+    "reflect-metadata": "0.1.10",
+    "sinon": "4.1.4",
     "then-request": "4.1.0",
-    "url-join": "2.0.2",
+    "url-join": "2.0.5",
     "uuid": "3.1.0"
   },
   "keywords": [
@@ -63,24 +72,25 @@
     "httpbackend"
   ],
   "devDependencies": {
-    "@types/async": "2.0.41",
-    "@types/chokidar": "^1.7.0",
-    "@types/connect": "3.4.30",
-    "@types/fs-extra": "4.0.0",
-    "@types/glob": "5.0.31",
-    "chai": "4.1.1",
+    "@types/async": "2.0.46",
+    "@types/chokidar": "1.7.4",
+    "@types/connect": "3.4.31",
+    "@types/fs-extra": "5.0.0",
+    "@types/glob": "5.0.34",
+    "@types/sinon": "4.1.2",
+    "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
-    "connect": "3.6.3",
-    "cucumber": "2.3.1",
+    "connect": "3.6.5",
+    "cucumber": "3.2.1",
     "cucumberjs-junitxml": "1.0.0",
     "jasmine-node": "1.14.5",
-    "protractor": "5.1.2",
-    "protractor-cucumber-framework": "3.1.2",
-    "serve-static": "1.12.3",
+    "protractor": "5.2.2",
+    "protractor-cucumber-framework": "4.1.1",
+    "serve-static": "1.13.1",
     "shortid": "2.2.8",
-    "tslint": "5.6.0",
+    "tslint": "5.9.0",
     "tslint-eslint-rules": "4.1.1",
-    "typescript": "2.4.2",
-    "vrsource-tslint-rules": "5.1.1"
+    "typescript": "2.6.2",
+    "vrsource-tslint-rules": "5.8.0"
   }
 }

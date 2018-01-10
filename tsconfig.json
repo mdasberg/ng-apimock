@@ -4,6 +4,7 @@
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
+    "outDir": "dist",
     "noLib": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
