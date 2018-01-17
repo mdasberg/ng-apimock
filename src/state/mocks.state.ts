@@ -7,6 +7,7 @@ import HttpResponseRecording from './httpResponseRecording';
 import MockResponse from '../domain/mock.response';
 import State from './state';
 import Mock from '../domain/mock';
+import {IncomingHttpHeaders} from 'http';
 
 /** The mocks state. */
 @injectable()
@@ -59,16 +60,36 @@ class MocksState {
     }
 
     /**
-     * Gets the mock matching the given url and method.
+     * Gets the mock matching the given url, method, headers and payload.
      * @param {string} url The url.
      * @param {string} method The method.
+     * @param {IncomingHttpHeaders} headers The headers.
+     * @param {any} payload The payload.
      * @return {Mock} mock The matching mock.
      */
-    getMatchingMock(url: string, method: string): Mock {
+    getMatchingMock(url: string, method: string, headers: IncomingHttpHeaders, payload: any): Mock {
         return this.mocks.find(_mock => {
-            const expressionMatches = new RegExp(_mock.expression).exec(decodeURI(url)) !== null;
-            const methodMatches = _mock.method === method;
-            return expressionMatches && methodMatches;
+            const matchUrl = new RegExp(_mock.request.url).exec(decodeURI(url)) !== null;
+            const matchMethod = _mock.request.method === method;
+
+            let matchHeaders = true;
+            if (_mock.request.headers !== undefined) {
+                matchHeaders = Object.keys(_mock.request.headers).filter((key) => {
+                    const defined = headers[key.toLowerCase()] !== undefined;
+                    const matched = new RegExp(_mock.request.headers[key]).exec((headers as any)[key.toLowerCase()]) !== null;
+                    return !defined || !matched;
+                }).length === 0;
+            }
+            let matchPayload = true;
+            if (_mock.request.payload !== undefined) {
+                matchPayload = Object.keys(_mock.request.payload).filter((key) => {
+                    const defined = payload[key] !== undefined;
+                    const matched = new RegExp(_mock.request.payload[key]).exec(payload[key]) !== null;
+                    return !defined || !matched;
+                }).length === 0;
+            }
+
+            return matchUrl && matchMethod && matchHeaders && matchPayload;
         });
     }
 

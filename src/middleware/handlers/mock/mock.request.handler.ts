@@ -21,39 +21,31 @@ class MockRequestHandler implements Handler {
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string, mock: Mock): void {
         const _response: MockResponse = this.mocksState.getResponse(mock.name, id);
         const _variables: any = this.mocksState.getVariables(id);
-        const requestDataChunks: Buffer[] = [];
-
-        request.on('data', (rawData: Buffer) => {
-            requestDataChunks.push(rawData);
-        });
 
         if (_response !== undefined) {
-            request.on('end', () => {
-                const status: number = _response.status || HttpStatusCode.OK;
-                const delay: number = this.mocksState.getDelay(mock.name, id);
-                const jsonCallbackName = this.getJsonCallbackName(request);
+            const status: number = _response.status || HttpStatusCode.OK;
+            const delay: number = this.mocksState.getDelay(mock.name, id);
+            const jsonCallbackName = this.getJsonCallbackName(request);
 
-                let headers: { [key: string]: string };
-                let chunk: Buffer | string;
+            let headers: { [key: string]: string };
+            let chunk: Buffer | string;
 
-                if (this._isBinaryResponse(_response)) {
-                    headers = _response.headers || HttpHeaders.CONTENT_TYPE_BINARY;
-                    chunk = fs.readFileSync(_response.file);
-                } else {
-                    headers = _response.headers || HttpHeaders.CONTENT_TYPE_APPLICATION_JSON;
-                    chunk = this.interpolateResponseData(_response.data, _variables, (mock.isArray ? [] : {}));
-                }
+            if (this._isBinaryResponse(_response)) {
+                headers = _response.headers || HttpHeaders.CONTENT_TYPE_BINARY;
+                chunk = fs.readFileSync(_response.file);
+            } else {
+                headers = _response.headers || HttpHeaders.CONTENT_TYPE_APPLICATION_JSON;
+                chunk = this.interpolateResponseData(_response.data, _variables, (mock.isArray ? [] : {}));
+            }
 
-                if (jsonCallbackName !== false) {
-                    chunk = jsonCallbackName + '(' + chunk + ')';
-                }
+            if (jsonCallbackName !== false) {
+                chunk = jsonCallbackName + '(' + chunk + ')';
+            }
 
-                setTimeout(() => {
-                    response.writeHead(status, headers);
-                    response.end(chunk);
-                }, delay);
-
-            });
+            setTimeout(() => {
+                response.writeHead(status, headers);
+                response.end(chunk);
+            }, delay);
         } else {
             next();
         }

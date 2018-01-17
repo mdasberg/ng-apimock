@@ -42,21 +42,31 @@ class Middleware {
      */
     middleware(request: http.IncomingMessage, response: http.ServerResponse, next: Function): void {
         const apimockId: string = this.getApimockId(request.headers);
-        const matchingMock: Mock = this.apimockState.getMatchingMock(request.url, request.method);
 
         if (request.url.startsWith('/ngapimock/mocks')) {
             this.scenarioHandler.handle(request, response, next, apimockId);
         } else if (request.url.startsWith('/ngapimock/actions') && request.method === HttpMethods.PUT) {
             this.actionHandler.handle(request, response, next, apimockId);
-        } else if (matchingMock !== undefined) {
-            this.echoRequestHandler.handle(request, response, next, apimockId, matchingMock);
-            if (this.apimockState.record && !request.headers.record) {
-                this.recordResponseHandler.handle(request, response, next, apimockId, matchingMock);
-            } else {
-                this.mockRequestHander.handle(request, response, next, apimockId, matchingMock);
-            }
         } else {
-            next();
+            const requestDataChunks: Buffer[] = [];
+
+            request.on('data', (rawData: Buffer) => {
+                requestDataChunks.push(rawData);
+            }).on('end', () => {
+                const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
+                const matchingMock: Mock = this.apimockState.getMatchingMock(request.url, request.method, request.headers, payload);
+                if (matchingMock !== undefined) {
+                    this.echoRequestHandler.handle(request, response, next, apimockId, matchingMock);
+                    if (this.apimockState.record && !request.headers.record) {
+                        this.recordResponseHandler.handle(request, response, next, apimockId, matchingMock);
+                    } else {
+                        this.mockRequestHander.handle(request, response, next, apimockId, matchingMock);
+                    }
+                } else {
+                    next();
+                }
+            });
+
         }
     }
 
