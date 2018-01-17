@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "declaration": true,
-    "removeComments": true,
-    "outDir": "dist",
-    "noLib": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
@@ -13,33 +10,26 @@
       "es2015",
       "dom"
     ],
-    "sourceMap": true,
-    "pretty": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
+    "module": "commonjs",
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
-    "noFallthroughCasesInSwitch": true,
+    "noLib": false,
+    "outDir": "dist",
+    "pretty": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "target": "es6",
     "typeRoots": [
-      "node_modules/@types",
-      "node_modules"
-    ],
-    "types": [
-      "async",
-      "chokidar",
-      "fs-extra",
-      "glob",
-      "node"
+      "node_modules/@types"
     ]
   },
   "include": [
     "**/*.ts"
   ],
   "exclude": [
-    "built",
-    "node_modules",
-    "results",
-    "test"
+    "node_modules/**/*",
+    "dist"
   ]
 }
