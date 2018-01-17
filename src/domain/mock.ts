@@ -1,4 +1,5 @@
 import MockResponse from './mock.response';
+import MockRequest from './mock.request';
 
 /** Mock. */
 interface Mock {
@@ -6,10 +7,8 @@ interface Mock {
     name: string;
     // type of response object either
     isArray?: boolean;
-    // the expression
-    expression: string;
-    // the http method (GET, POST, PUT, DELETE)
-    method: string;
+    // the request
+    request: MockRequest;
     // the available responses
     responses: { [key: string]: MockResponse };
 }
