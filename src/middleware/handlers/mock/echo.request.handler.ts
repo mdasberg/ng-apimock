@@ -25,7 +25,7 @@ class EchoRequestHandler implements Handler {
             });
 
             const payload: string = Buffer.concat(requestDataChunks).toString();
-            console.log(`${mock.method} request made on '${mock.expression}' with payload: '${payload}`);
+            console.log(`${mock.request.method} request made on '${mock.request.url}' with payload: '${payload}`);
         }
     }
 }
