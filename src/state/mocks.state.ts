@@ -53,7 +53,7 @@ class MocksState {
                 state = new SessionState(id);
                 state.mocks = JSON.parse(JSON.stringify(this.global.mocks));
                 state.variables = JSON.parse(JSON.stringify(this.global.variables));
-                this.sessions.push(state as SessionState)
+                this.sessions.push(state as SessionState);
             }
         }
         return state;
