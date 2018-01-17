@@ -40,9 +40,8 @@ class ScenarioHandler implements Handler {
             mocks: this.mocksState.mocks.map((mock) => ({
                 name: mock.name,
                 isArray: mock.isArray ? [] : {},
-                expression: mock.expression,
-                method: mock.method,
-                scenarios: Object.keys(mock.responses)
+                request: mock.request,
+                responses: Object.keys(mock.responses)
             }))
         };
         response.writeHead(HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
