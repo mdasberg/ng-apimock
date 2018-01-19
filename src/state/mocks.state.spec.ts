@@ -75,11 +75,8 @@ describe('MocksState', () => {
         });
 
         describe('id === undefined', () =>
-            it('returns the global mocksState', () => {
-                const matchingState = mocksState.getMatchingState(undefined);
-                expect(matchingState).toBe(globalState);
-            })
-        );
+            it('returns the global mocksState', () =>
+                expect(mocksState.getMatchingState(undefined)).toBe(globalState)));
 
         describe('no session matching the id', () =>
             it('returns a new SessionState by cloning the GlobalState', () => {
@@ -120,23 +117,29 @@ describe('MocksState', () => {
         const VALID_URL = 'some/api';
         const INVALID_URL = 'no/match';
 
-        it('returns undefined when the request does not match any mock', () => {
-            // url does not match
-            expect(mocksState.getMatchingMock(INVALID_URL, 'POST', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined();
-            // method does not match
-            expect(mocksState.getMatchingMock(VALID_URL, 'PUT', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined();
-            // headers do not match
-            expect(mocksState.getMatchingMock(VALID_URL, 'POST', INVALID_HEADERS, VALID_PAYLOAD)).toBeUndefined();
-            // payload does not match
-            expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, INVALID_PAYLOAD)).toBeUndefined();
-        });
+        describe('url does not match', () =>
+            it('returns undefined', () =>
+                expect(mocksState.getMatchingMock(INVALID_URL, 'POST', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
 
-        it('returns the matching mock when the request matches', () => {
-            // match simple mock - only url and method
-            expect(mocksState.getMatchingMock(VALID_URL, 'GET', {}, {})).toBe(simpleMock);
-            // match advanced mock - url, method, headers, payload
-            expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, VALID_PAYLOAD)).toBe(advancedMock);
-        });
+        describe('method does not match', () =>
+            it('returns undefined', () =>
+                expect(mocksState.getMatchingMock(VALID_URL, 'PUT', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
+
+        describe('headers does not match', () =>
+            it('returns undefined', () =>
+                expect(mocksState.getMatchingMock(VALID_URL, 'POST', INVALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
+
+        describe('payload does not match', () =>
+            it('returns undefined', () =>
+                expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, INVALID_PAYLOAD)).toBeUndefined()));
+
+        describe('request matches', () =>
+            it('returns the matching mock', () => {
+                // match simple mock - only url and method
+                expect(mocksState.getMatchingMock(VALID_URL, 'GET', {}, {})).toBe(simpleMock);
+                // match advanced mock - url, method, headers, payload
+                expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, VALID_PAYLOAD)).toBe(advancedMock);
+            }));
     });
 
     describe('getResponse', () => {
@@ -155,16 +158,13 @@ describe('MocksState', () => {
             getMatchingStateFn.returns(state);
         });
 
-        it('returns undefined when there is no matching mock', () => {
-            // no matching mock
-            const response = mocksState.getResponse('noMatch', 'id');
-            expect(response).toBeUndefined();
-        });
+        describe('no matching mock', () =>
+            it('returns undefined', () =>
+                expect(mocksState.getResponse('noMatch', 'id')).toBeUndefined()));
 
-        it('returns the selected response for the matching mock', () => {
-            const response = mocksState.getResponse('simple', 'id');
-            expect(response).toBe(simpleMock.responses['one']);
-        });
+        describe('matching mock', () =>
+            it('returns the selected response', () =>
+                expect(mocksState.getResponse('simple', 'id')).toBe(simpleMock.responses['one'])));
 
         afterEach(() => {
             getMatchingStateFn.reset();
@@ -187,16 +187,13 @@ describe('MocksState', () => {
             getMatchingStateFn.returns(state);
         });
 
-        it('returns 0 when there is no matching mock', () => {
-            // no matching mock
-            const response = mocksState.getDelay('noMatch', 'id');
-            expect(response).toBe(0);
-        });
+        describe('no matching mock', () =>
+            it('returns 0', () =>
+                expect(mocksState.getDelay('noMatch', 'id')).toBe(0)));
 
-        it('returns the set delay for the matching mock', () => {
-            const response = mocksState.getDelay('simple', 'id');
-            expect(response).toBe(1000);
-        });
+        describe('matching mock', () =>
+            it('returns the selected delay', () =>
+                expect(mocksState.getDelay('simple', 'id')).toBe(1000)));
 
         afterEach(() => {
             getMatchingStateFn.reset();
@@ -219,16 +216,13 @@ describe('MocksState', () => {
             getMatchingStateFn.returns(state);
         });
 
-        it('returns false when there is no matching mock', () => {
-            // no matching mock
-            const response = mocksState.getEcho('noMatch', 'id');
-            expect(response).toBe(false);
-        });
+        describe('no matching mock', () =>
+            it('returns false', () =>
+                expect(mocksState.getEcho('noMatch', 'id')).toBe(false)));
 
-        it('returns the set delay for the matching mock', () => {
-            const response = mocksState.getEcho('simple', 'id');
-            expect(response).toBe(true);
-        });
+        describe('matching mock', () =>
+            it('returns the selected echo', () =>
+                expect(mocksState.getEcho('simple', 'id')).toBe(true)));
 
         afterEach(() => {
             getMatchingStateFn.reset();
@@ -241,7 +235,7 @@ describe('MocksState', () => {
             state = {
                 mocks: {},
                 variables: {
-                    this:'this',
+                    this: 'this',
                     that: 'that'
                 }
             };
@@ -279,12 +273,12 @@ describe('MocksState', () => {
 
             mocksState.defaults['simple'] = {
                 scenario: 'two',
-                delay:2000,
+                delay: 2000,
                 echo: false
             };
             mocksState.defaults['advanced'] = {
                 scenario: 'four',
-                delay:4000,
+                delay: 4000,
                 echo: true
             };
         });
@@ -340,12 +334,12 @@ describe('MocksState', () => {
 
             mocksState.defaults['simple'] = {
                 scenario: 'two',
-                delay:2000,
+                delay: 2000,
                 echo: false
             };
             mocksState.defaults['advanced'] = {
                 scenario: 'four',
-                delay:4000,
+                delay: 4000,
                 echo: true
             };
         });
