@@ -13,6 +13,7 @@ import {IncomingHttpHeaders} from 'http';
 @injectable()
 class MocksState {
     private DEFAULT_DELAY = 0;
+    private DEFAULT_ECHO = false;
     private PASS_THROUGH = 'passThrough';
 
     mocks: Mock[];
@@ -80,6 +81,7 @@ class MocksState {
                     return !defined || !matched;
                 }).length === 0;
             }
+
             let matchPayload = true;
             if (_mock.request.payload !== undefined) {
                 matchPayload = Object.keys(_mock.request.payload).filter((key) => {
@@ -101,14 +103,16 @@ class MocksState {
      */
     getResponse(name: string, id: string): MockResponse {
         const state = this.getMatchingState(id);
+        let response = undefined;
         let scenario = undefined;
 
-        if (state && state.mocks[name] !== undefined) {
+        if (state.mocks[name] !== undefined) {
             scenario = state.mocks[name].scenario;
+            const mock = this.mocks.find((_mock: Mock) => _mock.name === name);
+            response = mock.responses[scenario];
         }
 
-        const mock = this.mocks.find((_mock: Mock) => _mock.name === name);
-        return mock.responses[scenario];
+        return response;
     }
 
     /**
@@ -135,7 +139,7 @@ class MocksState {
      */
     getEcho(name: string, id: string): boolean {
         const state = this.getMatchingState(id);
-        let echo = false;
+        let echo = this.DEFAULT_ECHO;
 
         if (state && state.mocks[name] !== undefined) {
             echo = state.mocks[name].echo;
@@ -156,7 +160,7 @@ class MocksState {
             variables = state.variables;
         }
         return variables;
-    };
+    }
 
     /**
      * Sets the mocks to the default state.
