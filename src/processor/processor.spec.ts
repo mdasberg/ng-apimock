@@ -64,29 +64,25 @@ describe('MocksProcessor', () => {
             sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/three.json'));
         });
 
-        it('overrides a duplicate mock', () => {
-            sinon.assert.calledWith(consoleWarnFn, `Mock with identifier 'one' already exists. Overwriting existing mock.`)
-        });
+        it('overrides a duplicate mock', () =>
+            sinon.assert.calledWith(consoleWarnFn, `Mock with identifier 'one' already exists. Overwriting existing mock.`));
 
-        it('sets the defaults', () => {
+        it('sets the defaults', () =>
             expect(mocksState.defaults).toEqual({
                 one: {scenario: 'y', echo: false, delay: 0}, // default delay
                 two: {scenario: 'x', echo: false, delay: 2000}, // delay specified in the mock
                 three: {scenario: 'passThrough', echo: false, delay: 0} // passThrough because no default has been specified
-            });
-        });
+            }));
 
-        it('sets the global mocks', () => {
+        it('sets the global mocks', () =>
             expect(mocksState.global.mocks).toEqual({
                 one: {scenario: 'y', echo: false, delay: 0}, // default delay
                 two: {scenario: 'x', echo: false, delay: 2000}, // delay specified in the mock
                 three: {scenario: 'passThrough', echo: false, delay: 0} // passThrough because no default has been specified
-            });
-        });
+            }));
 
-        it('processes 2 unique mocks', () => {
-            sinon.assert.calledWith(consoleLogFn, `Processed 3 unique mocks.`);
-        });
+        it('processes unique mocks', () =>
+            sinon.assert.calledWith(consoleLogFn, `Processed 3 unique mocks.`));
     });
 
     afterAll(() => {

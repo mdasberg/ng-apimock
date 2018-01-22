@@ -66,7 +66,6 @@ class Middleware {
                     next();
                 }
             });
-
         }
     }
 
