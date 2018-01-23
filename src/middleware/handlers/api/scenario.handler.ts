@@ -18,11 +18,11 @@ class ScenarioHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string): void {
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: {id: string}): void {
         if (request.method === HttpMethods.GET) {
-            this.handleGetMocks(response, id);
+            this.handleGetMocks(response, params.id);
         } else if (request.method === HttpMethods.PUT) {
-            this.handleSelectMockScenario(request, response, id);
+            this.handleSelectMockScenario(request, response, params.id);
         }
     }
 

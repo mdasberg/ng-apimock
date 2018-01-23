@@ -14,18 +14,12 @@ class EchoRequestHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string, mock: Mock): void {
-        const echo: boolean = this.mocksState.getEcho(mock.name, id);
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function,
+           params: { id: string, mock: Mock, payload: string }): void {
+        const echo: boolean = this.mocksState.getEcho(params.mock.name, params.id);
 
         if (echo) {
-            const requestDataChunks: Buffer[] = [];
-
-            request.on('data', (rawData: Buffer) => {
-                requestDataChunks.push(rawData);
-            });
-
-            const payload: string = Buffer.concat(requestDataChunks).toString();
-            console.log(`${mock.request.method} request made on '${mock.request.url}' with payload: '${payload}`);
+            console.log(`${params.mock.request.method} request made on '${params.mock.request.url}' with payload: '${JSON.stringify(params.payload)}`);
         }
     }
 }

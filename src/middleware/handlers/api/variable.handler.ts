@@ -15,7 +15,7 @@ class VariableHandler implements Handler {
     mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string, mock: Mock): void {
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: any): void {
     }
 }
 

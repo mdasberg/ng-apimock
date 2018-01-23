@@ -17,7 +17,7 @@ class RecordResponseHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string, mock: Mock): void {
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock }): void {
         const requestDataChunks: Buffer[] = [];
 
         request.on('data', (rawData: Buffer) => {
@@ -42,7 +42,7 @@ class RecordResponseHandler implements Handler {
                 _response.setEncoding(this.RESPONSE_ENCODING);
                 _response.on('data', (chunk: Buffer) => {
                     this.record(payload, chunk.toString(this.RESPONSE_ENCODING), request, _response.statusCode,
-                        mock.name);
+                        params.mock.name);
                     response.end(chunk);
                 });
             });

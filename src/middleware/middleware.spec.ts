@@ -15,7 +15,6 @@ import {HttpMethods} from './http';
 import Mock from '../domain/mock';
 
 describe('Middleware', () => {
-    let actionHandler: ActionHandler;
     let middleware: Middleware;
     let mocksState: MocksState;
 
@@ -69,7 +68,7 @@ describe('Middleware', () => {
 
                 middleware.middleware(request, response, nextFn);
                 sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(scenarioHandlerHandleFn, request, response, nextFn, APIMOCK_ID);
+                sinon.assert.calledWith(scenarioHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID});
             });
 
             afterEach(() => {
@@ -96,7 +95,7 @@ describe('Middleware', () => {
 
                 middleware.middleware(request, response, nextFn);
                 sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(actionHandlerHandleFn, request, response, nextFn, APIMOCK_ID);
+                sinon.assert.calledWith(actionHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID});
             });
 
             afterEach(() => {
@@ -166,7 +165,11 @@ describe('Middleware', () => {
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(echoRequestHandlerHandleFn, request, response, nextFn, APIMOCK_ID, matchingMock);
+                    sinon.assert.calledWith(echoRequestHandlerHandleFn, request, response, nextFn, {
+                        id: APIMOCK_ID,
+                        mock: matchingMock,
+                        payload: {}
+                    });
                 });
 
                 afterEach(() => {
@@ -192,7 +195,7 @@ describe('Middleware', () => {
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, APIMOCK_ID, matchingMock);
+                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {mock: matchingMock});
                 });
 
                 afterEach(() => {
@@ -209,23 +212,23 @@ describe('Middleware', () => {
             });
 
             describe('mock request', () => {
-                it('calls the recordHandler when recording is false', () => {
+                it('calls the mockRequestHandler when recording is false', () => {
                     mocksState.record = false;
                     middleware.middleware(request, response, nextFn);
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, APIMOCK_ID, matchingMock);
+                    sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, mock: matchingMock});
                 });
 
-                it('calls the recordHandler when request.headers.record is true', () => {
+                it('calls the mockRequestHandler when request.headers.record is true', () => {
                     mocksState.record = true;
                     request.headers.record = true;
                     middleware.middleware(request, response, nextFn);
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, APIMOCK_ID, matchingMock);
+                    sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, mock: matchingMock});
                 });
 
                 afterEach(() => {
@@ -306,11 +309,11 @@ describe('Middleware', () => {
         beforeEach(() => {
             getApimockIdFn.callThrough();
         });
-        describe('present', () =>
+        describe('apimockId cookie is present', () =>
             it('returns the apimockId', () =>
                 expect(middleware.getApimockId({cookie: 'a=a;apimockid=123;c=c'})).toBe('123')));
 
-        describe('not present', () =>
+        describe('apimockId cookie is not present', () =>
             it('returns undefined', () =>
                 expect(middleware.getApimockId({cookie: 'a=a;b=b;c=c'})).toBe(undefined)));
     });

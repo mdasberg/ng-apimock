@@ -18,7 +18,7 @@ class ActionHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string): void {
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: {id: string}): void {
         const requestDataChunks: Buffer[] = [];
 
         request.on('data', (rawData: Buffer) => {
@@ -30,12 +30,12 @@ class ActionHandler implements Handler {
 
             try {
                 const action: string = data.action;
-                const matchingState: State = this.mocksState.getMatchingState(id);
+                const matchingState: State = this.mocksState.getMatchingState(params.id);
 
                 if (action === this.DEFAULTS) {
-                    this.mocksState.setToDefaults(id);
+                    this.mocksState.setToDefaults(params.id);
                 } else if (action === this.PASS_THROUGHS) {
-                    this.mocksState.setToPassThroughs(id);
+                    this.mocksState.setToPassThroughs(params.id);
                 } else {
                     throw new Error(`No action matching ['${action}'] found`);
                 }

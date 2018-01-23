@@ -9,10 +9,9 @@ interface Handler {
      * @param {"http".IncomingMessage} request The http request.
      * @param {"http".ServerResponse} response The http response.
      * @param {Function} next The next middleware.
-     * @param {string} id The apimock id.
-     * @param {Mock} mock The apimock mock.
+     * @param {object} params The parameters.
      */
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string, mock?: Mock): void;
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params?: any): void;
 }
 
 export default Handler;

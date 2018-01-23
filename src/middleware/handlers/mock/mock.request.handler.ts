@@ -18,13 +18,13 @@ class MockRequestHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, id: string, mock: Mock): void {
-        const _response: MockResponse = this.mocksState.getResponse(mock.name, id);
-        const _variables: any = this.mocksState.getVariables(id);
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { id: string, mock: Mock }): void {
+        const _response: MockResponse = this.mocksState.getResponse(params.mock.name, params.id);
+        const _variables: any = this.mocksState.getVariables(params.id);
 
         if (_response !== undefined) {
             const status: number = _response.status || HttpStatusCode.OK;
-            const delay: number = this.mocksState.getDelay(mock.name, id);
+            const delay: number = this.mocksState.getDelay(params.mock.name, params.id);
             const jsonCallbackName = this.getJsonCallbackName(request);
 
             let headers: { [key: string]: string };
@@ -35,7 +35,7 @@ class MockRequestHandler implements Handler {
                 chunk = fs.readFileSync(_response.file);
             } else {
                 headers = _response.headers || HttpHeaders.CONTENT_TYPE_APPLICATION_JSON;
-                chunk = this.interpolateResponseData(_response.data, _variables, (mock.isArray ? [] : {}));
+                chunk = this.interpolateResponseData(_response.data, _variables, (params.mock.isArray ? [] : {}));
             }
 
             if (jsonCallbackName !== false) {
