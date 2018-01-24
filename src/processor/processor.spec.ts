@@ -8,6 +8,7 @@ import * as sinon from 'sinon';
 
 import MocksProcessor from './processor';
 import MocksState from '../state/mocks.state';
+import {HttpHeaders} from '../middleware/http';
 
 describe('MocksProcessor', () => {
     let processor: MocksProcessor;
@@ -38,11 +39,50 @@ describe('MocksProcessor', () => {
 
     describe('process', () => {
         beforeAll(() => {
-            globSyncFn.returns(['mock/one.json', 'mock/two.json', 'mock/duplicate-one.json', 'mock/three.json']);
-            fsReadJsonSyncFn.onCall(0).returns({name: 'one', responses: {'x': {default: true}}});
-            fsReadJsonSyncFn.onCall(1).returns({name: 'two', responses: {'x': {default: true, echo: true, delay: 2000}}});
-            fsReadJsonSyncFn.onCall(2).returns({name: 'one', responses: {'x': {}, 'y': {default: true}}});
-            fsReadJsonSyncFn.onCall(3).returns({name: 'three', responses: {'x': {}}});
+            globSyncFn.returns([
+                'mock/minimal-json-request.json',
+                'mock/minimal-binary-request.json',
+                'mock/full-request.json',
+                'mock/duplicate-request.json']);
+            fsReadJsonSyncFn.onCall(0).returns({
+                name: 'minimal-json-request',
+                request: {url: 'minimal/json/url', method: 'GET'},
+                responses: {'minimal-json-response': {}}
+            });
+            fsReadJsonSyncFn.onCall(1).returns({
+                name: 'minimal-binary-request',
+                request: {url: 'minimal/binary/url', method: 'GET'},
+                responses: {'minimal-binary-response': {file: 'some.pdf'}}
+            });
+            fsReadJsonSyncFn.onCall(2).returns({
+                name: 'full-request',
+                isArray: true,
+                request: {url: 'full/url', method: 'GET', headers: {'Cache-control': 'no-store'}, payload: {'uuid': '\\d+'}},
+                responses: {
+                    'full-response': {
+                        status: 404,
+                        data: [{'a': 'a'}],
+                        headers: {'Content-type': 'application/something'},
+                        statusText: 'oops',
+                        default: true,
+                        delay: 1000
+                    },
+                    'another-full-response': {
+                        status: 500,
+                        data: [{'a': 'a'}],
+                        headers: {'Content-type': 'application/something'},
+                        file: 'some.pdf',
+                        statusText: 'oops',
+                        default: false,
+                        delay: 0
+                    }
+                }
+            });
+            fsReadJsonSyncFn.onCall(3).returns({
+                name: 'minimal-json-request',
+                request: {url: 'duplicate/url', method: 'GET'},
+                responses: {'duplicate-response': {}}
+            });
 
             processor.process({
                 src: SRC,
@@ -58,28 +98,70 @@ describe('MocksProcessor', () => {
                     cwd: SRC, root: '/'
                 }
             );
-            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/one.json'));
-            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/two.json'));
-            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/duplicate-one.json'));
-            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/three.json'));
+            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/minimal-json-request.json'));
+            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/minimal-binary-request.json'));
+            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/full-request.json'));
+            sinon.assert.calledWith(fsReadJsonSyncFn, path.join(SRC, 'mock/duplicate-request.json'));
         });
 
-        it('overrides a duplicate mock', () =>
-            sinon.assert.calledWith(consoleWarnFn, `Mock with identifier 'one' already exists. Overwriting existing mock.`));
+        it('overrides a duplicate mock', () => {
+            sinon.assert.calledWith(consoleWarnFn, `Mock with identifier 'minimal-json-request' already exists. Overwriting existing mock.`);
+            expect(Object.keys(mocksState.mocks[0].responses)).toEqual(['duplicate-response']);
+        });
 
         it('sets the defaults', () =>
             expect(mocksState.defaults).toEqual({
-                one: {scenario: 'y', echo: false, delay: 0}, // default delay
-                two: {scenario: 'x', echo: false, delay: 2000}, // delay specified in the mock
-                three: {scenario: 'passThrough', echo: false, delay: 0} // passThrough because no default has been specified
+                'minimal-json-request': {scenario: 'passThrough', echo: false, delay: 0},
+                'minimal-binary-request': {scenario: 'passThrough', echo: false, delay: 0},
+                'full-request': {scenario: 'full-response', echo: false, delay: 1000}
             }));
 
         it('sets the global mocks', () =>
             expect(mocksState.global.mocks).toEqual({
-                one: {scenario: 'y', echo: false, delay: 0}, // default delay
-                two: {scenario: 'x', echo: false, delay: 2000}, // delay specified in the mock
-                three: {scenario: 'passThrough', echo: false, delay: 0} // passThrough because no default has been specified
+                'minimal-json-request': {scenario: 'passThrough', echo: false, delay: 0},
+                'minimal-binary-request': {scenario: 'passThrough', echo: false, delay: 0},
+                'full-request': {scenario: 'full-response', echo: false, delay: 1000}
             }));
+
+        it('updates the mocks with default values', () => {
+            consoleLogFn.callThrough();
+            expect(mocksState.mocks[0].responses).toEqual({
+                'duplicate-response': {
+                    status: 200, // default is status ok => 200
+                    data: {}, // default if isArray is empty of false
+                    headers: HttpHeaders.CONTENT_TYPE_APPLICATION_JSON, // default if no binary file is specified
+                    delay: 0 // default is no delay
+                }
+            });
+            expect(mocksState.mocks[1].responses).toEqual({
+                'minimal-binary-response': {
+                    status: 200, // default is status ok => 200
+                    data: {}, // default if isArray is empty of false
+                    headers: HttpHeaders.CONTENT_TYPE_BINARY, // default if a binary file is specified
+                    file: 'some.pdf',
+                    delay: 0 // default is no delay
+                }
+            });
+            expect(mocksState.mocks[2].responses).toEqual({
+                'full-response': {
+                    status: 404,
+                    statusText: 'oops',
+                    default: true,
+                    data: [{a: 'a'}],
+                    headers: {'Content-type': 'application/something'}, // does not add the default headers if specified
+                    delay: 1000
+                },
+                'another-full-response': {
+                    status: 500,
+                    statusText: 'oops',
+                    data: [{a: 'a'}],
+                    headers: {'Content-type': 'application/something'}, // does not add the default headers if specified
+                    file: 'some.pdf',
+                    default: false,
+                    delay: 0
+                }
+            });
+        });
 
         it('processes unique mocks', () =>
             sinon.assert.calledWith(consoleLogFn, `Processed 3 unique mocks.`));

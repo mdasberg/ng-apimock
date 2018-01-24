@@ -8,6 +8,7 @@ import * as path from 'path';
 import Config from './config';
 import Mock from '../domain/mock';
 import MocksState from '../state/mocks.state';
+import {HttpHeaders, HttpStatusCode} from '../middleware/http';
 
 /** Mocks processor. */
 @injectable()
@@ -42,6 +43,25 @@ class MocksProcessor {
                 counter++;
             }
 
+            Object.keys(mock.responses).forEach((key) => {
+                const response = mock.responses[key];
+                if (response.status === undefined) {
+                    response.status = HttpStatusCode.OK;
+                }
+                if (response.data === undefined) {
+                    response.data = mock.isArray ? [] : {};
+                }
+                if (response.headers === undefined) {
+                    response.headers = response.file !== undefined ?
+                        HttpHeaders.CONTENT_TYPE_BINARY :
+                        HttpHeaders.CONTENT_TYPE_APPLICATION_JSON;
+                }
+                if(response.delay === undefined) {
+                    response.delay = this.DEFAULT_DELAY;
+                }
+                return response;
+            });
+
             const _default = Object.keys(mock.responses).find(key => !!mock.responses[key]['default']);
             let state: { scenario: string, echo: boolean, delay: number } = {
                 scenario: this.PASS_THROUGH,
@@ -53,7 +73,7 @@ class MocksProcessor {
                 state = {
                     scenario: _default,
                     echo: this.DEFAULT_ECHO,
-                    delay: mock.responses[_default].delay || this.DEFAULT_DELAY
+                    delay: mock.responses[_default].delay
                 };
             }
 
