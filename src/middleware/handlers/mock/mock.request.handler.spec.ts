@@ -18,7 +18,7 @@ describe('MockRequestHandler', () => {
     let nextFn: sinon.SinonStub;
     let requestOnFn: sinon.SinonStub;
     let responseWriteHeadFn: sinon.SinonStub;
-    let responseEndHeadFn: sinon.SinonStub;
+    let responseEndFn: sinon.SinonStub;
     let mockStateGetResponseFn: sinon.SinonStub;
     let mockStateGetVariablesFn: sinon.SinonStub;
     let mockStateGetDelayFn: sinon.SinonStub;
@@ -36,16 +36,16 @@ describe('MockRequestHandler', () => {
     beforeAll(() => {
         container = new Container();
         container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
-        container.bind<MockRequestHandler>('EchoRequestHandler').to(MockRequestHandler);
+        container.bind<MockRequestHandler>('MockRequestHandler').to(MockRequestHandler);
 
         nextFn = sinon.stub();
         requestOnFn = sinon.stub();
         responseWriteHeadFn = sinon.stub();
-        responseEndHeadFn = sinon.stub();
+        responseEndFn = sinon.stub();
         clock = sinon.useFakeTimers();
 
         mocksState = container.get<MocksState>('MocksState');
-        mockRequestHandler = container.get<MockRequestHandler>('EchoRequestHandler');
+        mockRequestHandler = container.get<MockRequestHandler>('MockRequestHandler');
         interpolateResponseDataFn = sinon.stub(MockRequestHandler.prototype, 'interpolateResponseData');
         getJsonCallbackNameFn = sinon.stub(MockRequestHandler.prototype, 'getJsonCallbackName');
 
@@ -68,7 +68,7 @@ describe('MockRequestHandler', () => {
             };
             response = {
                 writeHead: responseWriteHeadFn,
-                end: responseEndHeadFn
+                end: responseEndFn
             } as any;
             mock = {
                 name: 'some',
@@ -102,7 +102,7 @@ describe('MockRequestHandler', () => {
 
                     clock.tick(1000);
                     sinon.assert.calledWith(responseWriteHeadFn, mockResponse.status, mockResponse.headers);
-                    sinon.assert.calledWith(responseEndHeadFn, BINARY_CONTENT);
+                    sinon.assert.calledWith(responseEndFn, BINARY_CONTENT);
                 });
 
                 it('wraps the payload in a json callback', () => {
@@ -111,7 +111,7 @@ describe('MockRequestHandler', () => {
 
                     clock.tick(1000);
                     sinon.assert.calledWith(responseWriteHeadFn, mockResponse.status, mockResponse.headers);
-                    sinon.assert.calledWith(responseEndHeadFn, `callback(${BINARY_CONTENT})`);
+                    sinon.assert.calledWith(responseEndFn, `callback(${BINARY_CONTENT})`);
                 });
 
                 afterEach(() => {
@@ -152,7 +152,7 @@ describe('MockRequestHandler', () => {
 
                     clock.tick(1000);
                     sinon.assert.calledWith(responseWriteHeadFn, mockResponse.status, mockResponse.headers);
-                    sinon.assert.calledWith(responseEndHeadFn, INTERPOLATED_RESPONSE_DATA);
+                    sinon.assert.calledWith(responseEndFn, INTERPOLATED_RESPONSE_DATA);
                 });
 
                 it('wraps the payload in a json callback', () => {
@@ -161,7 +161,7 @@ describe('MockRequestHandler', () => {
 
                     clock.tick(1000);
                     sinon.assert.calledWith(responseWriteHeadFn, mockResponse.status, mockResponse.headers);
-                    sinon.assert.calledWith(responseEndHeadFn, `callback(${INTERPOLATED_RESPONSE_DATA})`);
+                    sinon.assert.calledWith(responseEndFn, `callback(${INTERPOLATED_RESPONSE_DATA})`);
                 });
 
                 afterEach(() => {

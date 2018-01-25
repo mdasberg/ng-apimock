@@ -58,7 +58,7 @@ class Middleware {
                 if (matchingMock !== undefined) {
                     this.echoRequestHandler.handle(request, response, next, {id: apimockId, mock: matchingMock, payload: payload});
                     if (this.apimockState.record && !request.headers.record) {
-                        this.recordResponseHandler.handle(request, response, next, {mock: matchingMock});
+                        this.recordResponseHandler.handle(request, response, next, {mock: matchingMock, payload: payload});
                     } else {
                         this.mockRequestHander.handle(request, response, next, {id: apimockId, mock: matchingMock});
                     }

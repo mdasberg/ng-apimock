@@ -17,56 +17,45 @@ class RecordResponseHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock }): void {
-        const requestDataChunks: Buffer[] = [];
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock, payload: string }): void {
+        const headers: http.IncomingHttpHeaders = request.headers;
+        const host: string = headers.host;
+        const options = {
+            host: host.split(':')[0],
+            port: Number(host.split(':')[1]),
+            path: request.url,
+            method: request.method,
+            headers: headers
+        };
 
-        request.on('data', (rawData: Buffer) => {
-            requestDataChunks.push(rawData);
+        headers.record = 'off';
+
+        const _request: http.ClientRequest = http.request(options, (_response: http.IncomingMessage) => {
+            _response.setEncoding(this.RESPONSE_ENCODING);
+            _response.on('data', (chunk: Buffer) => {
+                this.record(params.payload, chunk.toString(this.RESPONSE_ENCODING), request, _response.statusCode,
+                    params.mock.name);
+                response.end(chunk);
+            });
         });
 
-        request.on('end', () => {
-            const payload: string = Buffer.concat(requestDataChunks).toString();
-            const headers: http.IncomingHttpHeaders = request.headers;
-            const host: string = headers.host;
-            const options = {
-                host: host.split(':')[0],
-                port: Number(host.split(':')[1]),
-                path: request.url,
-                method: request.method,
-                headers: headers
-            };
+        _request.on('error', (e) => response.end(e));
 
-            headers.record = 'off';
-
-            const _request: http.ClientRequest = http.request(options, (_response: http.IncomingMessage) => {
-                _response.setEncoding(this.RESPONSE_ENCODING);
-                _response.on('data', (chunk: Buffer) => {
-                    this.record(payload, chunk.toString(this.RESPONSE_ENCODING), request, _response.statusCode,
-                        params.mock.name);
-                    response.end(chunk);
-                });
-            });
-
-            _request.on('error', function (e) {
-                response.end(e);
-            });
-
-            _request.end();
-        });
+        _request.end();
     }
 
     /**
      * Stores the recording with the matching mock.
      * Recording are limited to the MAX_RECORDINGS_PER_MOCK.
      * When the maximum number is reached, the oldest recording is removed.
-     * @param payload The payload.
-     * @param chunk The chunk.
-     * @param request The http request.
-     * @param statusCode The status code.
-     * @param identifier The identifier.
+     * @param {string} payload The payload.
+     * @param {string | Buffer} chunk The chunk.
+     * @param {"http".IncomingMessage} request The http request.
+     * @param {number} statusCode The status code.
+     * @param {string} identifier The identifier.
      */
-    private record(payload: string, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number,
-                   identifier: string) {
+    record(payload: string, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number,
+           identifier: string) {
         const result = {
             data: typeof chunk === 'string' ? chunk : chunk.toString(this.RESPONSE_ENCODING),
             payload: payload,

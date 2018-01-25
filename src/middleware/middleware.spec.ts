@@ -115,6 +115,7 @@ describe('Middleware', () => {
             let request: any;
             let matchingMock: Mock;
             let response: http.ServerResponse;
+            let payload: string;
 
             beforeEach(() => {
                 request = {
@@ -127,6 +128,8 @@ describe('Middleware', () => {
                 matchingMock = {
                     name: 'match'
                 } as Mock;
+
+                payload=  '{"x":"x"}';
 
                 response = {} as http.ServerResponse;
 
@@ -144,7 +147,7 @@ describe('Middleware', () => {
                     sinon.assert.calledWith(requestOnFn, 'data');
                     sinon.assert.calledWith(requestOnFn, 'end');
 
-                    requestOnFn.getCall(0).args[1](new Buffer('{"x":"x"}'));
+                    requestOnFn.getCall(0).args[1](new Buffer(payload));
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.calledWith(apimockStateGetMatchingMockFn, request.url, request.method, request.headers, {x: 'x'});
@@ -192,10 +195,11 @@ describe('Middleware', () => {
                 });
 
                 it('calls the recordHandler', () => {
+                    requestOnFn.getCall(0).args[1](new Buffer(payload));
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {mock: matchingMock});
+                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {mock: matchingMock, payload: {x: "x"}});
                 });
 
                 afterEach(() => {

@@ -18,7 +18,7 @@ class MocksProcessor {
     private PASS_THROUGH = 'passThrough';
 
     @inject('MocksState')
-    private mocksState: MocksState;
+     mocksState: MocksState;
 
     /**
      * Initialize apimock by:
