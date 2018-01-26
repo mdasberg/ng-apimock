@@ -43,17 +43,16 @@ class Middleware {
     middleware(request: http.IncomingMessage, response: http.ServerResponse, next: Function): void {
         const apimockId: string = this.getApimockId(request.headers);
 
-        if (request.url.startsWith('/ngapimock/mocks')) {
-            this.scenarioHandler.handle(request, response, next, {id: apimockId});
-        } else if (request.url.startsWith('/ngapimock/actions') && request.method === HttpMethods.PUT) {
-            this.actionHandler.handle(request, response, next, {id: apimockId});
-        } else {
-            const requestDataChunks: Buffer[] = [];
-
-            request.on('data', (rawData: Buffer) => {
-                requestDataChunks.push(rawData);
-            }).on('end', () => {
-                const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
+        const requestDataChunks: Buffer[] = [];
+        request.on('data', (rawData: Buffer) => {
+            requestDataChunks.push(rawData);
+        }).on('end', () => {
+            const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
+            if (request.url.startsWith('/ngapimock/mocks')) {
+                this.scenarioHandler.handle(request, response, next, {id: apimockId, payload: payload});
+            } else if (request.url.startsWith('/ngapimock/actions') && request.method === HttpMethods.PUT) {
+                this.actionHandler.handle(request, response, next, {id: apimockId, payload: payload});
+            } else {
                 const matchingMock: Mock = this.apimockState.getMatchingMock(request.url, request.method, request.headers, payload);
                 if (matchingMock !== undefined) {
                     this.echoRequestHandler.handle(request, response, next, {id: apimockId, mock: matchingMock, payload: payload});
@@ -65,8 +64,8 @@ class Middleware {
                 } else {
                     next();
                 }
-            });
-        }
+            }
+        });
     }
 
     /**

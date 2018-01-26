@@ -62,13 +62,19 @@ describe('Middleware', () => {
             it('calls the scenarioHandler', () => {
                 getApimockIdFn.returns(APIMOCK_ID);
                 const request = {
-                    url: '/ngapimock/mocks'
-                } as http.IncomingMessage;
+                    url: '/ngapimock/mocks',
+                    on: requestOnFn
+                } as any;
+                const payload = '{"x":"x"}';
                 const response = {} as http.ServerResponse;
+                requestOnFn.onCall(0).returns(request);
 
                 middleware.middleware(request, response, nextFn);
+                requestOnFn.getCall(0).args[1](new Buffer(payload));
+                requestOnFn.getCall(1).args[1]();
+
                 sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(scenarioHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID});
+                sinon.assert.calledWith(scenarioHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
             });
 
             afterEach(() => {
@@ -89,13 +95,19 @@ describe('Middleware', () => {
                 getApimockIdFn.returns(APIMOCK_ID);
                 const request = {
                     url: '/ngapimock/actions',
-                    method: HttpMethods.PUT
-                } as http.IncomingMessage;
+                    method: HttpMethods.PUT,
+                    on: requestOnFn
+                } as any;
+                const payload = '{"x":"x"}';
                 const response = {} as http.ServerResponse;
+                requestOnFn.onCall(0).returns(request);
 
                 middleware.middleware(request, response, nextFn);
+                requestOnFn.getCall(0).args[1](new Buffer(payload));
+                requestOnFn.getCall(1).args[1]();
+
                 sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(actionHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID});
+                sinon.assert.calledWith(actionHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
             });
 
             afterEach(() => {
@@ -129,7 +141,7 @@ describe('Middleware', () => {
                     name: 'match'
                 } as Mock;
 
-                payload=  '{"x":"x"}';
+                payload = '{"x":"x"}';
 
                 response = {} as http.ServerResponse;
 
@@ -199,7 +211,10 @@ describe('Middleware', () => {
                     requestOnFn.getCall(1).args[1]();
 
                     sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {mock: matchingMock, payload: {x: "x"}});
+                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {
+                        mock: matchingMock,
+                        payload: {x: 'x'}
+                    });
                 });
 
                 afterEach(() => {

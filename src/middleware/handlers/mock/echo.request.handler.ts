@@ -15,7 +15,7 @@ class EchoRequestHandler implements Handler {
 
     /** {@inheritDoc}.*/
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function,
-           params: { id: string, mock: Mock, payload: string }): void {
+           params: { id: string, mock: Mock, payload: any }): void {
         const echo: boolean = this.mocksState.getEcho(params.mock.name, params.id);
 
         if (echo) {

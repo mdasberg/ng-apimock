@@ -17,7 +17,7 @@ class RecordResponseHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock, payload: string }): void {
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock, payload: any }): void {
         const headers: http.IncomingHttpHeaders = request.headers;
         const host: string = headers.host;
         const options = {
@@ -48,13 +48,13 @@ class RecordResponseHandler implements Handler {
      * Stores the recording with the matching mock.
      * Recording are limited to the MAX_RECORDINGS_PER_MOCK.
      * When the maximum number is reached, the oldest recording is removed.
-     * @param {string} payload The payload.
+     * @param {object} payload The payload.
      * @param {string | Buffer} chunk The chunk.
      * @param {"http".IncomingMessage} request The http request.
      * @param {number} statusCode The status code.
      * @param {string} identifier The identifier.
      */
-    record(payload: string, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number,
+    record(payload: any, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number,
            identifier: string) {
         const result = {
             data: typeof chunk === 'string' ? chunk : chunk.toString(this.RESPONSE_ENCODING),

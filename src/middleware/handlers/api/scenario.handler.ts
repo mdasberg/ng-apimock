@@ -18,11 +18,13 @@ class ScenarioHandler implements Handler {
     private mocksState: MocksState;
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: {id: string}): void {
+    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: {
+        id: string, payload: { name: string, scenario: string, echo: boolean, delay: number }
+    }): void {
         if (request.method === HttpMethods.GET) {
             this.handleGetMocks(response, params.id);
         } else if (request.method === HttpMethods.PUT) {
-            this.handleSelectMockScenario(request, response, params.id);
+            this.handleSelectMockScenario(request, response, params.id, params.payload);
         }
     }
 
@@ -54,51 +56,43 @@ class ScenarioHandler implements Handler {
      * @param {"http".ServerResponse} response The http response.
      * @param {string} id The apimock id.
      */
-    handleSelectMockScenario(request: http.IncomingMessage, response: http.ServerResponse, id: string): void {
-        const requestDataChunks: Buffer[] = [];
+    handleSelectMockScenario(request: http.IncomingMessage, response: http.ServerResponse, id: string, payload: {
+        name: string, scenario: string, echo: boolean, delay: number
+    }): void {
+        try {
+            const mockName: string = payload.name;
+            const matchingMock: Mock = this.mocksState.mocks.find((mock) => mock.name === mockName);
+            const matchingState: State = this.mocksState.getMatchingState(id);
 
-        request.on('data', (rawData: Buffer) => {
-            requestDataChunks.push(rawData);
-        });
+            if (matchingMock !== undefined) {
+                const scenario: string = payload.scenario;
+                const echo: boolean = payload.echo;
+                const delay: number = payload.delay;
 
-        request.on('end', () => {
-            const data = JSON.parse(Buffer.concat(requestDataChunks).toString());
-
-            try {
-                const mockName: string = data.name;
-                const matchingMock: Mock = this.mocksState.mocks.find((mock) => mock.name === mockName);
-                const matchingState: State = this.mocksState.getMatchingState(id);
-
-                if (matchingMock !== undefined) {
-                    const scenario: string = data.scenario;
-                    const echo: boolean = data.echo;
-                    const delay: number = data.delay;
-
-                    if (scenario !== undefined) {
-                        if (scenario === this.PASS_THROUGH ||
-                            Object.keys(matchingMock.responses).find((_scenario) => _scenario === scenario)) {
-                            matchingState.mocks[mockName].scenario = scenario;
-                        } else {
-                            throw new Error(`No scenario matching [${scenario}] found`);
-                        }
+                if (scenario !== undefined) {
+                    if (scenario === this.PASS_THROUGH ||
+                        Object.keys(matchingMock.responses).find((_scenario) => _scenario === scenario)) {
+                        matchingState.mocks[mockName].scenario = scenario;
+                    } else {
+                        throw new Error(`No scenario matching [${scenario}] found`);
                     }
-                    if (echo !== undefined) {
-                        matchingState.mocks[mockName].echo = echo;
-                    }
-                    if (delay !== undefined) {
-                        matchingState.mocks[mockName].delay = delay;
-                    }
-
-                } else {
-                    throw new Error(`No mock matching name ['${mockName}'] found`);
                 }
-                response.writeHead(HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
-                response.end();
-            } catch (e) {
-                response.writeHead(HttpStatusCode.CONFLICT, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
-                response.end(JSON.stringify(e, ['message']));
+                if (echo !== undefined) {
+                    matchingState.mocks[mockName].echo = echo;
+                }
+                if (delay !== undefined) {
+                    matchingState.mocks[mockName].delay = delay;
+                }
+
+            } else {
+                throw new Error(`No mock matching name ['${mockName}'] found`);
             }
-        });
+            response.writeHead(HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
+            response.end();
+        } catch (e) {
+            response.writeHead(HttpStatusCode.CONFLICT, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
+            response.end(JSON.stringify(e, ['message']));
+        }
     }
 }
 
