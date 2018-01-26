@@ -15,7 +15,7 @@ describe('EchoRequestHandler', () => {
 
     let nextFn: sinon.SinonStub;
     let requestOnFn: sinon.SinonStub;
-    let mockStateGetEchoFn: sinon.SinonStub;
+    let mocksStateGetEchoFn: sinon.SinonStub;
     let consoleLogFn: sinon.SinonStub;
 
     let container: Container;
@@ -33,7 +33,7 @@ describe('EchoRequestHandler', () => {
         mocksState = container.get<MocksState>('MocksState');
         echoRequestHandler = container.get<EchoRequestHandler>('EchoRequestHandler');
 
-        mockStateGetEchoFn = sinon.stub(MocksState.prototype, 'getEcho');
+        mocksStateGetEchoFn = sinon.stub(MocksState.prototype, 'getEcho');
         consoleLogFn = sinon.stub(console, 'log');
 
     });
@@ -61,33 +61,33 @@ describe('EchoRequestHandler', () => {
         });
         describe('echo = true', () =>
             it('console.logs the request', () => {
-                mockStateGetEchoFn.returns(true);
+                mocksStateGetEchoFn.returns(true);
 
                 echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock, payload: payload});
-                sinon.assert.calledWith(mockStateGetEchoFn, mock.name, APIMOCK_ID);
+                sinon.assert.calledWith(mocksStateGetEchoFn, mock.name, APIMOCK_ID);
                 sinon.assert.calledWith(consoleLogFn, `${mock.request.method} request made on \'${mock.request.url}\' with payload: \'${JSON.stringify(payload)}`);
             })
         );
 
         describe('echo = false', () =>
             it('does not console.logs the request', () => {
-                mockStateGetEchoFn.returns(false);
+                mocksStateGetEchoFn.returns(false);
 
                 echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock, payload: payload});
-                sinon.assert.calledWith(mockStateGetEchoFn, mock.name, APIMOCK_ID);
+                sinon.assert.calledWith(mocksStateGetEchoFn, mock.name, APIMOCK_ID);
                 sinon.assert.notCalled(consoleLogFn);
             })
         );
 
         afterEach(() => {
-            mockStateGetEchoFn.reset();
+            mocksStateGetEchoFn.reset();
             nextFn.reset();
             consoleLogFn.reset();
         });
     });
 
     afterAll(() => {
-        mockStateGetEchoFn.restore();
+        mocksStateGetEchoFn.restore();
         consoleLogFn.restore();
     });
 });
