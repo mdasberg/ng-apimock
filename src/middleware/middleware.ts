@@ -11,6 +11,7 @@ import MockRequestHandler from './handlers/mock/mock.request.handler';
 import MocksState from '../state/mocks.state';
 import RecordResponseHandler from './handlers/mock/record.response.handler';
 import ScenarioHandler from './handlers/api/scenario.handler';
+import VariableHandler from './handlers/api/variable.handler';
 
 /** Middleware. */
 @injectable()
@@ -27,6 +28,9 @@ class Middleware {
 
     @inject('ScenarioHandler')
     private scenarioHandler: ScenarioHandler;
+
+    @inject('VariableHandler')
+    private variableHandler: VariableHandler;
 
     @inject('ActionHandler')
     private actionHandler: ActionHandler;
@@ -50,6 +54,8 @@ class Middleware {
             const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
             if (request.url.startsWith('/ngapimock/mocks')) {
                 this.scenarioHandler.handle(request, response, next, {id: apimockId, payload: payload});
+            } else if (request.url.startsWith('/ngapimock/variables')) {
+                this.variableHandler.handle(request, response, next, {id: apimockId, payload: payload});
             } else if (request.url.startsWith('/ngapimock/actions') && request.method === HttpMethods.PUT) {
                 this.actionHandler.handle(request, response, next, {id: apimockId, payload: payload});
             } else {

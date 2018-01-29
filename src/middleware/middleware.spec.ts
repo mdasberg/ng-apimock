@@ -11,8 +11,9 @@ import MockRequestHandler from './handlers/mock/mock.request.handler';
 import RecordResponseHandler from './handlers/mock/record.response.handler';
 import ScenarioHandler from './handlers/api/scenario.handler';
 import MocksState from '../state/mocks.state';
-import {HttpMethods} from './http';
 import Mock from '../domain/mock';
+import VariableHandler from './handlers/api/variable.handler';
+import {HttpMethods} from './http';
 
 describe('Middleware', () => {
     let middleware: Middleware;
@@ -27,6 +28,7 @@ describe('Middleware', () => {
     let echoRequestHandlerHandleFn: sinon.SinonStub;
     let recordResponseHandlerHandleFn: sinon.SinonStub;
     let mockRequestHandlerHandleFn: sinon.SinonStub;
+    let variableHandlerHandleFn: sinon.SinonStub;
 
     let container: Container;
 
@@ -39,6 +41,7 @@ describe('Middleware', () => {
         container.bind<RecordResponseHandler>('RecordResponseHandler').to(RecordResponseHandler);
         container.bind<ScenarioHandler>('ScenarioHandler').to(ScenarioHandler);
         container.bind<ActionHandler>('ActionHandler').to(ActionHandler);
+        container.bind<VariableHandler>('VariableHandler').to(VariableHandler);
         container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
 
         container.bind<Middleware>('Middleware').to(Middleware);
@@ -54,6 +57,7 @@ describe('Middleware', () => {
         echoRequestHandlerHandleFn = sinon.stub(EchoRequestHandler.prototype, 'handle');
         recordResponseHandlerHandleFn = sinon.stub(RecordResponseHandler.prototype, 'handle');
         mockRequestHandlerHandleFn = sinon.stub(MockRequestHandler.prototype, 'handle');
+        variableHandlerHandleFn = sinon.stub(VariableHandler.prototype, 'handle');
 
     });
 
@@ -86,6 +90,40 @@ describe('Middleware', () => {
                 echoRequestHandlerHandleFn.reset();
                 recordResponseHandlerHandleFn.reset();
                 mockRequestHandlerHandleFn.reset();
+                variableHandlerHandleFn.reset();
+                nextFn.reset();
+            });
+        });
+
+        describe('variable request', () => {
+            it('calls the variablesHandler', () => {
+                getApimockIdFn.returns(APIMOCK_ID);
+                const request = {
+                    url: '/ngapimock/variables',
+                    on: requestOnFn
+                } as any;
+                const payload = '{"x":"x"}';
+                const response = {} as http.ServerResponse;
+                requestOnFn.onCall(0).returns(request);
+
+                middleware.middleware(request, response, nextFn);
+                requestOnFn.getCall(0).args[1](new Buffer(payload));
+                requestOnFn.getCall(1).args[1]();
+
+                sinon.assert.called(getApimockIdFn);
+                sinon.assert.calledWith(variableHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
+            });
+
+            afterEach(() => {
+                apimockStateGetMatchingMockFn.reset();
+                actionHandlerHandleFn.reset();
+                getApimockIdFn.reset();
+                requestOnFn.reset();
+                scenarioHandlerHandleFn.reset();
+                echoRequestHandlerHandleFn.reset();
+                recordResponseHandlerHandleFn.reset();
+                mockRequestHandlerHandleFn.reset();
+                variableHandlerHandleFn.reset();
                 nextFn.reset();
             });
         });
@@ -345,5 +383,6 @@ describe('Middleware', () => {
         echoRequestHandlerHandleFn.restore();
         recordResponseHandlerHandleFn.restore();
         mockRequestHandlerHandleFn.restore();
+        variableHandlerHandleFn.restore();
     });
 });
