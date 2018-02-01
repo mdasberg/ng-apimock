@@ -48,30 +48,34 @@ class Middleware {
         const apimockId: string = this.getApimockId(request.headers);
 
         const requestDataChunks: Buffer[] = [];
-        request.on('data', (rawData: Buffer) => {
-            requestDataChunks.push(rawData);
-        }).on('end', () => {
-            const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
-            if (request.url.startsWith('/ngapimock/mocks')) {
-                this.scenarioHandler.handle(request, response, next, {id: apimockId, payload: payload});
-            } else if (request.url.startsWith('/ngapimock/variables')) {
-                this.variableHandler.handle(request, response, next, {id: apimockId, payload: payload});
-            } else if (request.url.startsWith('/ngapimock/actions') && request.method === HttpMethods.PUT) {
-                this.actionHandler.handle(request, response, next, {id: apimockId, payload: payload});
-            } else {
-                const matchingMock: Mock = this.apimockState.getMatchingMock(request.url, request.method, request.headers, payload);
-                if (matchingMock !== undefined) {
-                    this.echoRequestHandler.handle(request, response, next, {id: apimockId, mock: matchingMock, payload: payload});
-                    if (this.apimockState.record && !request.headers.record) {
-                        this.recordResponseHandler.handle(request, response, next, {mock: matchingMock, payload: payload});
-                    } else {
-                        this.mockRequestHander.handle(request, response, next, {id: apimockId, mock: matchingMock});
-                    }
+        if(request.headers.record) {
+            next();
+        } else {
+            request.on('data', (rawData: Buffer) => {
+                requestDataChunks.push(rawData);
+            }).on('end', () => {
+                const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
+                if (request.url.startsWith('/ngapimock/mocks')) {
+                    this.scenarioHandler.handle(request, response, next, {id: apimockId, payload: payload});
+                } else if (request.url.startsWith('/ngapimock/variables')) {
+                    this.variableHandler.handle(request, response, next, {id: apimockId, payload: payload});
+                } else if (request.url.startsWith('/ngapimock/actions') && request.method === HttpMethods.PUT) {
+                    this.actionHandler.handle(request, response, next, {id: apimockId, payload: payload});
                 } else {
-                    next();
+                    const matchingMock: Mock = this.apimockState.getMatchingMock(request.url, request.method, request.headers, payload);
+                    if (matchingMock !== undefined) {
+                        this.echoRequestHandler.handle(request, response, next, {id: apimockId, mock: matchingMock, payload: payload});
+                        if (this.apimockState.record && !request.headers.record) {
+                            this.recordResponseHandler.handle(request, response, next, {mock: matchingMock, payload: payload});
+                        } else {
+                            this.mockRequestHander.handle(request, response, next, {id: apimockId, mock: matchingMock});
+                        }
+                    } else {
+                        next();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
@@ -90,7 +94,6 @@ class Middleware {
                 };
             })
             .find(cookie => cookie.key === 'apimockid');
-
         return result !== undefined ? result.value : undefined;
     }
 }

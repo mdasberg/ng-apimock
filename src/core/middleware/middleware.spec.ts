@@ -67,6 +67,7 @@ describe('Middleware', () => {
                 getApimockIdFn.returns(APIMOCK_ID);
                 const request = {
                     url: '/ngapimock/mocks',
+                    headers: {},
                     on: requestOnFn
                 } as any;
                 const payload = '{"x":"x"}';
@@ -100,6 +101,7 @@ describe('Middleware', () => {
                 getApimockIdFn.returns(APIMOCK_ID);
                 const request = {
                     url: '/ngapimock/variables',
+                    headers: {},
                     on: requestOnFn
                 } as any;
                 const payload = '{"x":"x"}';
@@ -134,6 +136,7 @@ describe('Middleware', () => {
                 const request = {
                     url: '/ngapimock/actions',
                     method: HttpMethods.PUT,
+                    headers: {},
                     on: requestOnFn
                 } as any;
                 const payload = '{"x":"x"}';
@@ -146,6 +149,38 @@ describe('Middleware', () => {
 
                 sinon.assert.called(getApimockIdFn);
                 sinon.assert.calledWith(actionHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
+            });
+
+            afterEach(() => {
+                apimockStateGetMatchingMockFn.reset();
+                actionHandlerHandleFn.reset();
+                getApimockIdFn.reset();
+                requestOnFn.reset();
+                scenarioHandlerHandleFn.reset();
+                echoRequestHandlerHandleFn.reset();
+                recordResponseHandlerHandleFn.reset();
+                mockRequestHandlerHandleFn.reset();
+                nextFn.reset();
+            });
+        });
+
+        describe('record request', () => {
+            it('calls next', () => {
+                getApimockIdFn.returns(APIMOCK_ID);
+                const request = {
+                    url: '/some/thing',
+                    method: HttpMethods.PUT,
+                    headers: {
+                        record: true
+                    },
+                    on: requestOnFn
+                } as any;
+                const response = {} as http.ServerResponse;
+
+                middleware.middleware(request, response, nextFn);
+
+                sinon.assert.called(getApimockIdFn);
+                sinon.assert.called(nextFn);
             });
 
             afterEach(() => {
@@ -282,10 +317,8 @@ describe('Middleware', () => {
                     mocksState.record = true;
                     request.headers.record = true;
                     middleware.middleware(request, response, nextFn);
-                    requestOnFn.getCall(1).args[1]();
 
-                    sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, mock: matchingMock});
+                    sinon.assert.called(nextFn);
                 });
 
                 afterEach(() => {
@@ -331,7 +364,6 @@ describe('Middleware', () => {
 
                     requestOnFn.getCall(1).args[1]();
 
-                    sinon.assert.calledWith(apimockStateGetMatchingMockFn, request.url, request.method, request.headers, {});
                     sinon.assert.called(nextFn);
                 });
 
@@ -346,7 +378,6 @@ describe('Middleware', () => {
                     mockRequestHandlerHandleFn.reset();
                     nextFn.reset();
                 });
-
             });
 
             afterEach(() => {

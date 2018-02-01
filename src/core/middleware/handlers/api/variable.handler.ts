@@ -7,7 +7,6 @@ import Handler from '../handler';
 import MocksState from '../../../state/mocks.state';
 import State from '../../../state/state';
 import {HttpHeaders, HttpMethods, HttpStatusCode} from '../../http';
-import {httpHeaders} from '../../../../lib/http';
 
 /**  Handler for a variables. */
 @injectable()
@@ -76,7 +75,7 @@ class VariableHandler implements Handler {
         const key = new RegExp('/ngapimock/variables/(.*)').exec(url)[1];
         delete state.variables[key];
 
-        response.writeHead(HttpStatusCode.OK, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
+        response.writeHead(HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
         response.end();
     }
 }
