@@ -1,4 +1,3 @@
-import {browser} from 'protractor';
 import {HttpHeaders, HttpStatusCode} from '../core/middleware/http';
 
 /** Base client that takes care of the actual invoking of the apimock api.*/
@@ -8,10 +7,10 @@ class BaseApimockClient {
     baseUrl: string;
 
     /** Constructor.*/
-    constructor() {
+    constructor(baseUrl: string) {
         this.apimockId = require('uuid').v4();
         this.request = require('then-request');
-        this.baseUrl = require('url-join')(browser.baseUrl, 'ngapimock');
+        this.baseUrl = require('url-join')(baseUrl, 'ngapimock');
     }
 
     /**
