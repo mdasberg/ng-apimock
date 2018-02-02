@@ -1,4 +1,5 @@
 import {browser, protractor} from 'protractor';
+import ApimockClient from '../apimock.client';
 import BaseApimockClient from '../base.client';
 
 /** Protractor client for apimock. */
@@ -7,7 +8,7 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
 
     /** Constructor.*/
     constructor() {
-        super();
+        super(browser.baseUrl);
 
         /** Make sure that angular uses the ngapimock identifier for the requests. */
         browser.getProcessedConfig().then((config) => {
@@ -161,5 +162,3 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
 }
 
 export default ProtractorClient;
-
-module.exports = new ProtractorClient();
