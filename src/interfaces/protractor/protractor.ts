@@ -30,6 +30,24 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
         });
     }
 
+    /**
+     * Gets the mocks.
+     * @return {Promise<any>} promise The promise.
+     */
+    getMocks(): Promise<any> {
+        return this._request((resolve: Function, reject: Function) =>
+            this.getMocksRequest(resolve, reject));
+    }
+
+    /**
+     * Gets the variables.
+     * @return {Promise<any>} promise The promise.
+     */
+    getvariables(): Promise<any> {
+        return this._request((resolve: Function, reject: Function) =>
+            this.getVariablesRequest(resolve, reject));
+    }
+
     /** {@inheritDoc}. */
     selectScenario(name: string, scenario: string): Promise<any> {
         return this.updateMock({name: name, scenario: scenario});
@@ -125,7 +143,7 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      */
     resetMocksToDefault(): Promise<any> {
         return this._request((resolve: Function, reject: Function) =>
-            this.performActionRequest({action: 'defaults'},resolve, reject));
+            this.performActionRequest({action: 'defaults'}, resolve, reject));
     }
 
     /**
@@ -134,7 +152,7 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      */
     setMocksToPassThrough(): Promise<any> {
         return this._request((resolve: Function, reject: Function) =>
-            this.performActionRequest({action: 'passThroughs'},resolve, reject));
+            this.performActionRequest({action: 'passThroughs'}, resolve, reject));
     }
 
     /**

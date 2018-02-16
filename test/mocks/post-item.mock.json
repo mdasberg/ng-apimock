@@ -1,0 +1,24 @@
+{
+  "name": "post item",
+  "isArray": true,
+  "request": {
+    "url": "items",
+    "method": "POST",
+    "payload": {
+      "item": "^[a-zA-Z]{3,10}$"
+    }
+  },
+  "responses": {
+    "ok": {
+      "status": 200,
+      "default": true
+    },
+    "nok": {
+      "status": 409
+    },
+    "server-error": {
+      "default": false,
+      "status": 500
+    }
+  }
+}

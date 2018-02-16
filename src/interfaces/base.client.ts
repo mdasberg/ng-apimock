@@ -25,7 +25,35 @@ class BaseApimockClient {
         const headers = JSON.parse(JSON.stringify(HttpHeaders.CONTENT_TYPE_APPLICATION_JSON));
         headers.cookie = `apimockid=${this.apimockId}`;
         this.request(method, url, {json: payload, headers: headers})
-            .done((res: any) => res.statusCode === HttpStatusCode.OK ? resolve() : reject(res));
+            .done((res: any) => res.statusCode === HttpStatusCode.OK ? resolve(res) : reject(res));
+    }
+
+    /**
+     * Gets the mock state.
+     * @param {Function} reject The reject callback.
+     * @param {Function} resolve The resolve callback.
+     */
+    getMocksRequest(resolve: Function,
+                    reject: Function): void {
+        /** wrap it and return the parsed body */
+        const _resolve = (res: any) => {
+            return resolve(JSON.parse(res.body));
+        };
+        return this.invoke(this.baseUrl + '/mocks', 'GET', {}, _resolve, reject);
+    }
+
+    /**
+     * Gets the variables state.
+     * @param {Function} reject The reject callback.
+     * @param {Function} resolve The resolve callback.
+     */
+    getVariablesRequest(resolve: Function,
+                    reject: Function): void {
+        /** wrap it and return the parsed body */
+        const _resolve = (res: any) => {
+            return resolve(JSON.parse(res.body));
+        };
+        return this.invoke(this.baseUrl + '/variables', 'GET', {}, _resolve, reject);
     }
 
     /**
@@ -51,7 +79,7 @@ class BaseApimockClient {
 
     /**
      * Updates the variables.
-     * @param payload The payload
+     * @param key The key
      * @param {Function} reject The reject callback.
      * @param {Function} resolve The resolve callback.
      */

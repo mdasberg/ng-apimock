@@ -84,11 +84,7 @@ describe('MocksProcessor', () => {
                 responses: {'duplicate-response': {}}
             });
 
-            processor.process({
-                src: SRC,
-                done: doneFn,
-                outputDir: OUTPUT_DIR
-            });
+            processor.process(SRC);
 
         });
 

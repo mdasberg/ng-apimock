@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as path from 'path';
 
-import Config from './config';
 import Mock from '../domain/mock';
 import MocksState from '../state/mocks.state';
 import {HttpHeaders, HttpStatusCode} from '../middleware/http';
@@ -18,20 +17,20 @@ class MocksProcessor {
     private PASS_THROUGH = 'passThrough';
 
     @inject('MocksState')
-     mocksState: MocksState;
+    mocksState: MocksState;
 
     /**
      * Initialize apimock by:
      * - processing the globs and processing all available mocks.
-     * @param {Config} config The config.
+     * @param {string} src The src.
      */
-    process(config: Config): void {
+    process(src: string): void {
         let counter = 0;
         glob.sync('**/*.json', {
-            cwd: config.src,
+            cwd: src,
             root: '/'
         }).forEach((file) => {
-            const mock: Mock = fs.readJsonSync(path.join(config.src, file)) as Mock;
+            const mock: Mock = fs.readJsonSync(path.join(src, file)) as Mock;
             const match = this.mocksState.mocks.find((_mock: Mock) => _mock.name === mock.name);
             const index = this.mocksState.mocks.indexOf(match);
 
@@ -56,7 +55,7 @@ class MocksProcessor {
                         HttpHeaders.CONTENT_TYPE_BINARY :
                         HttpHeaders.CONTENT_TYPE_APPLICATION_JSON;
                 }
-                if(response.delay === undefined) {
+                if (response.delay === undefined) {
                     response.delay = this.DEFAULT_DELAY;
                 }
                 return response;

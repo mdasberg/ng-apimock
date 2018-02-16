@@ -1,0 +1,49 @@
+{
+  "name": "get items",
+  "isArray": true,
+  "request": {
+    "url": "items",
+    "method": "GET"
+  },
+  "responses": {
+    "crypto-currencies": {
+      "status": 200,
+      "data": [
+        "Bitcoin",
+        "Bitcoin Cash",
+        "Etherium",
+        "Litecoin",
+        "Some%%coinName%%Coin"
+      ],
+      "headers": {
+        "Content-type": "application/json",
+        "custom": "custom"
+      },
+      "statusText": "text",
+      "default": true
+    },
+    "crypto-exchanges": {
+      "status": 200,
+      "data": [
+        "Coinbase",
+        "Binance",
+        "Hitbtc"
+      ],
+      "headers": {
+        "Content-type": "application/json",
+        "custom": "custom"
+      }
+    },
+    "binary": {
+      "file": "test/mocks/test.pdf",
+      "headers": {
+        "Content-type": "application/pdf",
+        "filename": "test.pdf"
+      }
+    },
+    "server-error": {
+      "default": false,
+      "status": 500
+    }
+  }
+}
