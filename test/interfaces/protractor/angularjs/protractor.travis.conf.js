@@ -6,6 +6,10 @@ const server = child_process.spawn('node',
 
 process.on('exit', () => server.kill());
 
+config.params = {
+    environment: 'TRAVIS',
+    default_directory: '/tmp'
+};
 config.sauceUser = process.env.SAUCE_USERNAME;
 config.sauceKey = process.env.SAUCE_ACCESS_KEY;
 
