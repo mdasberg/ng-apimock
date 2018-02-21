@@ -1,13 +1,21 @@
 const config = require('../protractor.conf').config;
 const child_process = require('child_process');
 const server = child_process.spawn('node',
-    ['test/interfaces/protractor/angularjs/serve.js'],
+    ['test/interfaces/protractor/angular/serve.js'],
     {cwd: process.cwd(), stdio: 'inherit'});
 
 process.on('exit', () => server.kill());
 
+config.sauceUser = process.env.SAUCE_USERNAME;
+config.sauceKey = process.env.SAUCE_ACCESS_KEY;
+
 config.multiCapabilities = [{
     browserName: 'chrome',
+    name: 'ngApimock - protractor',
+    'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+    build: process.env.TRAVIS_BUILD_NUMBER,
+    shardTestFiles: true,
+    maxInstances: 10,
     chromeOptions: {
         args: ['--no-sandbox', '--test-type=browser'],
         prefs: {
@@ -20,7 +28,4 @@ config.multiCapabilities = [{
     }
 }];
 
-config.seleniumAddress = 'http://localhost:4444/wd/hub';
-
 exports.config = config;
-
