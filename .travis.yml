@@ -10,9 +10,10 @@ before_script:
 - npm install
 script:
 - npm run-script build
-- npm run-script verify
-- npm run-script travis-protractor
-- npm run-script travis-interface
+- npm run-script whitebox
+#- npm run-script verify
+- npm run-script blackbox-travis
+#- npm run-script travis-interface
 
 addons:
   sauce_connect: true

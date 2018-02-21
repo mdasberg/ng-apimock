@@ -34,7 +34,6 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",
-    "test": "jasmine-ts \"src/**/*.spec.ts\"",
     "verify": "tslint -p tsconfig.json",
     "verify-type-check": "npm run verify -- --type-check",
     "local": "jasmine-node test/unit/*.spec.js && protractor test/protractor/config/protractor-local-interface.conf.js && protractor test/protractor/config/protractor-local-protractor.conf.js",
@@ -42,9 +41,13 @@
     "travis-protractor": "protractor test/protractor/config/protractor-travis-protractor.conf.js",
     "release": "npm publish && node dockerize.js && docker build --file=docker/Dockerfile docker -t mdasberg/ng-apimock && docker push mdasberg/ng-apimock",
 
+    "whitebox": "jasmine-ts \"src/**/*.spec.ts\"",
     "protractor-angular-local": "protractor test/interfaces/protractor/angular/protractor.local.conf.js",
-    "protractor-angularjs-local": "protractor test/interfaces/protractor/angularjs/protractor.local.conf.js",
-    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local"
+    "protractor-angularjs-local": "protractor test/interfaces/protractor/angularjs/protractor.travis.conf.js",
+    "protractor-angular-travis": "protractor test/interfaces/protractor/angular/protractor.travis.conf.js",
+    "protractor-angularjs-travis": "protractor test/interfaces/protractor/angularjs/protractor.local.conf.js",
+    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local",
+    "blackbox-travis": "npm run protractor-angular-travis && npm run protractor-angularjs-travis"
 
   },
   "dependencies": {
