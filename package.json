@@ -43,9 +43,9 @@
 
     "whitebox": "jasmine-ts \"src/**/*.spec.ts\"",
     "protractor-angular-local": "protractor test/interfaces/protractor/angular/protractor.local.conf.js",
-    "protractor-angularjs-local": "protractor test/interfaces/protractor/angularjs/protractor.travis.conf.js",
+    "protractor-angularjs-local": "protractor test/interfaces/protractor/angularjs/protractor.local.conf.js",
     "protractor-angular-travis": "protractor test/interfaces/protractor/angular/protractor.travis.conf.js",
-    "protractor-angularjs-travis": "protractor test/interfaces/protractor/angularjs/protractor.local.conf.js",
+    "protractor-angularjs-travis": "protractor test/interfaces/protractor/angularjs/protractor.travis.conf.js",
     "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local",
     "blackbox-travis": "npm run protractor-angular-travis && npm run protractor-angularjs-travis"
 
