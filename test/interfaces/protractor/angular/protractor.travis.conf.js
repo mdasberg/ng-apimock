@@ -14,8 +14,6 @@ config.multiCapabilities = [{
     name: 'ngApimock - protractor',
     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
     build: process.env.TRAVIS_BUILD_NUMBER,
-    shardTestFiles: true,
-    maxInstances: 10,
     chromeOptions: {
         args: ['--no-sandbox', '--test-type=browser'],
         prefs: {
