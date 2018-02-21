@@ -2,7 +2,7 @@ const child_process = require('child_process');
 const uuid = require('uuid').v4();
 
 const server = child_process.spawn('node',
-    ['test/interfaces/protractor/angular/serve.js'],
+    ['test/interfaces/protractor/angularjs/serve.js'],
     {cwd: process.cwd(), stdio: 'inherit'});
 
 const chai = require('chai');

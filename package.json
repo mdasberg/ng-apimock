@@ -41,7 +41,11 @@
     "travis-interface": "protractor test/protractor/config/protractor-travis-interface.conf.js",
     "travis-protractor": "protractor test/protractor/config/protractor-travis-protractor.conf.js",
     "release": "npm publish && node dockerize.js && docker build --file=docker/Dockerfile docker -t mdasberg/ng-apimock && docker push mdasberg/ng-apimock",
-    "protractor-angular-local": "protractor test/interfaces/protractor/angular/protractor.local.conf.js"
+
+    "protractor-angular-local": "protractor test/interfaces/protractor/angular/protractor.local.conf.js",
+    "protractor-angularjs-local": "protractor test/interfaces/protractor/angularjs/protractor.local.conf.js",
+    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local"
+
   },
   "dependencies": {
     "angular": "1.6.9",
@@ -68,6 +72,9 @@
     "scenario",
     "httpbackend"
   ],
+  "peerDependencies": {
+    "protractor": "5.x"
+  },
   "devDependencies": {
     "@types/async": "2.0.47",
     "@types/chokidar": "1.7.4",
@@ -84,7 +91,8 @@
     "cucumberjs-junitxml": "1.0.0",
     "jasmine-node": "1.14.5",
     "jasmine-ts": "0.2.1",
-    "ng-apimock-angular-test-app": "^1.0.1",
+    "ng-apimock-angular-test-app": "1.0.1",
+    "ng-apimock-angularjs-test-app": "1.0.2",
     "protractor": "5.3.0",
     "protractor-cucumber-framework": "4.2.0",
     "serve-static": "1.13.2",

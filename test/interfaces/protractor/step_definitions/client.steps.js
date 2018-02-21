@@ -9,14 +9,6 @@
             })
         ));
 
-    Given(/^the following variables state$/, async (dataTable) =>
-        await client.getvariables().then((variables) =>
-            dataTable.rows().forEach(row => {
-                console.log(variables);
-                // expect(mocks.state[row[0]].scenario).to.equal(row[1]);
-            })
-        ));
-
     When(/^I select scenario (.*) for mock (.*)$/, async (scenario, name) =>
         await client.selectScenario(name, scenario));
 

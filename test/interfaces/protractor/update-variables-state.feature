@@ -4,9 +4,9 @@ Feature: Update variables state
   Developers must be able to:
 
   - Update variable state
-  - add a variable
-  - update a variable
-  - delete a variable
+    - add a variable
+    - update a variable
+    - delete a variable
 
   in order to run the application against mocks.
 

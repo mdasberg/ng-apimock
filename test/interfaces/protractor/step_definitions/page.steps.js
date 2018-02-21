@@ -1,6 +1,6 @@
 (() => {
     const {Given, When, Then} = require('cucumber');
-    const page = new (require('../pos/test.po'))();
+    const page = new (require('../pos/page.po'))();
 
     const fs = require('fs-extra');
     const path = require('path');
@@ -14,9 +14,11 @@
     responses.getItems['passThrough'] = {status: 200, data: [{pass: 'through'}]};
     responses.postItem['passThrough'] = {status: 200, data: {pass: 'through'}};
 
-    Given(/^I open the test page$/, () => page.open());
+    Given(/^I open the test page$/, async () => await page.open());
 
     When(/^I get the items$/, async () => await page.buttons.get.click());
+
+    When(/^I download the binary file$/, async () => await page.buttons.binary.click());
 
     When(/^I get the items as jsonp$/, async () => await page.buttons.getAsJsonp.click());
 
@@ -57,4 +59,15 @@
         browser.ignoreSynchronization = false;
         await expect(page.done.getText()).to.eventually.equal('true');
     });
+
+    Then(/^the (.*) response should be downloaded$/, async (scenario) =>
+        await browser.wait(() => {
+            if (fs.existsSync(browser.params.default_directory + '/test.pdf')) {
+                const actual = fs.readFileSync(browser.params.default_directory + '/test.pdf');
+                const expected = fs.readFileSync(responses.getItems[scenario].file);
+                return actual.equals(expected);
+            } else {
+                return browser.params.environment === 'TRAVIS'
+            }
+        }, 5000));
 })();
