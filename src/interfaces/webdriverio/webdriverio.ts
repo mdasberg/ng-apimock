@@ -1,10 +1,10 @@
 import BaseApimockClient from '../base.client';
 import ApimockClient from '../apimock.client';
 
-class WebdriverClient extends BaseApimockClient implements ApimockClient {
+/** Webdriver.io client for apimock. */
+class WebdriverIOClient extends BaseApimockClient implements ApimockClient {
     /** Constructor.*/
     constructor() {
-
         super(browser.options.baseUrl);
         /** Make sure that angular uses the ngapimock identifier for the requests. */
         require('hooker').hook(browser, 'url', {
@@ -114,4 +114,4 @@ class WebdriverClient extends BaseApimockClient implements ApimockClient {
     }
 }
 
-export default WebdriverClient;
+export default WebdriverIOClient;
