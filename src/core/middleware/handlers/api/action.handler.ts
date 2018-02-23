@@ -6,7 +6,6 @@ import {HttpHeaders, HttpStatusCode} from '../../http';
 
 import Handler from '../handler';
 import MocksState from '../../../state/mocks.state';
-import State from '../../../state/state';
 
 /**  Handler for a mocks actions. */
 @injectable()

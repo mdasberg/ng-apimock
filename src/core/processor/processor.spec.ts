@@ -21,7 +21,6 @@ describe('MocksProcessor', () => {
     let consoleLogFn: sinon.SinonStub;
 
     const SRC = 'src';
-    const OUTPUT_DIR = 'outpuDir';
 
     beforeAll(() => {
         container = new Container();
