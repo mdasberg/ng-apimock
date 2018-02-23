@@ -101,35 +101,34 @@ describe('ProtractorClient', () => {
 
     describe('selectScenario', () =>
         it('sets the mock scenario', () => {
-            let name = 'name';
-            let scenario = 'scenario';
-
+            const name = 'name';
+            const scenario = 'scenario';
             client.selectScenario(name, scenario);
             sinon.assert.calledWith(updateMockFn, {name: name, scenario: scenario})
         }));
 
     describe('delayResponse', () =>
         it('sets the mock response delay time', () => {
-            let name = 'name';
-            let delay = 1000;
+            const name = 'name';
+            const delay = 1000;
             client.delayResponse(name, delay);
             sinon.assert.calledWith(updateMockFn, {name: name, delay: delay});
         }));
 
     describe('echoRequest', () =>
         it('sets the mock echo indicator', () => {
-            let name = 'name';
-            let echo = true;
+            const name = 'name';
+            const echo = true;
             client.echoRequest(name, echo);
             sinon.assert.calledWith(updateMockFn, {name: name, echo: echo});
         }));
 
     describe('updateMock', () =>
         it('calls updateMockRequest', () => {
-            let name = 'name';
-            let echo = true;
-            let scenario = 'scenario';
-            let delay = 1000;
+            const name = 'name';
+            const echo = true;
+            const scenario = 'scenario';
+            const delay = 1000;
             updateMockFn.callThrough();
             client.updateMock({name: name, scenario: scenario, delay: delay, echo: echo});
             sinon.assert.calledWith(updateMockRequestFn, {name: name, scenario: scenario, delay: delay, echo: echo});

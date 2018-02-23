@@ -31,69 +31,33 @@ describe('BaseApimockClient', () => {
             expect(client.request).toBeDefined());
     });
 
-    describe('updateMockRequest', () => {
-        let payload: any;
-        beforeEach(() => {
-            payload = {name: 'name', scenario: 'scenario'};
+    describe('updateMockRequest', () =>
+        it('calls the api', () => {
+            const payload = {name: 'name', scenario: 'scenario'};
             client.updateMockRequest(payload, resolveFn, rejectFn);
-        });
-        it('calls the api', () =>
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/mocks', 'PUT', payload, resolveFn, rejectFn));
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/mocks', 'PUT', payload, resolveFn, rejectFn);
+        }));
 
-        afterEach(() => {
-            invokeFn.reset();
-            resolveFn.reset();
-            rejectFn.reset();
-        });
-    });
-
-    describe('setVariablesRequest', () => {
-        let payload: any;
-        beforeEach(() => {
-            payload = {'one': 'first', 'two': 'second'};
+    describe('setVariablesRequest', () =>
+        it('calls the api', () => {
+            const payload = {'one': 'first', 'two': 'second'};
             client.setVariablesRequest(payload, resolveFn, rejectFn);
-        });
-        it('calls the api', () =>
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables', 'PUT', payload, resolveFn, rejectFn));
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables', 'PUT', payload, resolveFn, rejectFn);
+        }));
 
-        afterEach(() => {
-            invokeFn.reset();
-            resolveFn.reset();
-            rejectFn.reset();
-        });
-    });
-
-    describe('deleteVariableRequest', () => {
-        let key: string;
-        beforeEach(() => {
-            key = 'one';
+    describe('deleteVariableRequest', () =>
+        it('calls the api', () => {
+            const key = 'one';
             client.deleteVariableRequest(key, resolveFn, rejectFn);
-        });
-        it('calls the api', () =>
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables/one', 'DELETE', {}, resolveFn, rejectFn));
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables/one', 'DELETE', {}, resolveFn, rejectFn);
+        }));
 
-        afterEach(() => {
-            invokeFn.reset();
-            resolveFn.reset();
-            rejectFn.reset();
-        });
-    });
-
-    describe('performActionRequest', () => {
-        let payload: any;
-        beforeEach(() => {
-            payload = {action: 'action'};
+    describe('performActionRequest', () =>
+        it('calls the api', () => {
+            const payload = {action: 'action'};
             client.performActionRequest(payload, resolveFn, rejectFn);
-        });
-        it('calls the api', () =>
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/actions', 'PUT', payload, resolveFn, rejectFn));
-
-        afterEach(() => {
-            invokeFn.reset();
-            resolveFn.reset();
-            rejectFn.reset();
-        });
-    });
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/actions', 'PUT', payload, resolveFn, rejectFn);
+        }));
 
     describe('invoke', () => {
         let url: string;
@@ -109,28 +73,25 @@ describe('BaseApimockClient', () => {
             invokeFn.callThrough();
             client.invoke(url, method, payload, resolveFn, rejectFn);
         });
-        it('calls the api', () => {
+        it('calls the api', () =>
             sinon.assert.calledWith(request, method, url, {
                 json: payload, headers: {
                     'Content-Type': 'application/json',
                     'cookie': `apimockid=${client.apimockId}`
                 }
-            });
-        });
+            }));
 
-        describe('status code OK', () => {
+        describe('status code OK', () =>
             it('calls resolve', () => {
                 requestDoneFn.args[0][0]({statusCode: HttpStatusCode.OK});
                 sinon.assert.called(resolveFn);
-            });
-        });
+            }));
 
-        describe('status code not OK', () => {
+        describe('status code not OK', () =>
             it('calls reject', () => {
                 requestDoneFn.args[0][0]({statusCode: HttpStatusCode.CONFLICT});
                 sinon.assert.called(rejectFn);
-            });
-        });
+            }));
 
         afterEach(() => {
             invokeFn.reset();
