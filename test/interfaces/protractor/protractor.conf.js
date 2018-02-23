@@ -5,7 +5,7 @@ exports.config = {
         default_directory: '/tmp'
     },
     specs: [
-        '../*.feature'
+        '../../*.feature'
     ],
     onPrepare: () => {
         const chai = require('chai');

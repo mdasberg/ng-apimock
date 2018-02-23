@@ -1,10 +1,5 @@
 const config = require('../protractor.conf').config;
-const child_process = require('child_process');
-const server = child_process.spawn('node',
-    ['test/interfaces/protractor/angular/serve.js'],
-    {cwd: process.cwd(), stdio: 'inherit'});
-
-process.on('exit', () => server.kill());
+let server;
 
 config.params = {
     environment: 'TRAVIS',
@@ -29,5 +24,18 @@ config.multiCapabilities = [{
         }
     }
 }];
+
+config.beforeLaunch = () => {
+    const child_process = require('child_process');
+    const path = require('path');
+    server = child_process.spawn('node',
+        [path.join(process.cwd(), 'test/apps/angular/serve.js')],
+        {cwd: process.cwd(), stdio: 'inherit'});
+    process.on('exit', () => server.kill());
+
+};
+config.afterLaunch = () => {
+    server.kill();
+};
 
 exports.config = config;

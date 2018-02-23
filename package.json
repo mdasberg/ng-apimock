@@ -40,15 +40,16 @@
     "travis-interface": "protractor test/protractor/config/protractor-travis-interface.conf.js",
     "travis-protractor": "protractor test/protractor/config/protractor-travis-protractor.conf.js",
     "release": "npm publish && node dockerize.js && docker build --file=docker/Dockerfile docker -t mdasberg/ng-apimock && docker push mdasberg/ng-apimock",
-
+   
     "whitebox": "jasmine-ts \"src/**/*.spec.ts\"",
     "protractor-angular-local": "protractor test/interfaces/protractor/angular/protractor.local.conf.js",
     "protractor-angularjs-local": "protractor test/interfaces/protractor/angularjs/protractor.local.conf.js",
     "protractor-angular-travis": "protractor test/interfaces/protractor/angular/protractor.travis.conf.js",
     "protractor-angularjs-travis": "protractor test/interfaces/protractor/angularjs/protractor.travis.conf.js",
-    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local",
+    "wdio-local": "wdio test/interfaces/webdriverio/wdio.local.conf.js",
+    "wdio-travis": "wdio test/interfaces/webdriverio/wdio.travis.conf.js",
+    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local && npm run wdio-local && && npm run wdio-travis",
     "blackbox-travis": "npm run protractor-angular-travis && npm run protractor-angularjs-travis"
-
   },
   "dependencies": {
     "angular": "1.6.9",
@@ -87,6 +88,7 @@
     "@types/jasmine": "2.8.6",
     "@types/node": "8.9.1",
     "@types/sinon": "4.1.3",
+    "@types/webdriverio": "4.8.8",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
     "connect": "3.6.5",
@@ -104,6 +106,9 @@
     "tslint": "5.9.1",
     "tslint-eslint-rules": "4.1.1",
     "typescript": "2.7.1",
-    "vrsource-tslint-rules": "5.8.0"
+    "vrsource-tslint-rules": "5.8.0",
+    "wdio-cucumber-framework": "1.1.0",
+    "wdio-selenium-standalone-service": "0.0.9",
+    "webdriverio": "4.10.2"
   }
 }

@@ -1,6 +1,6 @@
 (() => {
     const {Given, When, After} = require('cucumber');
-    const client = require('../../../../dist/src/interfaces/interfaces').protractor;
+    const client = require('../../../../dist/src/interfaces/interfaces').webdriverio;
 
     Given(/^the following mock state$/, async (dataTable) =>
         await client.getMocks().then((mocks) =>
@@ -16,7 +16,7 @@
         await client.delayResponse(name, parseInt(delay))
     });
 
-    When(/^I wait a (\d+) milliseconds$/, async (wait) => await browser.sleep(wait));
+    When(/^I wait a (\d+) milliseconds$/, async (wait) => await browser.pause(wait));
 
     When(/^I reset the mocks to default$/, async () => await client.resetMocksToDefault());
 

@@ -1,15 +1,9 @@
-const config = require('../protractor.conf').config;
-let server;
-
-config.params = {
-    environment: 'TRAVIS',
-    default_directory: '/tmp'
-};
+const config = require('./wdio.conf').config;
 
 config.sauceUser = process.env.SAUCE_USERNAME;
 config.sauceKey = process.env.SAUCE_ACCESS_KEY;
 
-config.multiCapabilities = [{
+config.capabilities = [{
     browserName: 'chrome',
     name: 'ngApimock - protractor',
     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
@@ -25,18 +19,5 @@ config.multiCapabilities = [{
         }
     }
 }];
-
-config.beforeLaunch = () => {
-    const child_process = require('child_process');
-    const path = require('path');
-    server = child_process.spawn('node',
-        [path.join(process.cwd(), 'test/apps/angularjs/serve.js')],
-        {cwd: process.cwd(), stdio: 'inherit'});
-    process.on('exit', () => server.kill());
-
-};
-config.afterLaunch = () => {
-    server.kill();
-};
 
 exports.config = config;
