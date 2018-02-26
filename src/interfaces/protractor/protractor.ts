@@ -31,42 +31,22 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
     }
 
     /**
-     * Gets the mocks.
-     * @return {Promise<any>} promise The promise.
+     * {@inheritDoc}.
+     * Since the SELENIUM_PROMISE_MANAGER flag has been introduced we need to make sure to return the correct promise.
+     * Therefor the following promise should be returned:
+     * - SELENIUM_PROMISE_MANAGER is false => new Promise
+     * - else => protractor.promise.defer
      */
-    getMocks(): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.getMocksRequest(resolve, reject));
-    }
-
-    /**
-     * Gets the variables.
-     * @return {Promise<any>} promise The promise.
-     */
-    getvariables(): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.getVariablesRequest(resolve, reject));
-    }
-
-    /** {@inheritDoc}. */
-    selectScenario(name: string, scenario: string): Promise<any> {
-        return this.updateMock({name: name, scenario: scenario});
-    }
-
-    /** {@inheritDoc}. */
-    delayResponse(name: string, delay: number): Promise<any> {
-        return this.updateMock({name: name, delay: delay});
-    }
-
-    /** {@inheritDoc}. */
-    echoRequest(name: string, echo: boolean): Promise<any> {
-        return this.updateMock({name: name, echo: echo});
-    }
-
-    /** {@inheritDoc}. */
-    updateMock(payload: { name: string, scenario?: string, delay?: number, echo?: boolean }): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.updateMockRequest(payload, resolve, reject));
+    wrapAsPromise(fn: Function): Promise<any> {
+        if (this.usePromise) {
+            return new Promise((resolve, reject) => {
+                fn(resolve, reject);
+            });
+        } else {
+            const deferred = protractor.promise.defer();
+            fn(deferred.fulfill, deferred.reject);
+            return deferred.promise as any;
+        }
     }
 
     /**
@@ -100,25 +80,6 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
         return this.deleteVariable(key);
     }
 
-    /** {@inheritDoc}. */
-    setVariable(key: string, value: string): Promise<any> {
-        const payload: { [key: string]: string } = {};
-        payload[key] = value;
-        return this.setVariables(payload);
-    }
-
-    /** {@inheritDoc}. */
-    setVariables(payload: { [key: string]: string }): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.setVariablesRequest(payload, resolve, reject));
-    }
-
-    /** {@inheritDoc}. */
-    deleteVariable(key: string): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.deleteVariableRequest(key, resolve, reject));
-    }
-
     /**
      * Sets for all the mocks the selected scenario back to the default.
      * @return {Promise} promise The promise.
@@ -135,47 +96,6 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      */
     setAllScenariosToPassThrough(): Promise<any> {
         return this.setMocksToPassThrough();
-    }
-
-    /**
-     * Sets for all the mocks the selected scenario back to the default.
-     * @return {Promise} promise The promise.
-     */
-    resetMocksToDefault(): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.performActionRequest({action: 'defaults'}, resolve, reject));
-    }
-
-    /**
-     * Sets for all the mocks the selected scenario to the passThrough.
-     * @return {Promise} promise The promise.
-     */
-    setMocksToPassThrough(): Promise<any> {
-        return this._request((resolve: Function, reject: Function) =>
-            this.performActionRequest({action: 'passThroughs'}, resolve, reject));
-    }
-
-    /**
-     * Execute the request.
-     * Since the SELENIUM_PROMISE_MANAGER flag has been introduced we need to make sure to return the correct promise.
-     * Therefor the following promise should be returned:
-     * - SELENIUM_PROMISE_MANAGER is false => new Promise
-     * - else => protractor.promise.defer
-     *
-     * @param {Function} fn The function to perform.
-     * @return {Promise} promise The promise.
-     * @private
-     */
-    _request(fn: Function): Promise<any> {
-        if (this.usePromise) {
-            return new Promise((resolve, reject) => {
-                fn(resolve, reject);
-            });
-        } else {
-            const deferred = protractor.promise.defer();
-            fn(deferred.fulfill, deferred.reject);
-            return deferred.promise as any;
-        }
     }
 }
 

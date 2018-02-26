@@ -48,8 +48,8 @@
     "protractor-angularjs-travis": "protractor test/interfaces/protractor/angularjs/protractor.travis.conf.js",
     "wdio-local": "wdio test/interfaces/webdriverio/wdio.local.conf.js",
     "wdio-travis": "wdio test/interfaces/webdriverio/wdio.travis.conf.js",
-    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local && npm run wdio-local && && npm run wdio-travis",
-    "blackbox-travis": "npm run protractor-angular-travis && npm run protractor-angularjs-travis"
+    "blackbox-local": "npm run protractor-angular-local && npm run protractor-angularjs-local && npm run wdio-local",
+    "blackbox-travis": "npm run protractor-angular-travis && npm run protractor-angularjs-travis && npm run wdio-travis"
   },
   "dependencies": {
     "angular": "1.6.9",
