@@ -11,10 +11,7 @@
 
     When(/^I select scenario (.*) for mock (.*)$/, async (scenario, name) => await client.selectScenario(name, scenario));
 
-    When(/^I set delay to (\d+) for mock (.*)$/, async (delay, name) => {
-        browser.ignoreSynchronization = true;
-        await client.delayResponse(name, parseInt(delay))
-    });
+    When(/^I set delay to (\d+) for mock (.*)$/, async (delay, name) =>  await client.delayResponse(name, parseInt(delay)));
 
     When(/^I wait a (\d+) milliseconds$/, async (wait) => await browser.pause(wait));
 

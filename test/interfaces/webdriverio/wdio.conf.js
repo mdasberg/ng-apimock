@@ -22,7 +22,6 @@ exports.config = {
     ],
     sync: false,
     baseUrl: 'http://localhost:9900/',
-    services: ['selenium-standalone'],
     framework: 'cucumber',
     cucumberOpts: {
         require: [path.join(__dirname, 'step_definitions/*.steps.js')],

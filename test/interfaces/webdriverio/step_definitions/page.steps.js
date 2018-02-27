@@ -58,7 +58,6 @@
         expect(page.done.getText()).to.eventually.equal('false'));
 
     Then(/^the items are fetched$/, async () => {
-        browser.ignoreSynchronization = false;
         await expect(page.done.getText()).to.eventually.equal('true');
     });
 

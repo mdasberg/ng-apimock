@@ -1,5 +1,3 @@
-
-
 class PagePO {
     get data()   { return browser.element('.data'); }
     get status()   { return browser.element('.status'); }
@@ -11,9 +9,10 @@ class PagePO {
     }
 
     open() {
-        return browser.url('/index.html').then(()=> {
-            return browser.pause(500);
-        });
+        const url = '/index.html';
+        return browser.url(url).then(() => browser.waitUntil(() =>
+                browser.getText('h1').then((text) =>
+                    text.indexOf('ng-apimock test example app') > -1), 5000));
     }
 }
 

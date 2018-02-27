@@ -1,11 +1,17 @@
 const config = require('./wdio.conf').config;
 
-config.sauceUser = process.env.SAUCE_USERNAME;
-config.sauceKey = process.env.SAUCE_ACCESS_KEY;
+config.params = {
+    environment: 'TRAVIS',
+    default_directory: '/tmp'
+};
+
+config.services = ['sauce'];
+config.user = process.env.SAUCE_USERNAME;
+config.key = process.env.SAUCE_ACCESS_KEY;
 
 config.capabilities = [{
     browserName: 'chrome',
-    name: 'ngApimock - protractor',
+    name: 'ngApimock - webdriverio',
     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
     build: process.env.TRAVIS_BUILD_NUMBER,
     chromeOptions: {
