@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function MockingController(mockService, variableService, $interval, $window) {
+    function MockingController(mockService, presetService, variableService, $interval, $window) {
         var vm = this;
         var interval;
 
@@ -49,6 +49,13 @@
         function fetchVariables() {
             variableService.get({}, function (response) {
                 vm.variables = response;
+            });
+        }
+
+        /** Fetch all the presets and make them available. */
+        function fetchPresets() {
+            presetService.get({}, function (response) {
+                vm.presets = response;
             });
         }
 
