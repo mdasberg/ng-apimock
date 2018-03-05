@@ -2,6 +2,7 @@ import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import Mock from './mock';
+import Preset from "./preset";
 
 /** Registry represents a group of phases grouped under one name. */
 class Processor {
@@ -23,10 +24,23 @@ class Processor {
         const mocks: Mock[] = [];
         glob.sync('**/*.json', {
             cwd: directory,
-            root: '/'
+            root: '/',
+            ignore: 'presets.json'
         }).forEach((file) =>
             mocks.push(fs.readJsonSync(path.join(directory, file))));
         return mocks;
+    }
+
+    processPresets(directory: string): Preset[] {
+        const presets: Preset[] = [];
+        glob.sync('presets.json', {
+            cwd: directory,
+            root: '/'
+        }).forEach((file) => {
+            presets.push(fs.readJsonSync(path.join(directory, file)))
+        });
+
+        return presets;
     }
 
     /**

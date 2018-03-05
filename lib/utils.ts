@@ -107,6 +107,15 @@ import GET = httpMethods.GET;
     }
 
     /**
+     * Registers the given mocks.
+     * @param presets The presets.
+     */
+    function registerPresets(presets: Preset[]) {
+        presets.forEach(preset =>
+            _handlePreset(preset, `Preset with identifier '%s' already exists. Overwriting existing preset.`));
+    }
+
+    /**
      * Update the given mock.
      * @param mock The mock.
      */
@@ -131,6 +140,18 @@ import GET = httpMethods.GET;
         if (_default !== undefined) {
             registry.defaults[mock.identifier] = _default;
             registry.selections[mock.identifier] = _default;
+        }
+    }
+
+    function _handlePreset(preset: Preset, warning: string) {
+        const match = registry.presets.filter(_preset => preset.name === _preset.name)[0],
+            index = registry.presets.indexOf(match);
+
+        if (index > -1) { // exists so update
+            console.warn(warning, preset.name);
+            registry.presets[index] = preset;
+        } else { // add
+            registry.presets.push(preset);
         }
     }
 

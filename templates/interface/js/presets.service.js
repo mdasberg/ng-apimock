@@ -6,6 +6,7 @@
         }, {
             get: {
                 method: 'GET',
+                isArray: true,
                 headers: {
                     ngapimockid: undefined
                 }

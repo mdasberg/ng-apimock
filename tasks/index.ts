@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import Mock from './mock';
 import Configuration from './configuration';
 import Processor from './processor';
+import Preset from "./preset";
 
 (module).exports = function () {
     'use strict';
@@ -42,6 +43,7 @@ import Processor from './processor';
         };
 
         let mocks: Mock[];
+        let presets: Preset[];
 
         async.series({
                 processMocks: (callback: Function) => {
@@ -49,17 +51,27 @@ import Processor from './processor';
                     mocks = processor.processMocks(config.source);
                     callback(null, 'processed mocks');
                 },
-                registerMocks: function (callback) {
+                registerMocks: (callback: Function) => {
                     console.info('Register mocks');
                     utils.registerMocks(mocks);
                     callback(null, 'registered mocks');
                 },
-                generateMockingInterface: function (callback) {
+                processPresets: (callback: Function) => {
+                    console.info('Process all the presets');
+                    presets = processor.processPresets(config.source);
+                    callback(null, 'processed presets');
+                },
+                registerPresets: (callback: Function) => {
+                    console.info('Register presets');
+                    utils.registerPresets(presets);
+                    callback(null, 'registered presets');
+                },
+                generateMockingInterface: (callback: Function) => {
                     console.info('Generate the mocking web interface');
                     processor.generateMockingInterface(config.destination);
                     callback(null, 'generated mocking interface');
                 },
-                generateProtractorMock: function (callback) {
+                generateProtractorMock: (callback: Function) => {
                     console.info('Generate protractor.mock.js');
                     processor.generateProtractorMock(config.destination);
                     callback(null, 200);

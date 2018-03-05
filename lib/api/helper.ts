@@ -11,7 +11,6 @@ module helper {
             if (registry.sessions[ngApimockId] === undefined) {
                 registry.sessions[ngApimockId] = {
                     selections: JSON.parse(JSON.stringify(registry.defaults)),
-                    presets: {},
                     variables: {},
                     delays: {},
                     echos: {}

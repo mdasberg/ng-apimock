@@ -22,6 +22,7 @@ class Registry {
 
     constructor() {
         this.mocks = [];
+        this.presets = [];
         this.defaults = {};
         this.sessions = {};
         this.selections = {};
