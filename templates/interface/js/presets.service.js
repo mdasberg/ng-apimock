@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function PresetsService($resource) {
+    function PresetService($resource) {
         return $resource('/ngapimock/presets', {
         }, {
             get: {
@@ -13,7 +13,7 @@
         });
     }
 
-    PresetsService.$inject = ['$resource'];
+    PresetService.$inject = ['$resource'];
 
     /**
      * @ngdoc service
@@ -24,5 +24,5 @@
      */
     angular
         .module('ng-apimock')
-        .factory('presetsService', PresetsService);
+        .factory('presetService', PresetService);
 })();

@@ -17,6 +17,7 @@
 
         vm.$onInit = function () {
             fetchMocks();
+            fetchPresets();
             fetchVariables();
 
             vm.variable = {
@@ -166,7 +167,7 @@
         }
     }
 
-    MockingController.$inject = ['mockService', 'variableService', '$interval', '$window'];
+    MockingController.$inject = ['mockService', 'presetService', 'variableService', '$interval', '$window'];
 
     /**
      * @ngdoc controller
