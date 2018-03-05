@@ -1,4 +1,5 @@
 import Mock from '../tasks/mock';
+import Preset from '../tasks/preset';
 import * as http from 'http';
 import {httpMethods} from './http';
 import ProtractorGetMocksHandler from './api/mocks/protractor/getMocksHandler';
@@ -9,11 +10,10 @@ import ProtractorResetMocksToDefaultsHandler from './api/mocks/protractor/resetM
 import RuntimeResetMocksToDefaultsHandler from './api/mocks/runtime/resetMocksToDefaultsHandler';
 import RuntimeSetMocksToPassThroughsHandler from './api/mocks/runtime/setMocksToPassThroughsHandler';
 import RuntimeRecordResponseHandler from './api/mocks/runtime/recordResponseHandler';
+import GetPresetsHandler from './api/presets/getPresetsHandler';
 import Registry from './registry';
 import ProtractorUpdateMockHandler from './api/mocks/protractor/updateMockHandler';
 import RuntimeUpdateMockHandler from './api/mocks/runtime/updateMockHandler';
-import RuntimeGetPresetsHandler from './api/presets/runtime/getPresetsHandler';
-import ProtractorGetPresetsHandler from './api/presets/protractor/getPresetsHandler';
 import ProtractorDeleteVariableHandler from './api/variables/protractor/deleteVariableHandler';
 import ProtractorNgApimockHandler from './protractor/ngApimockHandler';
 import ProtractorAddOrUpdateVariableHandler from './api/variables/protractor/addOrUpdateVariableHandler';
@@ -32,6 +32,7 @@ import GET = httpMethods.GET;
     (module).exports = {
         ngApimockRequest: ngApimockRequest,
         registerMocks: registerMocks,
+        registerPresets: registerPresets,
         updateMock: updateMock
     };
 
@@ -43,7 +44,7 @@ import GET = httpMethods.GET;
                 resetMocksToDefaultsHandler: new ProtractorResetMocksToDefaultsHandler(),
                 setMocksToPassThroughsHandler: new ProtractorSetMocksToPassThroughsHandler(),
                 recordResponseHandler: new ProtractorRecordResponseHandler(),
-                getPresetsHandler: new ProtractorGetPresetsHandler(),
+                getPresetsHandler: new GetPresetsHandler(),
                 addOrUpdateVariableHandler: new ProtractorAddOrUpdateVariableHandler(),
                 getVariablesHandler: new ProtractorGetVariablesHandler(),
                 deleteVariableHandler: new ProtractorDeleteVariableHandler(),
@@ -55,7 +56,7 @@ import GET = httpMethods.GET;
                 resetMocksToDefaultsHandler: new RuntimeResetMocksToDefaultsHandler(),
                 setMocksToPassThroughsHandler: new RuntimeSetMocksToPassThroughsHandler(),
                 recordResponseHandler: new RuntimeRecordResponseHandler(),
-                getPresetsHandler: new RuntimeGetPresetsHandler(),
+                getPresetsHandler: new GetPresetsHandler(),
                 addOrUpdateVariableHandler: new RuntimeAddOrUpdateVariableHandler(),
                 getVariablesHandler: new RuntimeGetVariablesHandler(),
                 deleteVariableHandler: new RuntimeDeleteVariableHandler(),
@@ -84,7 +85,7 @@ import GET = httpMethods.GET;
         } else if (request.url === '/ngapimock/mocks/passthroughs' && request.method === PUT) {
             handlers[type].setMocksToPassThroughsHandler.handleRequest(request, response, next, registry, ngapimockId);
         } else if (request.url === '/ngapimock/presets' && request.method === GET) {
-            handlers[type].getPresetsHandler.handleRequest(request, response, next, registry, ngapimockId);
+            handlers[type].getPresetsHandler.handleRequest(request, response, next, registry);
         } else if (request.url === '/ngapimock/variables' && request.method === GET) {
             handlers[type].getVariablesHandler.handleRequest(request, response, next, registry, ngapimockId);
         } else if (request.url === '/ngapimock/variables' && request.method === PUT) {

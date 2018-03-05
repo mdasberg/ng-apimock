@@ -1,18 +1,18 @@
 import Mock from '../tasks/mock';
+import Preset from '../tasks/preset';
 
 class Registry {
     mocks: Mock[];
+    presets: Preset[];
     defaults: { [key: string]: string };
     sessions: {
         [key: string]: {
-            presets: { [key: string]: string }
             selections: { [key: string]: string };
             variables: { [key: string]: string };
             delays: { [key: string]: number };
             echos: { [key: string]: boolean };
         }
     };
-    presets: { [key: string]: string };
     selections: { [key: string]: string };
     variables: { [key: string]: string };
     recordings: { [key: string]: Recording[] };

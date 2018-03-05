@@ -2,9 +2,9 @@ import * as http from 'http';
 import {httpHeaders} from '../../http';
 import Handler from '../../handler';
 import Registry from '../../registry';
+import Preset from '../../../tasks/preset';
 
-/** Abstract Handler for Getting the mocks. */
-abstract class GetPresetsHandler implements Handler {
+class GetPresetsHandler implements Handler {
 
     /**
      * Gets the selections.
@@ -12,17 +12,17 @@ abstract class GetPresetsHandler implements Handler {
      * @param ngApimockId The ngApimock id.
      * @return presets The presets.
      */
-    abstract getPresets(registry: Registry, ngApimockId?: string): { [key: string]: string };
-
+    getPresets(registry: Registry): Preset[] {
+        return registry.presets;
+    };
 
     /**
      * @inheritDoc
      *
      * Handler that takes care of getting all the mocks.
      */
-    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
-                  ngApimockId: string): void {
-        const presets = this.getPresets(registry, ngApimockId);
+    handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry): void {
+        const presets = this.getPresets(registry);
 
         response.writeHead(200, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
         response.end(JSON.stringify(presets));
