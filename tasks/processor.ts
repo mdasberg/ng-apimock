@@ -25,22 +25,21 @@ class Processor {
         glob.sync('**/*.json', {
             cwd: directory,
             root: '/',
-            ignore: 'presets.json'
+            ignore: 'presets/*.json'
         }).forEach((file) =>
             mocks.push(fs.readJsonSync(path.join(directory, file))));
         return mocks;
     }
 
     processPresets(directory: string): Preset[] {
-        const presets: Preset[] = [];
-        glob.sync('presets.json', {
-            cwd: directory,
-            root: '/'
-        }).forEach((file) => {
-            presets.push(fs.readJsonSync(path.join(directory, file)))
-        });
+        const presetDir = path.join(directory, 'presets');
 
-        return presets;
+        return glob.sync('*.json', {
+            cwd: presetDir,
+            root: '/'
+        }).map((file) => {
+            return fs.readJsonSync(path.join(presetDir, file));
+        });
     }
 
     /**

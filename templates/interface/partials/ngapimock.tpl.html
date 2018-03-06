@@ -82,9 +82,9 @@
     </tr>
     </thead>
     <tbody>
-        <tr data-ng-repeat="(key, value) in $ctrl.presets track by key" id="preset-{{key}}">
-            <td>{{key}}</td>
-            <td>{{value}}</td>
+        <tr data-ng-repeat="preset in $ctrl.presets" id="preset-{{preset.name}}">
+            <td>{{preset.name}}</td>
+            <td>{{preset.scenarios}}</td>
         </tr>
     </tbody>
 </table>
