@@ -66,12 +66,22 @@
     <tfoot>
     <tr>
         <td colspan="7" class="text-right">
+            <button data-ng-click="$ctrl.exportAsPreset()">Export selection as preset</button>
             <button data-ng-click="$ctrl.defaultMocks()">Reset to defaults</button>
             <button data-ng-click="$ctrl.passThroughMocks()">All to passThrough</button>
         </td>
     </tr>
+    <tr ng-if="$ctrl.exportPreset">
+        <td colspan="7">
+            Save the following as a .json file in your presets directory to save this preset:
+            <pre>{{$ctrl.exportPreset}}</pre>
+            <button data-ng-click="$ctrl.exportPreset = null">Hide export panel</button>
+        </td>
+    </tr>
     </tfoot>
 </table>
+
+
 
 <h4>Currently the following presets have been detected</h4>
 <table class="table table-striped table-bordered table-hover">
@@ -84,7 +94,9 @@
     <tbody>
         <tr data-ng-repeat="preset in $ctrl.presets" id="preset-{{preset.name}}">
             <td>{{preset.name}}</td>
-            <td>{{preset.scenarios}}</td>
+            <td>
+                <button data-ng-click="$ctrl.applyPreset(preset)">Apply preset</button>
+            </td>
         </tr>
     </tbody>
 </table>

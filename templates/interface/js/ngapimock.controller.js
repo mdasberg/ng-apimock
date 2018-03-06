@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function MockingController(mockService, presetService, variableService, $interval, $window) {
+    function MockingController(mockService, presetService, variableService, $interval, $scope, $window) {
         var vm = this;
         var interval;
 
@@ -14,6 +14,8 @@
         vm.addVariable = addVariable;
         vm.updateVariable = updateVariable;
         vm.deleteVariable = deleteVariable;
+        vm.applyPreset = applyPreset;
+        vm.exportAsPreset = exportAsPreset;
 
         vm.$onInit = function () {
             fetchMocks();
@@ -112,6 +114,7 @@
          */
         function selectMock(mock, selection) {
             mockService.update({'identifier': mock.identifier, 'scenario': selection || 'passThrough'}, function () {
+                console.log('selected mock', mock.identifier, selection);
                 vm.selections[mock.identifier] = selection;
             });
         }
@@ -165,9 +168,31 @@
                 delete vm.variables[key];
             });
         }
+
+        /**
+         * Show the current selection as preset json, so it can be exported
+         */
+        function exportAsPreset() {
+            vm.exportPreset = JSON.stringify({
+                name: "[preset name]",
+                scenarios: vm.selections
+            }, null, 2);
+        }
+
+        /**
+         * Apply the provided preset
+         * @param preset The preset to apply
+         */
+        function applyPreset(preset) {
+            for(var name in preset.scenarios) {
+                selectMock({
+                    identifier: name
+                }, preset.scenarios[name]);
+            }
+        }
     }
 
-    MockingController.$inject = ['mockService', 'presetService', 'variableService', '$interval', '$window'];
+    MockingController.$inject = ['mockService', 'presetService', 'variableService', '$interval', '$scope', '$window'];
 
     /**
      * @ngdoc controller
