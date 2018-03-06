@@ -1,11 +1,6 @@
 interface Preset {
     name: string;
-    responses: PresetResponse[];
-}
-
-export interface PresetResponse {
-    name: string;
-    scenario: string;
+    scenarios: { [key: string]: string };
 }
 
 export default Preset;
