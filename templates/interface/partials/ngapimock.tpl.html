@@ -95,7 +95,7 @@
         <tr data-ng-repeat="preset in $ctrl.presets" id="preset-{{preset.name}}">
             <td>{{preset.name}}</td>
             <td>
-                <button data-ng-click="$ctrl.applyPreset(preset)">Apply preset</button>
+                <button data-ng-click="$ctrl.applyPreset(preset.name)">Apply preset</button>
             </td>
         </tr>
     </tbody>

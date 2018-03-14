@@ -184,11 +184,9 @@
          * @param preset The preset to apply
          */
         function applyPreset(preset) {
-            for(var name in preset.scenarios) {
-                selectMock({
-                    identifier: name
-                }, preset.scenarios[name]);
-            }
+            presetService.applyPreset(preset, function () {
+                $window.location.reload();
+            });
         }
     }
 

@@ -10,6 +10,12 @@
                 headers: {
                     ngapimockid: undefined
                 }
+            },
+            applyPreset: {
+                method: 'PUT',
+                headers: {
+                    ngapimockid: undefined
+                }
             }
         });
     }

@@ -2,26 +2,28 @@ import Mock from '../tasks/mock';
 import Preset from '../tasks/preset';
 import * as http from 'http';
 import {httpMethods} from './http';
+import GetPresetsHandler from './api/presets/getPresetsHandler';
+import ProtractorAddOrUpdateVariableHandler from './api/variables/protractor/addOrUpdateVariableHandler';
+import ProtractorApplyPresetHandler from './api/presets/protractor/applyPresetHandler';
+import ProtractorDeleteVariableHandler from './api/variables/protractor/deleteVariableHandler';
 import ProtractorGetMocksHandler from './api/mocks/protractor/getMocksHandler';
-import RuntimeGetMocksHandler from './api/mocks/runtime/getMocksHandler';
-import ProtractorSetMocksToPassThroughsHandler from './api/mocks/protractor/setMocksToPassThroughsHandler';
+import ProtractorGetVariablesHandler from './api/variables/protractor/getVariablesHandler';
+import ProtractorNgApimockHandler from './protractor/ngApimockHandler';
 import ProtractorRecordResponseHandler from './api/mocks/protractor/recordResponseHandler';
 import ProtractorResetMocksToDefaultsHandler from './api/mocks/protractor/resetMocksToDefaultsHandler';
+import ProtractorSetMocksToPassThroughsHandler from './api/mocks/protractor/setMocksToPassThroughsHandler';
+import ProtractorUpdateMockHandler from './api/mocks/protractor/updateMockHandler';
+import Registry from './registry';
+import RuntimeAddOrUpdateVariableHandler from './api/variables/runtime/addOrUpdateVariableHandler';
+import RuntimeApplyPresetHandler from './api/presets/runtime/applyPresetHandler';
+import RuntimeDeleteVariableHandler from './api/variables/runtime/deleteVariableHandler';
+import RuntimeGetMocksHandler from './api/mocks/runtime/getMocksHandler';
+import RuntimeGetVariablesHandler from './api/variables/runtime/getVariablesHandler';
+import RuntimeNgApimockHandler from './runtime/ngApimockHandler';
+import RuntimeRecordResponseHandler from './api/mocks/runtime/recordResponseHandler';
 import RuntimeResetMocksToDefaultsHandler from './api/mocks/runtime/resetMocksToDefaultsHandler';
 import RuntimeSetMocksToPassThroughsHandler from './api/mocks/runtime/setMocksToPassThroughsHandler';
-import RuntimeRecordResponseHandler from './api/mocks/runtime/recordResponseHandler';
-import GetPresetsHandler from './api/presets/getPresetsHandler';
-import Registry from './registry';
-import ProtractorUpdateMockHandler from './api/mocks/protractor/updateMockHandler';
 import RuntimeUpdateMockHandler from './api/mocks/runtime/updateMockHandler';
-import ProtractorDeleteVariableHandler from './api/variables/protractor/deleteVariableHandler';
-import ProtractorNgApimockHandler from './protractor/ngApimockHandler';
-import ProtractorAddOrUpdateVariableHandler from './api/variables/protractor/addOrUpdateVariableHandler';
-import ProtractorGetVariablesHandler from './api/variables/protractor/getVariablesHandler';
-import RuntimeAddOrUpdateVariableHandler from './api/variables/runtime/addOrUpdateVariableHandler';
-import RuntimeGetVariablesHandler from './api/variables/runtime/getVariablesHandler';
-import RuntimeDeleteVariableHandler from './api/variables/runtime/deleteVariableHandler';
-import RuntimeNgApimockHandler from './runtime/ngApimockHandler';
 import DELETE = httpMethods.DELETE;
 import PUT = httpMethods.PUT;
 import GET = httpMethods.GET;
@@ -45,6 +47,7 @@ import GET = httpMethods.GET;
                 setMocksToPassThroughsHandler: new ProtractorSetMocksToPassThroughsHandler(),
                 recordResponseHandler: new ProtractorRecordResponseHandler(),
                 getPresetsHandler: new GetPresetsHandler(),
+                applyPresetHandler: new ProtractorApplyPresetHandler(),
                 addOrUpdateVariableHandler: new ProtractorAddOrUpdateVariableHandler(),
                 getVariablesHandler: new ProtractorGetVariablesHandler(),
                 deleteVariableHandler: new ProtractorDeleteVariableHandler(),
@@ -57,6 +60,7 @@ import GET = httpMethods.GET;
                 setMocksToPassThroughsHandler: new RuntimeSetMocksToPassThroughsHandler(),
                 recordResponseHandler: new RuntimeRecordResponseHandler(),
                 getPresetsHandler: new GetPresetsHandler(),
+                applyPresetHandler: new RuntimeApplyPresetHandler(),
                 addOrUpdateVariableHandler: new RuntimeAddOrUpdateVariableHandler(),
                 getVariablesHandler: new RuntimeGetVariablesHandler(),
                 deleteVariableHandler: new RuntimeDeleteVariableHandler(),
@@ -86,6 +90,8 @@ import GET = httpMethods.GET;
             handlers[type].setMocksToPassThroughsHandler.handleRequest(request, response, next, registry, ngapimockId);
         } else if (request.url === '/ngapimock/presets' && request.method === GET) {
             handlers[type].getPresetsHandler.handleRequest(request, response, next, registry);
+        } else if (request.url === '/ngapimock/presets' && request.method === PUT) {
+            handlers[type].applyPresetHandler.handleRequest(request, response, next, registry, ngapimockId);
         } else if (request.url === '/ngapimock/variables' && request.method === GET) {
             handlers[type].getVariablesHandler.handleRequest(request, response, next, registry, ngapimockId);
         } else if (request.url === '/ngapimock/variables' && request.method === PUT) {
@@ -180,15 +186,15 @@ import GET = httpMethods.GET;
      */
     function _getNgApimockIdCookie(cookies: string) {
         return cookies && cookies
-                .split(';')
-                .map(cookie => {
-                    const parts = cookie.split('=');
-                    return {
-                        key: parts.shift().trim(),
-                        value: decodeURI(parts.join('='))
-                    };
-                })
-                .filter(cookie => cookie.key === 'ngapimockid')
-                .map(cookie => cookie.value)[0];
+            .split(';')
+            .map(cookie => {
+                const parts = cookie.split('=');
+                return {
+                    key: parts.shift().trim(),
+                    value: decodeURI(parts.join('='))
+                };
+            })
+            .filter(cookie => cookie.key === 'ngapimockid')
+            .map(cookie => cookie.value)[0];
     }
 })();
