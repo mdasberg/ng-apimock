@@ -45,6 +45,7 @@
                 if (vm.record) {
                     interval = $interval(refreshMocks, 5000);
                 }
+                vm.defaults = getAllDefaults();
             });
         }
 
@@ -60,6 +61,23 @@
             presetService.get({}, function (response) {
                 vm.presets = response;
             });
+        }
+
+        /**
+         * Extract all default scenarios from the mocks for faster lookup
+         */
+        function getAllDefaults() {
+            return vm.mocks.reduce(function (defaults, mock) {
+                var defaultResponse = Object.keys(mock.responses).filter(function(key) {
+                    return mock.responses[key].default === true;
+                })[0];
+
+                if(defaultResponse) {
+                    defaults[mock.identifier] = defaultResponse;
+                }
+
+                return defaults;
+            }, {});
         }
 
         /**
@@ -114,7 +132,6 @@
          */
         function selectMock(mock, selection) {
             mockService.update({'identifier': mock.identifier, 'scenario': selection || 'passThrough'}, function () {
-                console.log('selected mock', mock.identifier, selection);
                 vm.selections[mock.identifier] = selection;
             });
         }
@@ -170,12 +187,25 @@
         }
 
         /**
-         * Show the current selection as preset json, so it can be exported
+         * Show the current selection as preset json, so it can be exported.
+         * We only need to export selections that deviate from the default, including 'passThrough' selections.
          */
         function exportAsPreset() {
+            var selections = vm.mocks.map(function(mock) {
+                return {
+                    name: mock.identifier,
+                    value: vm.selections[mock.identifier]
+                };
+            }).filter(function (selection) {
+                return selection.value !== vm.defaults[selection.name]
+            }).reduce(function (all, current) {
+                all[current.name] = current.value || null;
+                return all;
+            }, {});
+
             vm.exportPreset = JSON.stringify({
                 name: "[preset name]",
-                scenarios: vm.selections
+                scenarios: selections
             }, null, 2);
         }
 
