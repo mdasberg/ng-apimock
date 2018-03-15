@@ -48,9 +48,9 @@ describe('ScenarioHandler', () => {
         mocksState = container.get<MocksState>('MocksState');
         scenarioHandler = container.get<ScenarioHandler>('ScenarioHandler');
 
-        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, 'getMatchingState');
-        handleGetMocksFn = sinon.stub(ScenarioHandler.prototype, 'handleGetMocks');
-        handleSelectMockScenarioFn = sinon.stub(ScenarioHandler.prototype, 'handleSelectMockScenario');
+        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, <any>'getMatchingState');
+        handleGetMocksFn = sinon.stub(ScenarioHandler.prototype, <any>'handleGetMocks');
+        handleSelectMockScenarioFn = sinon.stub(ScenarioHandler.prototype, <any>'handleSelectMockScenario');
     });
 
     describe('handle', () => {

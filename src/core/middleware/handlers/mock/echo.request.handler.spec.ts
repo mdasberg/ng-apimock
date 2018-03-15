@@ -33,8 +33,8 @@ describe('EchoRequestHandler', () => {
         mocksState = container.get<MocksState>('MocksState');
         echoRequestHandler = container.get<EchoRequestHandler>('EchoRequestHandler');
 
-        mocksStateGetEchoFn = sinon.stub(MocksState.prototype, 'getEcho');
-        consoleLogFn = sinon.stub(console, 'log');
+        mocksStateGetEchoFn = sinon.stub(MocksState.prototype, <any>'getEcho');
+        consoleLogFn = sinon.stub(console, <any>'log');
 
     });
 

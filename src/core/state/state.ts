@@ -6,7 +6,7 @@ interface State {
             delay: number;
             echo: boolean;
         }
-    }
+    };
     variables: { [key: string]: string };
 }
 

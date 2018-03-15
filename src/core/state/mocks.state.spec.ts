@@ -52,7 +52,7 @@ describe('MocksState', () => {
         mocksState.mocks.push(simpleMock);
         mocksState.mocks.push(advancedMock);
 
-        getMatchingStateFn = sinon.stub(MocksState.prototype, 'getMatchingState');
+        getMatchingStateFn = sinon.stub(MocksState.prototype, <any>'getMatchingState');
     });
 
     describe('getMatchingState', () => {

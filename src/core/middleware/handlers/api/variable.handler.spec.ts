@@ -42,10 +42,10 @@ describe('VariableHandler', () => {
         mocksState = container.get<MocksState>('MocksState');
         variableHandler = container.get<VariableHandler>('VariableHandler');
 
-        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, 'getMatchingState');
-        handleGetVariablesFn = sinon.stub(VariableHandler.prototype, 'handleGetVariables');
-        handleSetVariableFn = sinon.stub(VariableHandler.prototype, 'handleSetVariable');
-        handleDeleteVariableFn = sinon.stub(VariableHandler.prototype, 'handleDeleteVariable');
+        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, <any>'getMatchingState');
+        handleGetVariablesFn = sinon.stub(VariableHandler.prototype, <any>'handleGetVariables');
+        handleSetVariableFn = sinon.stub(VariableHandler.prototype, <any>'handleSetVariable');
+        handleDeleteVariableFn = sinon.stub(VariableHandler.prototype, <any>'handleDeleteVariable');
     });
 
     describe('handle', () => {

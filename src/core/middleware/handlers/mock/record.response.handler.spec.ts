@@ -43,8 +43,8 @@ describe('RecordResponseHandler', () => {
         mocksState = container.get<MocksState>('MocksState');
         recordResponseHandler = container.get<RecordResponseHandler>('RecordResponseHandler');
 
-        recordFn = sinon.stub(RecordResponseHandler.prototype, 'record');
-        httpRequestFn = sinon.stub(http, 'request');
+        recordFn = sinon.stub(RecordResponseHandler.prototype, <any>'record');
+        httpRequestFn = sinon.stub(http, <any>'request');
         now = new Date();
         clock = sinon.useFakeTimers(now.getTime());
     });

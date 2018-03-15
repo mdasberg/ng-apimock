@@ -32,24 +32,24 @@ describe('BaseApimockClient', () => {
 
     beforeAll(() => {
         client = new TestClient(BASE_URL);
-        invokeFn = sinon.stub(BaseApimockClient.prototype, 'invoke');
-        updateMockFn = sinon.stub(BaseApimockClient.prototype, 'updateMock');
-        updateMockRequestFn = sinon.stub(BaseApimockClient.prototype, '_updateMockRequest');
-        setVariablesFn = sinon.stub(BaseApimockClient.prototype, 'setVariables');
-        setVariablesRequestFn = sinon.stub(BaseApimockClient.prototype, '_setVariablesRequest');
-        deleteVariableFn = sinon.stub(BaseApimockClient.prototype, 'deleteVariable');
-        deleteVariableRequestFn = sinon.stub(BaseApimockClient.prototype, '_deleteVariableRequest');
-        getMocksFn = sinon.stub(BaseApimockClient.prototype, 'getMocks');
-        getMocksRequestFn = sinon.stub(BaseApimockClient.prototype, '_getMocksRequest');
-        getVariablesFn = sinon.stub(BaseApimockClient.prototype, 'getVariables');
-        getVariablesRequestFn = sinon.stub(BaseApimockClient.prototype, '_getVariablesRequest');
-        resetMocksToDefaultFn = sinon.stub(BaseApimockClient.prototype, 'resetMocksToDefault');
-        setMocksToPassThroughFn = sinon.stub(BaseApimockClient.prototype, 'setMocksToPassThrough');
-        performActionRequestFn = sinon.stub(BaseApimockClient.prototype, '_performActionRequest');
+        invokeFn = sinon.stub(BaseApimockClient.prototype, <any>'invoke');
+        updateMockFn = sinon.stub(BaseApimockClient.prototype, <any>'updateMock');
+        updateMockRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_updateMockRequest');
+        setVariablesFn = sinon.stub(BaseApimockClient.prototype, <any>'setVariables');
+        setVariablesRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_setVariablesRequest');
+        deleteVariableFn = sinon.stub(BaseApimockClient.prototype, <any>'deleteVariable');
+        deleteVariableRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_deleteVariableRequest');
+        getMocksFn = sinon.stub(BaseApimockClient.prototype, <any>'getMocks');
+        getMocksRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_getMocksRequest');
+        getVariablesFn = sinon.stub(BaseApimockClient.prototype, <any>'getVariables');
+        getVariablesRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_getVariablesRequest');
+        resetMocksToDefaultFn = sinon.stub(BaseApimockClient.prototype, <any>'resetMocksToDefault');
+        setMocksToPassThroughFn = sinon.stub(BaseApimockClient.prototype, <any>'setMocksToPassThrough');
+        performActionRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_performActionRequest');
         resolveFn = sinon.stub();
         rejectFn = sinon.stub();
         fetch = sinon.stub();
-        wrapAsPromiseFn = sinon.stub(TestClient.prototype, 'wrapAsPromise');
+        wrapAsPromiseFn = sinon.stub(TestClient.prototype, <any>'wrapAsPromise');
     });
 
     describe('constructor', () => {
@@ -329,7 +329,7 @@ describe('BaseApimockClient', () => {
 
     describe('performActionRequest', () => {
         it('calls the api', () => {
-            performActionRequestFn.callThrough()
+            performActionRequestFn.callThrough();
             const payload = {action: 'action'};
             client._performActionRequest(payload, resolveFn, rejectFn);
             sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/actions', 'PUT', payload, resolveFn, rejectFn);

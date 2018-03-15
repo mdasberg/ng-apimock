@@ -50,15 +50,14 @@ describe('Middleware', () => {
         mocksState = container.get<MocksState>('MocksState');
         middleware = container.get<Middleware>('Middleware');
 
-        getApimockIdFn = sinon.stub(Middleware.prototype, 'getApimockId');
-        scenarioHandlerHandleFn = sinon.stub(ScenarioHandler.prototype, 'handle');
-        actionHandlerHandleFn = sinon.stub(ActionHandler.prototype, 'handle');
-        apimockStateGetMatchingMockFn = sinon.stub(MocksState.prototype, 'getMatchingMock');
-        echoRequestHandlerHandleFn = sinon.stub(EchoRequestHandler.prototype, 'handle');
-        recordResponseHandlerHandleFn = sinon.stub(RecordResponseHandler.prototype, 'handle');
-        mockRequestHandlerHandleFn = sinon.stub(MockRequestHandler.prototype, 'handle');
-        variableHandlerHandleFn = sinon.stub(VariableHandler.prototype, 'handle');
-
+        getApimockIdFn = sinon.stub(Middleware.prototype, <any>'getApimockId');
+        scenarioHandlerHandleFn = sinon.stub(ScenarioHandler.prototype, <any>'handle');
+        actionHandlerHandleFn = sinon.stub(ActionHandler.prototype, <any>'handle');
+        apimockStateGetMatchingMockFn = sinon.stub(MocksState.prototype, <any>'getMatchingMock');
+        echoRequestHandlerHandleFn = sinon.stub(EchoRequestHandler.prototype, <any>'handle');
+        recordResponseHandlerHandleFn = sinon.stub(RecordResponseHandler.prototype, <any>'handle');
+        mockRequestHandlerHandleFn = sinon.stub(MockRequestHandler.prototype, <any>'handle');
+        variableHandlerHandleFn = sinon.stub(VariableHandler.prototype, <any>'handle');
     });
 
     describe('middleware', () => {

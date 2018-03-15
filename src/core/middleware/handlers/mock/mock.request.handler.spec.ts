@@ -46,13 +46,13 @@ describe('MockRequestHandler', () => {
 
         mocksState = container.get<MocksState>('MocksState');
         mockRequestHandler = container.get<MockRequestHandler>('MockRequestHandler');
-        interpolateResponseDataFn = sinon.stub(MockRequestHandler.prototype, 'interpolateResponseData');
-        getJsonCallbackNameFn = sinon.stub(MockRequestHandler.prototype, 'getJsonCallbackName');
+        interpolateResponseDataFn = sinon.stub(MockRequestHandler.prototype, <any>'interpolateResponseData');
+        getJsonCallbackNameFn = sinon.stub(MockRequestHandler.prototype, <any>'getJsonCallbackName');
 
-        mocksStateGetResponseFn = sinon.stub(MocksState.prototype, 'getResponse');
-        mocksStateGetVariablesFn = sinon.stub(MocksState.prototype, 'getVariables');
-        mocksStateGetDelayFn = sinon.stub(MocksState.prototype, 'getDelay');
-        fsReadFileSyncFn = sinon.stub(fs, 'readFileSync');
+        mocksStateGetResponseFn = sinon.stub(MocksState.prototype, <any>'getResponse');
+        mocksStateGetVariablesFn = sinon.stub(MocksState.prototype, <any>'getVariables');
+        mocksStateGetDelayFn = sinon.stub(MocksState.prototype, <any>'getDelay');
+        fsReadFileSyncFn = sinon.stub(fs, <any>'readFileSync');
 
     });
 

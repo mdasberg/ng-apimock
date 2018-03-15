@@ -27,10 +27,10 @@ describe('MocksProcessor', () => {
         container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
         container.bind<MocksProcessor>('MocksProcessor').to(MocksProcessor);
         doneFn = sinon.stub();
-        fsReadJsonSyncFn = sinon.stub(fs, 'readJsonSync');
-        globSyncFn = sinon.stub(glob, 'sync');
-        consoleWarnFn = sinon.stub(console, 'warn');
-        consoleLogFn = sinon.stub(console, 'log');
+        fsReadJsonSyncFn = sinon.stub(fs, <any>'readJsonSync');
+        globSyncFn = sinon.stub(glob, <any>'sync');
+        consoleWarnFn = sinon.stub(console, <any>'warn');
+        consoleLogFn = sinon.stub(console, <any>'log');
 
         mocksState = container.get<MocksState>('MocksState');
         processor = container.get<MocksProcessor>('MocksProcessor');

@@ -38,9 +38,9 @@ describe('ActionHandler', () => {
         mocksState = container.get<MocksState>('MocksState');
         actionHandler = container.get<ActionHandler>('ActionHandler');
 
-        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, 'getMatchingState');
-        mocksStateSetToDefaultsFn = sinon.stub(MocksState.prototype, 'setToDefaults');
-        mocksStateSetToPassThroughsFn = sinon.stub(MocksState.prototype, 'setToPassThroughs');
+        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, <any>'getMatchingState');
+        mocksStateSetToDefaultsFn = sinon.stub(MocksState.prototype, <any>'setToDefaults');
+        mocksStateSetToPassThroughsFn = sinon.stub(MocksState.prototype, <any>'setToPassThroughs');
     });
 
     describe('handle', () => {
