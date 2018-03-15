@@ -1,4 +1,6 @@
 interface Configuration {
+    // requests base url
+    baseUrl: string;
     // the directory containing the mocks
     src: string;
     // callback function

@@ -12,7 +12,7 @@ import Processor from './processor';
     const defaults = {
         destination: '.tmp/mocks/'
     };
-    const utils = require('../lib/utils.js');
+    const utils = require('../lib/utils');
 
     return {
         run: run,
@@ -35,6 +35,7 @@ import Processor from './processor';
         }
 
         const config = {
+            baseUrl: configuration.baseUrl,
             source: configuration.src,
             done: configuration.done !== undefined ? configuration.done : () => {
             },
@@ -61,7 +62,7 @@ import Processor from './processor';
                 },
                 generateProtractorMock: function (callback) {
                     console.info('Generate protractor.mock.js');
-                    processor.generateProtractorMock(config.destination);
+                    processor.generateProtractorMock(config.destination, config.baseUrl);
                     callback(null, 200);
                 }
             },

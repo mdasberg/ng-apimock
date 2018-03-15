@@ -4,6 +4,9 @@
 *.ipr
 *.iws
 
+#visual studio code
+.vscode
+
 # generated
 .tmp
 

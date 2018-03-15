@@ -1,10 +1,13 @@
 (() => {
     'use strict';
 
+    //The line below will be replaced to include external param info (e.g "const requestUrl = 'http://localhost:9900'")
+    const requestUrl;
+
     const path = require('path');
     const ngapimockid = _require('uuid').v4();
     const request = _require('then-request');
-    const baseUrl = _require('url-join')(browser.baseUrl, 'ngapimock');
+    const baseUrl = _require('url-join')(requestUrl || browser.baseUrl, 'ngapimock');
 
     let _handleRequest = function (httpMethod, urlSuffix, opts, errorMessage) {
         const deferred = protractor.promise.defer();
