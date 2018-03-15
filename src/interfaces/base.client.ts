@@ -1,9 +1,10 @@
-import {HttpHeaders, HttpStatusCode} from '../core/middleware/http';
+import {RequestInit} from 'node-fetch';
+import {HttpHeaders, HttpMethods} from '../core/middleware/http';
 
 /** Base client that takes care of the actual invoking of the apimock api.*/
 abstract class BaseApimockClient {
     apimockId: string;
-    request: any;
+    fetch: any;
     baseUrl: string;
 
     /**
@@ -12,7 +13,7 @@ abstract class BaseApimockClient {
      */
     constructor(baseUrl: string) {
         this.apimockId = require('uuid').v4();
-        this.request = require('then-request');
+        this.fetch = require('node-fetch');
         this.baseUrl = require('url-join')(baseUrl, 'ngapimock');
     }
 
@@ -41,8 +42,8 @@ abstract class BaseApimockClient {
     async _getMocksRequest(resolve: Function,
                            reject: Function): Promise<any> {
         /** wrap it and return the parsed body */
-        const _resolve = (res: any) => resolve(JSON.parse(res.body));
-        return await this.invoke(this.baseUrl + '/mocks', 'GET', {}, _resolve, reject);
+        const _resolve = (res: any) => resolve(res.json());
+        return await this.invoke(this.baseUrl + '/mocks', HttpMethods.GET, {}, _resolve, reject);
     }
 
     /**
@@ -61,12 +62,10 @@ abstract class BaseApimockClient {
      * @param {Function} resolve The resolve callback.
      */
     async _getVariablesRequest(resolve: Function,
-                              reject: Function): Promise<any> {
+                               reject: Function): Promise<any> {
         /** wrap it and return the parsed body */
-        const _resolve = (res: any) => {
-            return resolve(JSON.parse(res.body));
-        };
-        return await this.invoke(this.baseUrl + '/variables', 'GET', {}, _resolve, reject);
+        const _resolve = (res: any) => resolve(res.json());
+        return await this.invoke(this.baseUrl + '/variables', HttpMethods.GET, {}, _resolve, reject);
     }
 
     /** {@inheritDoc}. */
@@ -99,7 +98,7 @@ abstract class BaseApimockClient {
      */
     async _updateMockRequest(payload: { name: string, scenario?: string, delay?: number, echo?: boolean }, resolve: Function,
                              reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + '/mocks', 'PUT', payload, resolve, reject);
+        return await this.invoke(this.baseUrl + '/mocks', HttpMethods.PUT, payload, resolve, reject);
     }
 
     /** {@inheritDoc}. */
@@ -123,7 +122,7 @@ abstract class BaseApimockClient {
      * @private
      */
     async _setVariablesRequest(payload: { [key: string]: string }, resolve: Function, reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + '/variables', 'PUT', payload, resolve, reject);
+        return await this.invoke(this.baseUrl + '/variables', HttpMethods.PUT, payload, resolve, reject);
     }
 
     /** {@inheritDoc}. */
@@ -140,7 +139,7 @@ abstract class BaseApimockClient {
      * @private__
      */
     async _deleteVariableRequest(key: string, resolve: Function, reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + `/variables/${key}`, 'DELETE', {}, resolve, reject);
+        return await this.invoke(this.baseUrl + `/variables/${key}`, HttpMethods.DELETE, {}, resolve, reject);
     }
 
     /**
@@ -168,7 +167,7 @@ abstract class BaseApimockClient {
      * @param {Function} resolve The resolve callback.
      */
     async _performActionRequest(payload: { action: string }, resolve: Function, reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + '/actions', 'PUT', payload, resolve, reject);
+        return await this.invoke(this.baseUrl + '/actions', HttpMethods.PUT, payload, resolve, reject);
     }
 
     /**
@@ -180,10 +179,20 @@ abstract class BaseApimockClient {
      * @param {Function} resolve The resolve callback.
      */
     async invoke(url: string, method: string, payload: any, resolve: Function, reject: Function): Promise<any> {
-        const headers = JSON.parse(JSON.stringify(HttpHeaders.CONTENT_TYPE_APPLICATION_JSON));
-        headers.cookie = `apimockid=${this.apimockId}`;
-        return await this.request(method, url, {json: payload, headers: headers})
-            .done((res: any) => res.statusCode === HttpStatusCode.OK ? resolve(res) : reject(res));
+        const requestInit: RequestInit = {
+            method: method,
+            headers: Object.assign({}, {
+                cookie: `apimockid=${this.apimockId}`
+            }, JSON.parse(JSON.stringify(HttpHeaders.CONTENT_TYPE_APPLICATION_JSON)))
+        };
+
+        if ([HttpMethods.GET, HttpMethods.DELETE].indexOf(method) === -1) {
+            requestInit.body = JSON.stringify(payload);
+        }
+
+        return await this.fetch(url, requestInit)
+            .then((res: any) => resolve(res))
+            .catch((res: any) => reject(res));
     }
 }
 

@@ -1,13 +1,11 @@
 import * as sinon from 'sinon';
 
 import BaseApimockClient from './base.client';
-import {HttpStatusCode} from '../core/middleware/http';
 
 class TestClient extends BaseApimockClient {
     wrapAsPromise(func: Function): Promise<any> {
         return undefined;
     }
-
 }
 
 describe('BaseApimockClient', () => {
@@ -16,8 +14,7 @@ describe('BaseApimockClient', () => {
     let invokeFn: sinon.SinonStub;
     let resolveFn: sinon.SinonStub;
     let rejectFn: sinon.SinonStub;
-    let request: sinon.SinonStub;
-    let requestDoneFn: sinon.SinonStub;
+    let fetch: sinon.SinonStub;
     let wrapAsPromiseFn: sinon.SinonStub;
     let updateMockFn: sinon.SinonStub;
     let updateMockRequestFn: sinon.SinonStub;
@@ -51,8 +48,7 @@ describe('BaseApimockClient', () => {
         performActionRequestFn = sinon.stub(BaseApimockClient.prototype, '_performActionRequest');
         resolveFn = sinon.stub();
         rejectFn = sinon.stub();
-        request = sinon.stub();
-        requestDoneFn = sinon.stub();
+        fetch = sinon.stub();
         wrapAsPromiseFn = sinon.stub(TestClient.prototype, 'wrapAsPromise');
     });
 
@@ -63,8 +59,8 @@ describe('BaseApimockClient', () => {
         it('sets the baseUrl', () =>
             expect(client.baseUrl).toBe(BASE_URL + '/ngapimock'));
 
-        it('sets the request', () =>
-            expect(client.request).toBeDefined());
+        it('sets the fetch', () =>
+            expect(client.fetch).toBeDefined());
     });
 
     describe('getMocks', () => {
@@ -93,7 +89,7 @@ describe('BaseApimockClient', () => {
             client._getMocksRequest(resolveFn, rejectFn);
             sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/mocks', 'GET', {}, sinon.match.func, rejectFn);
 
-            invokeFn.getCall(0).args[3]({body: '{"x":"x"}'});
+            invokeFn.getCall(0).args[3]({json: ()=> ({x: 'x'})});
             sinon.assert.calledWith(resolveFn, {x: 'x'}); // convert to json object
         });
 
@@ -130,7 +126,7 @@ describe('BaseApimockClient', () => {
             client._getVariablesRequest(resolveFn, rejectFn);
             sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables', 'GET', {}, sinon.match.func, rejectFn);
 
-            invokeFn.getCall(0).args[3]({body: '{"x":"x"}'});
+            invokeFn.getCall(0).args[3]({json: ()=> ({x: 'x'})});
             sinon.assert.calledWith(resolveFn, {x: 'x'}); // convert to json object
         });
 
@@ -349,33 +345,92 @@ describe('BaseApimockClient', () => {
         let url: string;
         let method: string;
         let payload: any;
+        let promise: Promise<any>;
 
         beforeEach(() => {
             url = 'url';
-            method = 'method';
             payload = {'one': 'one'};
-            client.request = request;
-            request.returns({done: requestDoneFn})
+            client.fetch = fetch;
             invokeFn.callThrough();
-            client.invoke(url, method, payload, resolveFn, rejectFn);
         });
-        it('calls the api', () =>
-            sinon.assert.calledWith(request, method, url, {
-                json: payload, headers: {
-                    'Content-Type': 'application/json',
-                    'cookie': `apimockid=${client.apimockId}`
-                }
-            }));
+
+        describe('method is GET', () => {
+            it('calls the api without payload', () => {
+                fetch.resolves();
+                method = 'GET';
+                client.invoke(url, method, payload, resolveFn, rejectFn);
+
+                sinon.assert.calledWith(fetch, url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cookie': `apimockid=${client.apimockId}`
+                    }
+                });
+            });
+        });
+
+        describe('method is DELETE', () => {
+            it('calls the api without payload', () => {
+                fetch.resolves();
+                method = 'DELETE';
+                client.invoke(url, method, payload, resolveFn, rejectFn);
+
+                sinon.assert.calledWith(fetch, url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cookie': `apimockid=${client.apimockId}`
+                    }
+                });
+            });
+        });
+
+        describe('method is POST', () => {
+            it('calls the api with payload', () => {
+                fetch.resolves();
+                method = 'POST';
+                client.invoke(url, method, payload, resolveFn, rejectFn);
+
+                sinon.assert.calledWith(fetch, url, {
+                    method: method,
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cookie': `apimockid=${client.apimockId}`
+                    }
+                });
+            });
+        });
+
+        describe('method is PUT', () => {
+            it('calls the api with payload', () => {
+                fetch.resolves();
+                method = 'PUT';
+                client.invoke(url, method, payload, resolveFn, rejectFn);
+
+                sinon.assert.calledWith(fetch, url, {
+                    method: method,
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cookie': `apimockid=${client.apimockId}`
+                    }
+                });
+            });
+        });
 
         describe('status code OK', () =>
-            it('calls resolve', () => {
-                requestDoneFn.args[0][0]({statusCode: HttpStatusCode.OK});
+            it('calls resolve', async () => {
+                fetch.resolves();
+                await client.invoke(url, method, payload, resolveFn, rejectFn);
                 sinon.assert.called(resolveFn);
             }));
 
         describe('status code not OK', () =>
-            it('calls reject', () => {
-                requestDoneFn.args[0][0]({statusCode: HttpStatusCode.CONFLICT});
+            it('calls reject', async () => {
+                fetch.rejects();
+                await client.invoke(url, method, payload, resolveFn, rejectFn);
                 sinon.assert.called(rejectFn);
             }));
 
