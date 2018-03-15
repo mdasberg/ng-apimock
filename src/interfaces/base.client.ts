@@ -39,8 +39,7 @@ abstract class BaseApimockClient {
      * @param {Function} resolve The resolve callback.
      * @private
      */
-    async _getMocksRequest(resolve: Function,
-                           reject: Function): Promise<any> {
+    async _getMocksRequest(resolve: Function, reject: Function): Promise<any> {
         /** wrap it and return the parsed body */
         const _resolve = (res: any) => resolve(res.json());
         return await this.invoke(this.baseUrl + '/mocks', HttpMethods.GET, {}, _resolve, reject);
@@ -61,8 +60,7 @@ abstract class BaseApimockClient {
      * @param {Function} reject The reject callback.
      * @param {Function} resolve The resolve callback.
      */
-    async _getVariablesRequest(resolve: Function,
-                               reject: Function): Promise<any> {
+    async _getVariablesRequest(resolve: Function, reject: Function): Promise<any> {
         /** wrap it and return the parsed body */
         const _resolve = (res: any) => resolve(res.json());
         return await this.invoke(this.baseUrl + '/variables', HttpMethods.GET, {}, _resolve, reject);

@@ -13,8 +13,8 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
         /** Make sure that angular uses the ngapimock identifier for the requests. */
         browser.getProcessedConfig().then((config) => {
             require('hooker').hook(browser, 'get', {
-                post: (result: any) => {
-                    return result.then(() => {
+                post: (result: any) =>
+                    result.then(() => {
                         // Since protractor 5.0.0 the addCookie is an object, see
                         // https://github.com/angular/protractor/blob/master/CHANGELOG.md#500
                         try {
@@ -23,8 +23,7 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
                             // Fallback protractor < 5.0.0
                             return browser.manage().addCookie('apimockid', this.apimockId);
                         }
-                    });
-                }
+                    })
             });
             this.usePromise = !config.SELENIUM_PROMISE_MANAGER;
         });
@@ -56,8 +55,8 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      * @return {Promise} promise The promise.
      * @deprecated use {@link setVariable}
      */
-    setGlobalVariable(key: string, value: string): Promise<any> {
-        return this.setVariable(key, value);
+    async setGlobalVariable(key: string, value: string): Promise<any> {
+        return await this.setVariable(key, value);
     }
 
     /**
@@ -66,8 +65,8 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      * @return {Promise} promise The promise.
      * @deprecated use {@link setVariables}
      */
-    setGlobalVariables(payload: { [p: string]: string }): Promise<any> {
-        return this.setVariables(payload);
+    async setGlobalVariables(payload: { [p: string]: string }): Promise<any> {
+        return await this.setVariables(payload);
     }
 
     /**
@@ -76,8 +75,8 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      * @return {Promise} promise The promise.
      * @deprecated use {@link deleteVariable}
      */
-    deleteGlobalVariable(key: string): Promise<any> {
-        return this.deleteVariable(key);
+    async deleteGlobalVariable(key: string): Promise<any> {
+        return await this.deleteVariable(key);
     }
 
     /**
@@ -85,8 +84,8 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      * @return {Promise} promise The promise.
      * @deprecated use {@link resetMocksToDefault}.
      */
-    setAllScenariosToDefault(): Promise<any> {
-        return this.resetMocksToDefault();
+    async setAllScenariosToDefault(): Promise<any> {
+        return await this.resetMocksToDefault();
     }
 
     /**
@@ -94,8 +93,8 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
      * @return {Promise} promise The promise.
      * @deprecated use {@link setMocksToPassThrough
      */
-    setAllScenariosToPassThrough(): Promise<any> {
-        return this.setMocksToPassThrough();
+    async setAllScenariosToPassThrough(): Promise<any> {
+        return await this.setMocksToPassThrough();
     }
 }
 
