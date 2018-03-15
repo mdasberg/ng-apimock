@@ -29,7 +29,7 @@ In order to use the available mocks, you need to call the run function with this
 
 ```js
 ngApimock.run({
-  "baseUrl: "http:\/\/<NODE_SERVER_API_URL>:<PORT>", // If not informed browser.baseUrl will be used
+  "baseUrl": "http://<NODE_SERVER_API_URL>:<PORT>", // If not informed browser.baseUrl will be used 
   "src": "test/mocks", 
   "outputDir": "path/to/outputDir", 
   "done": function() { 
