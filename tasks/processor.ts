@@ -32,9 +32,26 @@ class Processor {
     /**
      * Generates the protractor.mock.js file in the given output directory.
      * @param {string} directory The output directory
+     * @param {string} baseUrl The requests baseUrl
      */
-    generateProtractorMock(directory: string): void {
-        fs.copySync(path.join(Processor.PTD, 'protractor.mock.js'), path.join(directory, 'protractor.mock.js'));
+    generateProtractorMock(directory: string, baseUrl: string): void {
+
+        let from = path.join(Processor.PTD, 'protractor.mock.js');
+        let to = path.join(directory, 'protractor.mock.js');
+
+        if (baseUrl) {
+
+            try {
+                var data = fs.readFileSync(from, 'utf-8');
+                var newValue = data.replace(/const requestUrl;/gi, 'const requestUrl = \'' + baseUrl + '\';');
+                fs.writeFileSync(to, newValue, 'utf-8');
+            } catch (error) {
+                console.error('Unable to rewrite protractor.mock.js', error);
+            }
+
+        } else {
+            fs.copySync(from, to);
+        }
     }
 
     /**
@@ -65,6 +82,7 @@ class Processor {
         fs.copySync(angularJs, path.join(directory, 'js', 'angular.min.js'));
         fs.copySync(angularResource, path.join(directory, 'js', 'angular-resource.min.js'));
     }
+
 }
 
 export default Processor;

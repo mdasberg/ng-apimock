@@ -1,44 +1,57 @@
+import { } from 'jasmine';
+
 (() => {
     'use strict';
+
+    class Log {
+
+        constructor() {
+            this.ok = [];
+            this.warn = [];
+            this.error = [];
+        }
+
+        public ok: any[];
+        public warn: any[];
+        public error: any[];
+    }
 
     /**
      * Tests for the ng-apimock plugin.
      */
-    describe('ngApimock', function () {
+    describe('ngApimock', () => {
+
         const hooker = require('hooker');
         const fsExtra = require('fs-extra');
         const path = require('path');
-        const ngApimock = require('./../../tasks/index')();
+        const ngApimock = require('../../tasks/index')();
+
         const DEFAULT_OUTPUT_DIR = '.tmp/mocks';
         const SOME_OTHER_DIR = '.tmp/some-mock-dir';
 
-        let log;
+        let log: Log = new Log();
 
-        beforeEach(function () {
-            log = {
-                ok: [],
-                warn: [],
-                error: []
-            };
-
-            fsExtra.emptydirSync(DEFAULT_OUTPUT_DIR);
-            fsExtra.emptydirSync(SOME_OTHER_DIR);
-        });
-
-        hooker.hook(console, "log", function () {
+        hooker.hook(console, "log", function() {
             log.ok.push(arguments[0]);
         });
-        hooker.hook(console, "info", function () {
+        hooker.hook(console, "info", function() {
             log.ok.push(arguments[0]);
         });
         hooker.hook(console, "warn", function() {
             log.warn.push(arguments);
         });
-        hooker.hook(console, "error", function () {
+        hooker.hook(console, "error", function() {
             log.error.push(arguments[0]);
         });
 
-        it('should fail when no configuration has been provided in the configuration', function () {
+        beforeEach(() => {
+            log = new Log();
+
+            fsExtra.emptydirSync(DEFAULT_OUTPUT_DIR);
+            fsExtra.emptydirSync(SOME_OTHER_DIR);
+        });
+
+        it('should fail when no configuration has been provided in the configuration', () => {
             try {
                 ngApimock.run();
                 fail();
@@ -47,7 +60,7 @@
             }
         });
 
-        it('should fail when no sources directory has been provided in the configuration', function () {
+        it('should fail when no sources directory has been provided in the configuration', () => {
             try {
                 ngApimock.run({});
                 fail();
@@ -56,9 +69,9 @@
             }
         });
 
-        it('should generate everything in the provided directory', function () {
+        it('should generate everything in the provided directory', () => {
+
             const done = jasmine.createSpy('done');
-            const SOME_OTHER_DIR = '.tmp/some-mock-dir';
 
             try {
                 ngApimock.run({
@@ -88,7 +101,21 @@
             }
         });
 
-        it('should generate everything in the default directory', function () {
+        it('should generate protractor.mock.js with baseUrl information correctly', () => {
+            try {
+                ngApimock.run({
+                    baseUrl: "http://some_uri:some_port",
+                    src: 'test/mocks/api',
+                });
+            } catch (e) {
+                fail();
+            } finally {
+                expect(fsExtra.existsSync(DEFAULT_OUTPUT_DIR + path.sep + 'protractor.mock.js')).toBeTruthy();
+                expect(fsExtra.readFileSync(DEFAULT_OUTPUT_DIR + path.sep + 'protractor.mock.js').toString()).toContain("const requestUrl = 'http://some_uri:some_port';");
+            }
+        });        
+
+        it('should generate everything in the default directory', () => {
             try {
                 ngApimock.run({
                     src: 'test/mocks/api'
@@ -114,7 +141,7 @@
             }
         });
 
-        it('should show warnings for duplicate mock identifiers', function () {
+        it('should show warnings for duplicate mock identifiers', () => {
             try {
                 ngApimock.run({
                     src: 'test/mocks/error-duplicate'
@@ -128,4 +155,5 @@
             }
         });
     });
+
 })();
