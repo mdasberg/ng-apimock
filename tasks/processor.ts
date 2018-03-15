@@ -36,14 +36,14 @@ class Processor {
      */
     generateProtractorMock(directory: string, baseUrl: string): void {
 
-        let from = path.join(Processor.PTD, 'protractor.mock.js');
-        let to = path.join(directory, 'protractor.mock.js');
+        const from = path.join(Processor.PTD, 'protractor.mock.js');
+        const to = path.join(directory, 'protractor.mock.js');
 
         if (baseUrl) {
 
             try {
-                var data = fs.readFileSync(from, 'utf-8');
-                var newValue = data.replace(/const requestUrl;/gi, 'const requestUrl = \'' + baseUrl + '\';');
+                const data = fs.readFileSync(from, 'utf-8');
+                const newValue = data.replace(/const requestUrl;/gi, 'const requestUrl = \'' + baseUrl + '\';');
                 fs.writeFileSync(to, newValue, 'utf-8');
             } catch (error) {
                 console.error('Unable to rewrite protractor.mock.js', error);
