@@ -1,5 +1,3 @@
-
-
 class PagePO {
     get data()  { return element(by.className('data')); }
     get status() { return element(by.className('status')); }

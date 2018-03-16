@@ -2,7 +2,7 @@ const connect = require('connect');
 const serveStatic = require('serve-static');
 const path = require("path");
 const app = connect();
-const apimock = require(path.join(process.cwd(), 'dist','src','index'));
+const apimock = require(path.join(process.cwd(), 'dist','index'));
 
 apimock.processor.process(path.join(process.cwd(), 'test', 'mocks'));
 
