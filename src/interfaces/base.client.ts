@@ -18,6 +18,29 @@ abstract class BaseApimockClient {
     }
 
     /**
+     * Opens the given url.
+     * @param {string} url The url.
+     * @return {Promise<any>} promise The promise.
+     */
+    abstract async openUrl(url: string): Promise<any>;
+
+    /**
+     * Sets the Apimock cookie.
+     * @return {Promise<any>} promise The promise.
+     */
+    abstract async setCookie(name: string, value: string): Promise<any>;
+
+    /**
+     * Sets the apimock cookie.
+     * @return {Promise<any>} promise The promise.
+     */
+    async setApimockCookie(): Promise<any> {
+        await this.openUrl(this.baseUrl + '/init').then(() =>
+            this.setCookie('apimockid', this.apimockId));
+        return this;
+    }
+
+    /**
      * Wrap the given function as a promise.
      * @param {Function} func The function.
      * @return {Promise<any>} promise The promise.

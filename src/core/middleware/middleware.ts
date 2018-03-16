@@ -55,7 +55,9 @@ class Middleware {
                 requestDataChunks.push(rawData);
             }).on('end', () => {
                 const payload = requestDataChunks.length > 0 ? JSON.parse(Buffer.concat(requestDataChunks).toString()) : {};
-                if (request.url.startsWith('/ngapimock/mocks')) {
+                if (request.url.startsWith('/ngapimock/init')) {
+                    next(); // used to initialize the client which sets the cookie on the correct domain before opening the page.
+                }else if (request.url.startsWith('/ngapimock/mocks')) {
                     this.scenarioHandler.handle(request, response, next, {id: apimockId, payload: payload});
                 } else if (request.url.startsWith('/ngapimock/variables')) {
                     this.variableHandler.handle(request, response, next, {id: apimockId, payload: payload});

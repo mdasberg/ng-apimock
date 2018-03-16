@@ -27,7 +27,7 @@ exports.config = {
         require: [path.join(__dirname, 'step_definitions/*.steps.js')],
         format: ['summary']
     },
-    onPrepare: function () {
+    onPrepare: () => {
         const child_process = require('child_process');
         server = child_process.spawn('node',
             [path.join(process.cwd(), 'test/apps/angular/serve.js')],
@@ -35,13 +35,14 @@ exports.config = {
 
         process.on('exit', () => server.kill());
     },
-    before: function () {
+    before: async () => {
         const chai = require('chai');
         chai.use(require('chai-as-promised'));
         global.chai = chai;
         global.expect = chai.expect;
+        global.client = await require(path.join(process.cwd(), 'dist', 'interfaces', 'interfaces')).webdriverio;
     },
-    onComplete: function () {
+    onComplete: () => {
         server.kill();
     }
 };

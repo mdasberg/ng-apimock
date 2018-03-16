@@ -1,6 +1,4 @@
 import * as sinon from 'sinon';
-
-import {browser} from 'protractor';
 import ProtractorClient from './protractor';
 
 describe('ProtractorClient', () => {
@@ -10,13 +8,13 @@ describe('ProtractorClient', () => {
     let rejectFn: sinon.SinonStub;
     let deferredPromise: any;
     let browserGetProcessedConfigThenFn: any;
-    let browserGetThenFn: sinon.SinonStub;
+    let browserGetFn: sinon.SinonStub;
     let browserManageAddCookieFn: sinon.SinonStub;
 
     beforeAll(() => {
         deferredPromise = {};
         browserGetProcessedConfigThenFn = sinon.stub();
-        browserGetThenFn = sinon.stub();
+        browserGetFn = sinon.stub();
         browserManageAddCookieFn = sinon.stub();
 
         (global as any)['protractor'] = {
@@ -25,9 +23,9 @@ describe('ProtractorClient', () => {
                 getProcessedConfig: () => ({
                     then: browserGetProcessedConfigThenFn
                 }),
-                get: () => ({
-                    then: browserGetThenFn
-                }),
+                driver: {
+                    get: browserGetFn
+                },
                 manage: () => ({
                     addCookie: browserManageAddCookieFn
                 })
@@ -62,41 +60,31 @@ describe('ProtractorClient', () => {
                     expect(client.usePromise).toBe(false);
                 }));
         });
-
-        describe('process browser config', () => {
-            beforeEach(() => {
-                browserGetProcessedConfigThenFn.getCall(0).args[0]({SELENIUM_PROMISE_MANAGER: false});
-            });
-
-            describe('protractor >= 5.0.0', () =>
-                it('sets the apimockid cookie', () => {
-                    browser.get(undefined, undefined); // call the hook
-                    browserGetThenFn.getCall(0).args[0](); // resolve then
-                    sinon.assert.calledWith(browserManageAddCookieFn, {name: 'apimockid', value: client.apimockId});
-                }));
-
-            describe('protractor < 5.0.0', () =>
-                it('sets the apimockid cookie', () => {
-                    browser.get(undefined, undefined); // call the hook
-                    browserManageAddCookieFn.throwsException(new Error());
-                    try {
-                        browserGetThenFn.getCall(0).args[0](); // resolve then
-                        sinon.assert.calledWith(browserManageAddCookieFn, 'apimockid', client.apimockId);
-                    } catch (e) {
-                    }
-                }));
-        });
     });
+
+    describe('openUrl', () =>
+        it('opens the url', async () => {
+            await client.openUrl('url');
+            sinon.assert.calledWith(browserGetFn, 'url');
+        }));
+
+    describe('setCookie', () =>
+        it('sets the cookie', async () => {
+            await client.setCookie('name', 'value');
+            sinon.assert.calledWith(browserManageAddCookieFn, {name: 'name', value: 'value'});
+        }));
 
     describe('wrapAsPromise', () => {
         describe('use promise', () =>
-            it('returns a promise', () => expect(client.wrapAsPromise(() => {
+            it('returns a promise', () => {
                 client.usePromise = true;
-            }) instanceof Promise).toBe(true)));
+                expect(client.wrapAsPromise(() => {}) instanceof Promise).toBe(true);
+            }));
 
         describe('use promise === false', () =>
-            it('returns a  protractor.promise.defer', () => expect(client.wrapAsPromise(() => {
+            it('returns a protractor.promise.defer', () => {
                 client.usePromise = false;
-            }) === deferredPromise).toBe(false)));
+                expect(client.wrapAsPromise(() => {})).toEqual(deferredPromise);
+            }));
     });
 });

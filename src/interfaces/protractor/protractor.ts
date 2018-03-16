@@ -10,23 +10,20 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
     constructor() {
         super(browser.baseUrl);
 
-        /** Make sure that angular uses the ngapimock identifier for the requests. */
+        /** Make sure to use the correct promise. */
         browser.getProcessedConfig().then((config) => {
-            require('hooker').hook(browser, 'get', {
-                post: (result: any) =>
-                    result.then(() => {
-                        // Since protractor 5.0.0 the addCookie is an object, see
-                        // https://github.com/angular/protractor/blob/master/CHANGELOG.md#500
-                        try {
-                            return (browser.manage() as any).addCookie({name: 'apimockid', value: this.apimockId});
-                        } catch (error) {
-                            // Fallback protractor < 5.0.0
-                            return browser.manage().addCookie('apimockid', this.apimockId);
-                        }
-                    })
-            });
             this.usePromise = !config.SELENIUM_PROMISE_MANAGER;
         });
+    }
+
+    /** {@inheritDoc}. */
+    async openUrl(url: string): Promise<any> {
+        return await browser.driver.get(url);
+    }
+
+    /** {@inheritDoc}. */
+    async setCookie(name: string, value: string): Promise<any> {
+        return await (browser.manage() as any).addCookie({name: name, value: value});
     }
 
     /**

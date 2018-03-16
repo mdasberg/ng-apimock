@@ -6,12 +6,16 @@ class WebdriverIOClient extends BaseApimockClient implements ApimockClient {
     /** Constructor.*/
     constructor() {
         super(browser.options.baseUrl);
-        /** Make sure that angular uses the ngapimock identifier for the requests. */
-        require('hooker').hook(browser, 'url', {
-            post: (result: any) =>
-                result.then(() =>
-                    browser.setCookie({name: 'apimockid', value: this.apimockId}))
-        });
+    }
+
+    /** {@inheritDoc}. */
+    async openUrl(url: string): Promise<any> {
+        return await browser.url(url);
+    }
+
+    /** {@inheritDoc}. */
+    async setCookie(name: string, value: string): Promise<any> {
+        return await browser.setCookie({name: name, value: value});
     }
 
     /** {@inheritDoc}. */

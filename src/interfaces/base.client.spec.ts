@@ -3,6 +3,13 @@ import * as sinon from 'sinon';
 import BaseApimockClient from './base.client';
 
 class TestClient extends BaseApimockClient {
+    openUrl(url: string): Promise<any> {
+        return undefined;
+    }
+
+    setCookie(name: string, value: string): Promise<any> {
+        return undefined;
+    }
     wrapAsPromise(func: Function): Promise<any> {
         return undefined;
     }
@@ -29,6 +36,8 @@ describe('BaseApimockClient', () => {
     let resetMocksToDefaultFn: sinon.SinonStub;
     let setMocksToPassThroughFn: sinon.SinonStub;
     let performActionRequestFn: sinon.SinonStub;
+    let openUrlFn: sinon.SinonStub;
+    let setCookieFn: sinon.SinonStub;
 
     beforeAll(() => {
         client = new TestClient(BASE_URL);
@@ -46,6 +55,9 @@ describe('BaseApimockClient', () => {
         resetMocksToDefaultFn = sinon.stub(BaseApimockClient.prototype, <any>'resetMocksToDefault');
         setMocksToPassThroughFn = sinon.stub(BaseApimockClient.prototype, <any>'setMocksToPassThrough');
         performActionRequestFn = sinon.stub(BaseApimockClient.prototype, <any>'_performActionRequest');
+        openUrlFn = sinon.stub(TestClient.prototype, <any>'openUrl');
+        setCookieFn = sinon.stub(TestClient.prototype, <any>'setCookie');
+
         resolveFn = sinon.stub();
         rejectFn = sinon.stub();
         fetch = sinon.stub();
@@ -61,6 +73,30 @@ describe('BaseApimockClient', () => {
 
         it('sets the fetch', () =>
             expect(client.fetch).toBeDefined());
+    });
+
+    describe('setApimockCookie', () => {
+        let promise: Promise<any>;
+        beforeEach(()=> {
+            openUrlFn.resolves();
+            setCookieFn.resolves();
+            promise = client.setApimockCookie();
+        });
+        it('opens the init url', async() => {
+            await promise;
+            sinon.assert.calledWith(openUrlFn, BASE_URL + '/ngapimock/init');
+        });
+
+        it('sets the cookie', async() => {
+            await promise;
+
+            sinon.assert.calledWith(setCookieFn, 'apimockid', client.apimockId);
+        });
+
+        afterEach(() => {
+            openUrlFn.reset();
+            setCookieFn.reset();
+        });
     });
 
     describe('getMocks', () => {

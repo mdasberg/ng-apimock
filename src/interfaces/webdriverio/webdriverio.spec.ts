@@ -9,22 +9,20 @@ describe('WebdriverIOClient', () => {
     let rejectFn: sinon.SinonStub;
     let deferredPromise: any;
     let browserGetProcessedConfigThenFn: any;
-    let browserUrlThenFn: sinon.SinonStub;
+    let browserUrlFn: sinon.SinonStub;
     let browserSetCookieFn: sinon.SinonStub;
 
     beforeAll(() => {
         deferredPromise = {};
         browserGetProcessedConfigThenFn = sinon.stub();
-        browserUrlThenFn = sinon.stub();
+        browserUrlFn = sinon.stub();
         browserSetCookieFn = sinon.stub();
 
         (global as any)['browser'] = {
             options: {
                 baseUrl: BASE_URL
             },
-            url: () => ({
-                then: browserUrlThenFn
-            }),
+            url: browserUrlFn,
             setCookie: browserSetCookieFn
         };
 
@@ -34,16 +32,21 @@ describe('WebdriverIOClient', () => {
         client = new WebdriverIOClient();
     });
 
-    describe('constructor', () => {
+    describe('constructor', () =>
         it('sets the baseUrl', () =>
-            expect(client.baseUrl).toBe(BASE_URL + '/ngapimock'));
+            expect(client.baseUrl).toBe(BASE_URL + '/ngapimock')));
 
-        it('sets the apimockid cookie', () => {
-            (global as any)['browser'].url(undefined); // call the hook
-            browserUrlThenFn.getCall(0).args[0](); // resolve then
-            sinon.assert.calledWith(browserSetCookieFn, {name: 'apimockid', value: client.apimockId});
-        });
-    });
+    describe('openUrl', () =>
+        it('opens the url', async () => {
+            await client.openUrl('url');
+            sinon.assert.calledWith(browserUrlFn, 'url');
+        }));
+
+    describe('setCookie', () =>
+        it('sets the cookie', async () => {
+            await client.setCookie('name', 'value');
+            sinon.assert.calledWith(browserSetCookieFn, {name: 'name', value: 'value'});
+        }));
 
     describe('wrapAsPromise', () =>
         it('returns a promise', () =>

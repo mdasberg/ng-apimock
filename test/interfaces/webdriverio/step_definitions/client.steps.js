@@ -1,6 +1,5 @@
 (() => {
     const {Given, When, After} = require('cucumber');
-    const client = require('../../../../dist/interfaces/interfaces').webdriverio;
 
     Given(/^the following mock state$/, async (dataTable) =>
         await client.getMocks().then((mocks) =>

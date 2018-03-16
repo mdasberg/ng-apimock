@@ -1,3 +1,5 @@
+const path = require('path');
+
 exports.config = {
     allScriptsTimeout: 5000,
     baseUrl: 'http://localhost:9900/',
@@ -7,13 +9,15 @@ exports.config = {
     specs: [
         '../../*.feature'
     ],
-    onPrepare: () => {
+    onPrepare: async () => {
         const chai = require('chai');
         chai.use(require('chai-as-promised'));
         global.chai = chai;
         global.expect = chai.expect;
-        browser.driver.get(this.config.baseUrl).then(() => // take care of setting the cookie
-            browser.driver.manage().window().maximize());
+        await browser.getProcessedConfig().then(async (config) => {
+            global.client = await require(path.join(process.cwd(), 'dist','interfaces','interfaces')).protractor;
+            await browser.driver.manage().window().maximize();
+        });
     },
     framework: 'custom',
     frameworkPath: require.resolve('protractor-cucumber-framework'),
