@@ -3,6 +3,7 @@ test
 
 # typescript
 **/*.ts
+!**/*.d.ts
 tslint.json
 tsconfig.json
 
@@ -15,6 +16,7 @@ _config.yml
 .npmignore
 yarn.lock
 .tmp/
+spec
 
 #docker
 dockerize.js

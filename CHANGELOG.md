@@ -1,3 +1,9 @@
+<a name="1.4.5"></a>
+# 1.4.5 (2018-03-15)
+
+## Feature
+- Add baseUrl at run configuration
+
 <a name="1.4.4"></a>
 # 1.4.4 (2017-12-13)
 
