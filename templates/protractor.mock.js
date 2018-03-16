@@ -2,7 +2,7 @@
     'use strict';
 
     //The line below will be replaced to include external param info (e.g "const requestUrl = 'http://localhost:9900'")
-    const requestUrl;
+    const requestUrl = undefined;
 
     const path = require('path');
     const ngapimockid = _require('uuid').v4();

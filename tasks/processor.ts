@@ -43,7 +43,7 @@ class Processor {
 
             try {
                 const data = fs.readFileSync(from, 'utf-8');
-                const newValue = data.replace(/const requestUrl;/gi, 'const requestUrl = \'' + baseUrl + '\';');
+                const newValue = data.replace(/const requestUrl = undefined;/gi, 'const requestUrl = \'' + baseUrl + '\';');
                 fs.writeFileSync(to, newValue, 'utf-8');
             } catch (error) {
                 console.error('Unable to rewrite protractor.mock.js', error);
