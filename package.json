@@ -85,6 +85,7 @@
     "tslint": "5.6.0",
     "tslint-eslint-rules": "4.1.1",
     "typescript": "2.4.2",
-    "vrsource-tslint-rules": "5.1.1"
+    "vrsource-tslint-rules": "5.1.1",
+    "express": "4.16.3"
   }
 }
