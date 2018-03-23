@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function MockingController(mockService, variableService, $interval, $window) {
+    function MockingController(mockService, presetService, variableService, $interval, $scope, $window) {
         var vm = this;
         var interval;
 
@@ -14,9 +14,12 @@
         vm.addVariable = addVariable;
         vm.updateVariable = updateVariable;
         vm.deleteVariable = deleteVariable;
+        vm.applyPreset = applyPreset;
+        vm.exportAsPreset = exportAsPreset;
 
         vm.$onInit = function () {
             fetchMocks();
+            fetchPresets();
             fetchVariables();
 
             vm.variable = {
@@ -42,6 +45,7 @@
                 if (vm.record) {
                     interval = $interval(refreshMocks, 5000);
                 }
+                vm.defaults = getAllDefaults();
             });
         }
 
@@ -50,6 +54,30 @@
             variableService.get({}, function (response) {
                 vm.variables = response;
             });
+        }
+
+        /** Fetch all the presets and make them available. */
+        function fetchPresets() {
+            presetService.get({}, function (response) {
+                vm.presets = response;
+            });
+        }
+
+        /**
+         * Extract all default scenarios from the mocks for faster lookup
+         */
+        function getAllDefaults() {
+            return vm.mocks.reduce(function (defaults, mock) {
+                var defaultResponse = Object.keys(mock.responses).filter(function(key) {
+                    return mock.responses[key].default === true;
+                })[0];
+
+                if(defaultResponse) {
+                    defaults[mock.identifier] = defaultResponse;
+                }
+
+                return defaults;
+            }, {});
         }
 
         /**
@@ -157,9 +185,42 @@
                 delete vm.variables[key];
             });
         }
+
+        /**
+         * Show the current selection as preset json, so it can be exported.
+         * We only need to export selections that deviate from the default, including 'passThrough' selections.
+         */
+        function exportAsPreset() {
+            var selections = vm.mocks.map(function(mock) {
+                return {
+                    name: mock.identifier,
+                    value: vm.selections[mock.identifier]
+                };
+            }).filter(function (selection) {
+                return selection.value !== vm.defaults[selection.name]
+            }).reduce(function (all, current) {
+                all[current.name] = current.value || null;
+                return all;
+            }, {});
+
+            vm.exportPreset = JSON.stringify({
+                name: "[preset name]",
+                scenarios: selections
+            }, null, 2);
+        }
+
+        /**
+         * Apply the provided preset
+         * @param preset The preset to apply
+         */
+        function applyPreset(preset) {
+            presetService.applyPreset({preset: preset}, function () {
+                $window.location.reload();
+            });
+        }
     }
 
-    MockingController.$inject = ['mockService', 'variableService', '$interval', '$window'];
+    MockingController.$inject = ['mockService', 'presetService', 'variableService', '$interval', '$scope', '$window'];
 
     /**
      * @ngdoc controller

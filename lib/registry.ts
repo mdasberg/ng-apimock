@@ -1,7 +1,9 @@
 import Mock from '../tasks/mock';
+import Preset from '../tasks/preset';
 
 class Registry {
     mocks: Mock[];
+    presets: Preset[];
     defaults: { [key: string]: string };
     sessions: {
         [key: string]: {
@@ -20,6 +22,7 @@ class Registry {
 
     constructor() {
         this.mocks = [];
+        this.presets = [];
         this.defaults = {};
         this.sessions = {};
         this.selections = {};

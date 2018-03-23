@@ -116,6 +116,12 @@
         }, 'Could not echo the request');
     }
 
+    function applyPreset(preset) {
+        return _execute('PUT', '/presets', {
+            preset: preset
+        }, 'Could not select preset [' + preset + ']');
+    }
+
     /**
      * Selects the default scenario for each mock.
      * @return {Promise} the promise.
@@ -276,6 +282,7 @@
 
         setAllScenariosToDefault: setAllScenariosToDefault,
         setAllScenariosToPassThrough: setAllScenariosToPassThrough,
+        applyPreset: applyPreset,
 
         setGlobalVariable: setGlobalVariable,
         setGlobalVariables: setGlobalVariables,
