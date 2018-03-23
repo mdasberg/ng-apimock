@@ -114,7 +114,9 @@
     }
 
     function applyPreset(preset) {
-        return _execute('PUT', '/presets', preset, 'Could not select preset [' + preset + ']');
+        return _execute('PUT', '/presets', {
+            preset: preset
+        }, 'Could not select preset [' + preset + ']');
     }
 
     /**

@@ -10,7 +10,7 @@ abstract class ApplyPresetHandler implements Handler {
     /**
      * Handle the preset selection.
      * @param registry The registry.
-     * @param identifier The preset identifier.
+     * @param preset The preset identifier.
      * @param ngApimockId The ngApimock id.
      */
     abstract handlePresetSelection(registry: Registry, preset: Preset, ngApimockId?: string): void;
@@ -29,13 +29,13 @@ abstract class ApplyPresetHandler implements Handler {
         });
 
         request.on('end', () => {
-            const presetName = Buffer.concat(requestDataChunks).toString();
+            const data = JSON.parse(Buffer.concat(requestDataChunks).toString());
             try {
-                const match = registry.presets.find(_preset => _preset.name === presetName);
+                const match = registry.presets.find(_preset => _preset.name === data.preset);
                 if (match) {
                     this.handlePresetSelection(registry, match, ngApimockId);
                 } else {
-                    throw new Error('No preset matching identifier [' + presetName + '] found');
+                    throw new Error('No preset matching identifier [' + data + '] found');
                 }
                 response.writeHead(200, httpHeaders.CONTENT_TYPE_APPLICATION_JSON);
                 response.end();

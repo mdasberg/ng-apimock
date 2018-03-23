@@ -214,7 +214,7 @@
          * @param preset The preset to apply
          */
         function applyPreset(preset) {
-            presetService.applyPreset(preset, function () {
+            presetService.applyPreset({preset: preset}, function () {
                 $window.location.reload();
             });
         }
