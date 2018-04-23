@@ -1,6 +1,6 @@
-import {browser, protractor} from 'protractor';
 import ApimockClient from '../apimock.client';
 import BaseApimockClient from '../base.client';
+import {browser, protractor} from 'protractor';
 
 /** Protractor client for apimock. */
 class ProtractorClient extends BaseApimockClient implements ApimockClient {

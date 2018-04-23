@@ -17,27 +17,28 @@ class TestClient extends BaseApimockClient {
 
 describe('BaseApimockClient', () => {
     const BASE_URL = 'http://localhost:9000';
+
     let client: BaseApimockClient;
-    let invokeFn: sinon.SinonStub;
-    let resolveFn: sinon.SinonStub;
-    let rejectFn: sinon.SinonStub;
-    let fetch: sinon.SinonStub;
-    let wrapAsPromiseFn: sinon.SinonStub;
-    let updateMockFn: sinon.SinonStub;
-    let updateMockRequestFn: sinon.SinonStub;
-    let setVariablesFn: sinon.SinonStub;
-    let setVariablesRequestFn: sinon.SinonStub;
     let deleteVariableFn: sinon.SinonStub;
     let deleteVariableRequestFn: sinon.SinonStub;
+    let fetch: sinon.SinonStub;
     let getMocksFn: sinon.SinonStub;
     let getMocksRequestFn: sinon.SinonStub;
     let getVariablesFn: sinon.SinonStub;
     let getVariablesRequestFn: sinon.SinonStub;
-    let resetMocksToDefaultFn: sinon.SinonStub;
-    let setMocksToPassThroughFn: sinon.SinonStub;
-    let performActionRequestFn: sinon.SinonStub;
+    let invokeFn: sinon.SinonStub;
     let openUrlFn: sinon.SinonStub;
+    let performActionRequestFn: sinon.SinonStub;
+    let rejectFn: sinon.SinonStub;
+    let resetMocksToDefaultFn: sinon.SinonStub;
+    let resolveFn: sinon.SinonStub;
     let setCookieFn: sinon.SinonStub;
+    let setMocksToPassThroughFn: sinon.SinonStub;
+    let setVariablesFn: sinon.SinonStub;
+    let setVariablesRequestFn: sinon.SinonStub;
+    let updateMockFn: sinon.SinonStub;
+    let updateMockRequestFn: sinon.SinonStub;
+    let wrapAsPromiseFn: sinon.SinonStub;
 
     beforeAll(() => {
         client = new TestClient(BASE_URL);

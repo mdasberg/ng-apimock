@@ -4,19 +4,19 @@ import WebdriverIOClient from './webdriverio';
 
 describe('WebdriverIOClient', () => {
     const BASE_URL = 'http://localhost:9000';
-    let client: WebdriverIOClient;
-    let resolveFn: sinon.SinonStub;
-    let rejectFn: sinon.SinonStub;
-    let deferredPromise: any;
     let browserGetProcessedConfigThenFn: any;
-    let browserUrlFn: sinon.SinonStub;
     let browserSetCookieFn: sinon.SinonStub;
+    let browserUrlFn: sinon.SinonStub;
+    let client: WebdriverIOClient;
+    let deferredPromise: any;
+    let rejectFn: sinon.SinonStub;
+    let resolveFn: sinon.SinonStub;
 
     beforeAll(() => {
-        deferredPromise = {};
         browserGetProcessedConfigThenFn = sinon.stub();
-        browserUrlFn = sinon.stub();
         browserSetCookieFn = sinon.stub();
+        browserUrlFn = sinon.stub();
+        deferredPromise = {};
 
         (global as any)['browser'] = {
             options: {

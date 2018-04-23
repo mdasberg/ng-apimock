@@ -1,11 +1,10 @@
-import {RequestInit} from 'node-fetch';
 import {HttpHeaders, HttpMethods} from '../core/middleware/http';
 
 /** Base client that takes care of the actual invoking of the apimock api.*/
 abstract class BaseApimockClient {
     apimockId: string;
-    fetch: any;
     baseUrl: string;
+    fetch: any;
 
     /**
      * Constructor.
@@ -13,8 +12,8 @@ abstract class BaseApimockClient {
      */
     constructor(baseUrl: string) {
         this.apimockId = require('uuid').v4();
-        this.fetch = require('node-fetch');
         this.baseUrl = require('url-join')(baseUrl, 'ngapimock');
+        this.fetch = require('node-fetch');
     }
 
     /**

@@ -3,24 +3,18 @@ import {Container} from 'inversify';
 
 import * as sinon from 'sinon';
 
-import GlobalState from './global.state';
 import MocksState from './mocks.state';
 import SessionState from './session.state';
 import State from './state';
 
 describe('MocksState', () => {
-    let container: Container;
-    let mocksState: MocksState;
     const simpleMock = {
         name: 'simple',
         request: {
             url: 'some/api',
             method: 'GET',
         },
-        responses: {
-            one: {},
-            two: {}
-        }
+        responses: {one: {}, two: {}}
     };
     const advancedMock = {
         name: 'advanced',
@@ -36,27 +30,21 @@ describe('MocksState', () => {
                 identifier: '^[a-zA-Z]{4}$'
             }
         },
-        responses: {
-            three: {},
-            four: {}
-        }
+        responses: {three: {}, four: {}}
     };
 
-    let getMatchingStateFn: sinon.SinonStub;
+    let container: Container;
+    let mocksState: MocksState;
+    let mocksStateGetMatchingStateFn: sinon.SinonStub;
 
     beforeAll(() => {
         container = new Container();
-        container.bind<MocksState>('MocksState').to(MocksState);
-        mocksState = container.get<MocksState>('MocksState');
-
-        mocksState.mocks.push(simpleMock);
-        mocksState.mocks.push(advancedMock);
-
-        getMatchingStateFn = sinon.stub(MocksState.prototype, <any>'getMatchingState');
+        mocksState = new MocksState();
+        mocksStateGetMatchingStateFn = sinon.stub(MocksState.prototype, <any>'getMatchingState');
+        mocksState.mocks = [simpleMock, advancedMock];
     });
 
     describe('getMatchingState', () => {
-        let globalState: GlobalState;
         const SOME = 'some';
         const SOME_MOCK = {
             scenario: 'thing',
@@ -65,18 +53,15 @@ describe('MocksState', () => {
         };
 
         beforeEach(() => {
-            globalState = mocksState.global;
-            globalState.mocks[SOME] = SOME_MOCK;
-            globalState.variables[SOME] = SOME;
-
+            mocksState.global.mocks[SOME] = SOME_MOCK;
+            mocksState.global.variables[SOME] = SOME;
             mocksState.sessions = [];
-
-            getMatchingStateFn.callThrough();
+            mocksStateGetMatchingStateFn.callThrough();
         });
 
         describe('id === undefined', () =>
             it('returns the global mocksState', () =>
-                expect(mocksState.getMatchingState(undefined)).toBe(globalState)));
+                expect(mocksState.getMatchingState(undefined)).toBe(mocksState.global)));
 
         describe('no session matching the id', () =>
             it('returns a new SessionState by cloning the GlobalState', () => {
@@ -105,7 +90,7 @@ describe('MocksState', () => {
         });
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 
@@ -119,7 +104,7 @@ describe('MocksState', () => {
 
         describe('url does not match', () =>
             it('returns undefined', () =>
-                expect(mocksState.getMatchingMock(INVALID_URL, 'POST', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
+                expect(mocksState.getMatchingMock(INVALID_URL, 'P2OST', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
 
         describe('method does not match', () =>
             it('returns undefined', () =>
@@ -155,7 +140,7 @@ describe('MocksState', () => {
                 },
                 variables: {}
             };
-            getMatchingStateFn.returns(state);
+            mocksStateGetMatchingStateFn.returns(state);
         });
 
         describe('no matching mock', () =>
@@ -167,7 +152,7 @@ describe('MocksState', () => {
                 expect(mocksState.getResponse('simple', 'id')).toBe(simpleMock.responses['one'])));
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 
@@ -184,7 +169,7 @@ describe('MocksState', () => {
                 },
                 variables: {}
             };
-            getMatchingStateFn.returns(state);
+            mocksStateGetMatchingStateFn.returns(state);
         });
 
         describe('no matching mock', () =>
@@ -196,7 +181,7 @@ describe('MocksState', () => {
                 expect(mocksState.getDelay('simple', 'id')).toBe(1000)));
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 
@@ -213,7 +198,7 @@ describe('MocksState', () => {
                 },
                 variables: {}
             };
-            getMatchingStateFn.returns(state);
+            mocksStateGetMatchingStateFn.returns(state);
         });
 
         describe('no matching mock', () =>
@@ -225,7 +210,7 @@ describe('MocksState', () => {
                 expect(mocksState.getEcho('simple', 'id')).toBe(true)));
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 
@@ -239,7 +224,7 @@ describe('MocksState', () => {
                     that: 'that'
                 }
             };
-            getMatchingStateFn.returns(state);
+            mocksStateGetMatchingStateFn.returns(state);
         });
 
         it('returns the state variables', () => {
@@ -248,7 +233,7 @@ describe('MocksState', () => {
         });
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 
@@ -284,7 +269,7 @@ describe('MocksState', () => {
         });
 
         it('sets the state to defaults', () => {
-            getMatchingStateFn.returns(state);
+            mocksStateGetMatchingStateFn.returns(state);
             let simpleMockState = state.mocks['simple'];
             expect(simpleMockState.scenario).toBe('one');
             expect(simpleMockState.delay).toBeTruthy(1000);
@@ -309,7 +294,7 @@ describe('MocksState', () => {
         });
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 
@@ -345,7 +330,7 @@ describe('MocksState', () => {
         });
 
         it('sets the state to defaults', () => {
-            getMatchingStateFn.returns(state);
+            mocksStateGetMatchingStateFn.returns(state);
             let simpleMockState = state.mocks['simple'];
             expect(simpleMockState.scenario).toBe('one');
             expect(simpleMockState.delay).toBeTruthy(1000);
@@ -370,7 +355,7 @@ describe('MocksState', () => {
         });
 
         afterEach(() => {
-            getMatchingStateFn.reset();
+            mocksStateGetMatchingStateFn.reset();
         });
     });
 });

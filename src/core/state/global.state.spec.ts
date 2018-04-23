@@ -1,8 +1,8 @@
 import SessionState from './session.state';
 
 describe('SessionState', () => {
-    let state: SessionState;
     const IDENTIFIER = 'id';
+    let state: SessionState;
 
     describe('constructor', () => {
         beforeAll(() => {

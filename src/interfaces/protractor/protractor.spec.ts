@@ -3,19 +3,19 @@ import ProtractorClient from './protractor';
 
 describe('ProtractorClient', () => {
     const BASE_URL = 'http://localhost:9000';
+    let browserGetFn: sinon.SinonStub;
+    let browserGetProcessedConfigThenFn: any;
+    let browserManageAddCookieFn: sinon.SinonStub;
     let client: ProtractorClient;
+    let deferredPromise: any;
     let resolveFn: sinon.SinonStub;
     let rejectFn: sinon.SinonStub;
-    let deferredPromise: any;
-    let browserGetProcessedConfigThenFn: any;
-    let browserGetFn: sinon.SinonStub;
-    let browserManageAddCookieFn: sinon.SinonStub;
 
     beforeAll(() => {
-        deferredPromise = {};
         browserGetProcessedConfigThenFn = sinon.stub();
         browserGetFn = sinon.stub();
         browserManageAddCookieFn = sinon.stub();
+        deferredPromise = {};
 
         (global as any)['protractor'] = {
             browser: {
@@ -37,8 +37,8 @@ describe('ProtractorClient', () => {
             }
         };
 
-        resolveFn = sinon.stub();
         rejectFn = sinon.stub();
+        resolveFn = sinon.stub();
 
         client = new ProtractorClient();
     });

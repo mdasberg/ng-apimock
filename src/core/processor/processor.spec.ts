@@ -11,33 +11,38 @@ import MocksState from '../state/mocks.state';
 import {HttpHeaders} from '../middleware/http';
 
 describe('MocksProcessor', () => {
-    let processor: MocksProcessor;
-    let container: Container;
-    let mocksState: MocksState;
-    let fsReadJsonSyncFn: sinon.SinonStub;
-    let doneFn: sinon.SinonStub;
-    let globSyncFn: sinon.SinonStub;
-    let consoleWarnFn: sinon.SinonStub;
-    let consoleLogFn: sinon.SinonStub;
-
     const SRC = 'src';
+
+    let consoleLogFn: sinon.SinonStub;
+    let consoleWarnFn: sinon.SinonStub;
+    let container: Container;
+    let doneFn: sinon.SinonStub;
+    let fsReadJsonSyncFn: sinon.SinonStub;
+    let globSyncFn: sinon.SinonStub;
+    let mocksState: MocksState;
+    let processor: MocksProcessor;
 
     beforeAll(() => {
         container = new Container();
-        container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
-        container.bind<MocksProcessor>('MocksProcessor').to(MocksProcessor);
         doneFn = sinon.stub();
-        fsReadJsonSyncFn = sinon.stub(fs, <any>'readJsonSync');
-        globSyncFn = sinon.stub(glob, <any>'sync');
+        mocksState = sinon.createStubInstance(MocksState);
+
+        container.bind<MocksState>('MocksState').toConstantValue(mocksState);
+        container.bind<MocksProcessor>('MocksProcessor').to(MocksProcessor);
+
         consoleWarnFn = sinon.stub(console, <any>'warn');
         consoleLogFn = sinon.stub(console, <any>'log');
+        fsReadJsonSyncFn = sinon.stub(fs, <any>'readJsonSync');
+        globSyncFn = sinon.stub(glob, <any>'sync');
 
-        mocksState = container.get<MocksState>('MocksState');
         processor = container.get<MocksProcessor>('MocksProcessor');
     });
 
     describe('process', () => {
         beforeAll(() => {
+            mocksState.mocks = [];
+            mocksState.defaults = {};
+            mocksState.global = {mocks: {}, variables: {}};
             globSyncFn.returns([
                 'mock/minimal-json-request.json',
                 'mock/minimal-binary-request.json',
@@ -163,8 +168,8 @@ describe('MocksProcessor', () => {
     });
 
     afterAll(() => {
-        consoleWarnFn.restore();
         consoleLogFn.restore();
+        consoleWarnFn.restore();
         fsReadJsonSyncFn.restore();
         globSyncFn.restore();
     });

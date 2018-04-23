@@ -2,11 +2,11 @@ import 'reflect-metadata';
 import {injectable} from 'inversify';
 
 import GlobalState from './global.state';
-import SessionState from './session.state';
 import HttpResponseRecording from './httpResponseRecording';
-import MockResponse from '../domain/mock.response';
-import State from './state';
 import Mock from '../domain/mock';
+import MockResponse from '../domain/mock.response';
+import SessionState from './session.state';
+import State from './state';
 import {IncomingHttpHeaders} from 'http';
 
 /** The mocks state. */

@@ -1,5 +1,5 @@
-import BaseApimockClient from '../base.client';
 import ApimockClient from '../apimock.client';
+import BaseApimockClient from '../base.client';
 
 /** Webdriver.io client for apimock. */
 class WebdriverIOClient extends BaseApimockClient implements ApimockClient {
