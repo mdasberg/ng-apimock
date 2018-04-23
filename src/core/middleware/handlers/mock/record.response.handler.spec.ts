@@ -10,35 +10,41 @@ import {HttpMethods, HttpStatusCode} from '../../http';
 import HttpResponseRecording from '../../../state/httpResponseRecording';
 
 describe('RecordResponseHandler', () => {
-    let recordResponseHandler: RecordResponseHandler;
-    let mocksState: MocksState;
+    const HEADERS = {host: 'localhost:8888'};
+    const METHOD = HttpMethods.GET;
+    const PAYLOAD = '{"x":"x"}';
+    const SOME_URL = '/some/api';
 
+    let clock: sinon.SinonFakeTimers;
+    let container: Container;
+    let httpRequestFn: sinon.SinonStub;
+    let mocksState: MocksState;
     let nextFn: sinon.SinonStub;
+    let now: Date;
+    let recordFn: sinon.SinonStub;
+    let recordResponseHandler: RecordResponseHandler;
+    let request: http.IncomingMessage;
     let requestOnFn: sinon.SinonStub;
     let requestEndFn: sinon.SinonStub;
+    let response: http.ServerResponse;
     let responseEndFn: sinon.SinonStub;
     let responseOnFn: sinon.SinonStub;
     let responseSetEncodingFn: sinon.SinonStub;
-    let httpRequestFn: sinon.SinonStub;
-    let recordFn: sinon.SinonStub;
-    let clock: sinon.SinonFakeTimers;
-    let now: Date;
-
-    let container: Container;
-
-    const PAYLOAD = '{"x":"x"}';
 
     beforeAll(() => {
         container = new Container();
-        container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
-        container.bind<RecordResponseHandler>('RecordResponseHandler').to(RecordResponseHandler);
-
+        mocksState = sinon.createStubInstance(MocksState);
         nextFn = sinon.stub();
+        request = sinon.createStubInstance(http.IncomingMessage);
         requestOnFn = sinon.stub();
         requestEndFn = sinon.stub();
-        responseOnFn = sinon.stub();
-        responseEndFn = sinon.stub();
+        response = sinon.createStubInstance(http.ServerResponse);
+        responseOnFn = response.on as sinon.SinonStub;
+        responseEndFn = response.end as sinon.SinonStub;
         responseSetEncodingFn = sinon.stub();
+
+        container.bind<MocksState>('MocksState').toConstantValue(mocksState);
+        container.bind<RecordResponseHandler>('RecordResponseHandler').to(RecordResponseHandler);
 
         mocksState = container.get<MocksState>('MocksState');
         recordResponseHandler = container.get<RecordResponseHandler>('RecordResponseHandler');
@@ -50,20 +56,13 @@ describe('RecordResponseHandler', () => {
     });
 
     describe('handle', () => {
-        let request: any;
-        let response: any;
         let mock: Mock;
 
         beforeEach(() => {
-            request = {
-                url: '/some/api',
-                method: HttpMethods.GET,
-                headers: {host: 'localhost:8888'}
-            };
-            response = {
-                // on: responseOnFn,
-                end: responseEndFn
-            } as any;
+            request.url = SOME_URL;
+            request.method = METHOD;
+            request.headers = HEADERS;
+
             mock = {name: 'some'} as Mock;
 
             httpRequestFn.returns({
@@ -74,8 +73,8 @@ describe('RecordResponseHandler', () => {
             recordResponseHandler.handle(request, response, nextFn, {mock: mock, payload: PAYLOAD});
         });
 
-        it('sets the record header to off', () =>
-            expect(request.headers.record).toBe('off'));
+        it('sets the record header to true', () =>
+            expect(request.headers.record).toBe('true'));
 
         it('calls http.request', () => {
             sinon.assert.calledWith(httpRequestFn, {
@@ -125,28 +124,29 @@ describe('RecordResponseHandler', () => {
 
     describe('record', () => {
         beforeEach(() => {
-           mocksState.recordings['some'] = [];
+            mocksState.recordings = {};
+            mocksState.recordings['some'] = [];
         });
         it('stores the recording', () => {
             recordFn.callThrough();
             recordResponseHandler.record('{"x":"x"}', 'chunk', {
-                method: HttpMethods.GET,
-                url: 'some/api'
+                method: METHOD,
+                url: SOME_URL
             } as http.IncomingMessage, HttpStatusCode.OK, 'some');
 
             expect(mocksState.recordings['some'][0]).toEqual({
                 data: 'chunk',
-                payload: '{"x":"x"}',
+                payload: PAYLOAD,
                 datetime: now.getTime(),
-                method: 'GET',
-                url: 'some/api',
+                method: METHOD,
+                url: SOME_URL,
                 statusCode: 200
             } as HttpResponseRecording);
 
             // convert buffer to string
-            recordResponseHandler.record('{"x":"x"}', new Buffer('chunk'), {
-                method: HttpMethods.GET,
-                url: 'some/api'
+            recordResponseHandler.record(PAYLOAD, new Buffer('chunk'), {
+                method: METHOD,
+                url: SOME_URL
             } as http.IncomingMessage, HttpStatusCode.OK, 'some');
 
             expect(mocksState.recordings['some'][0].data).toBe('chunk');
@@ -154,29 +154,25 @@ describe('RecordResponseHandler', () => {
 
         it('replaces the oldest recording if the max recordings are exceeded', () => {
             recordFn.callThrough();
-            const first = {
-              description: 'first'
-            } as any;
-            const second = {
-                description: 'second'
-            } as any;
+            const first = {description: 'first'} as any;
+            const second = {description: 'second'} as any;
             mocksState.recordings['some'].push(first);
             mocksState.recordings['some'].push(second);
             expect(mocksState.recordings['some'].length).toBe(2);
 
-            recordResponseHandler.record('{"x":"x"}', 'chunk', {
-                method: HttpMethods.GET,
-                url: 'some/api'
+            recordResponseHandler.record(PAYLOAD, 'chunk', {
+                method: METHOD,
+                url: SOME_URL
             } as http.IncomingMessage, HttpStatusCode.OK, 'some');
 
             expect(mocksState.recordings['some'].length).toBe(2);
             expect(mocksState.recordings['some'][0]).toEqual(second);
             expect(mocksState.recordings['some'][1]).toEqual({
                 data: 'chunk',
-                payload: '{"x":"x"}',
+                payload: PAYLOAD,
                 datetime: now.getTime(),
-                method: 'GET',
-                url: 'some/api',
+                method: METHOD,
+                url: SOME_URL,
                 statusCode: 200
             } as HttpResponseRecording);
         });

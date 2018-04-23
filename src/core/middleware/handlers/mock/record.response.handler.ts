@@ -3,9 +3,9 @@ import {inject, injectable} from 'inversify';
 
 import * as http from 'http';
 
-import Handler from '../handler';
 import Mock from '../../../domain/mock';
 import MocksState from '../../../state/mocks.state';
+import {Handler} from '../handler';
 
 /**  Handler for a recording a response. */
 @injectable()
@@ -13,8 +13,12 @@ class RecordResponseHandler implements Handler {
     RESPONSE_ENCODING = 'utf8';
     MAX_RECORDINGS_PER_MOCK = 2;
 
-    @inject('MocksState')
-    private mocksState: MocksState;
+    /**
+     * Constructor.
+     * @param {MocksState} mocksState The mocks state.
+     */
+    constructor(@inject('MocksState') private mocksState: MocksState) {
+    }
 
     /** {@inheritDoc}.*/
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock, payload: any }): void {
@@ -28,7 +32,7 @@ class RecordResponseHandler implements Handler {
             headers: headers
         };
 
-        headers.record = 'off';
+        headers.record = 'true';
 
         const _request: http.ClientRequest = http.request(options, (_response: http.IncomingMessage) => {
             _response.setEncoding(this.RESPONSE_ENCODING);
@@ -40,7 +44,6 @@ class RecordResponseHandler implements Handler {
         });
 
         _request.on('error', (e) => response.end(e));
-
         _request.end();
     }
 
@@ -54,8 +57,7 @@ class RecordResponseHandler implements Handler {
      * @param {number} statusCode The status code.
      * @param {string} identifier The identifier.
      */
-    record(payload: any, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number,
-           identifier: string) {
+    record(payload: any, chunk: string | Buffer, request: http.IncomingMessage, statusCode: number, identifier: string) {
         const result = {
             data: typeof chunk === 'string' ? chunk : chunk.toString(this.RESPONSE_ENCODING),
             payload: payload,
@@ -64,6 +66,7 @@ class RecordResponseHandler implements Handler {
             url: request.url,
             statusCode: statusCode
         };
+
 
         if (this.mocksState.recordings[identifier] === undefined) {
             this.mocksState.recordings[identifier] = [];

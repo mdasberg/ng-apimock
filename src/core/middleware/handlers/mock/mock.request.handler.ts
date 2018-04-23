@@ -5,16 +5,20 @@ import * as fs from 'fs-extra';
 import * as http from 'http';
 import * as url from 'url';
 
-import Handler from '../handler';
-import MocksState from '../../../state/mocks.state';
 import Mock from '../../../domain/mock';
 import MockResponse from '../../../domain/mock.response';
+import MocksState from '../../../state/mocks.state';
+import {Handler} from '../handler';
 
 /**  Handler for a mock request. */
 @injectable()
 class MockRequestHandler implements Handler {
-    @inject('MocksState')
-    private mocksState: MocksState;
+    /**
+     * Constructor.
+     * @param {MocksState} mocksState The mocks state.
+     */
+    constructor(@inject('MocksState') private mocksState: MocksState) {
+    }
 
     /** {@inheritDoc}.*/
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { id: string, mock: Mock }): void {

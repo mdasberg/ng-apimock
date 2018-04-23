@@ -12,72 +12,58 @@ import MocksState from '../../../state/mocks.state';
 import {HttpHeaders, HttpMethods, HttpStatusCode} from '../../http';
 
 describe('MockRequestHandler', () => {
+    const APIMOCK_ID = 'apimockId';
+    const BINARY_CONTENT = 'binary content';
+    const INTERPOLATED_RESPONSE_DATA = 'interpolatedResponseData';
+    const MOCK = {
+        name: 'some',
+        request: {
+            method: HttpMethods.GET,
+            url: '/some/url',
+        }
+    } as Mock;
+
+    let clock: sinon.SinonFakeTimers;
+    let container: Container;
+    let fsReadFileSyncFn: sinon.SinonStub;
+    let getJsonCallbackNameFn: sinon.SinonStub;
+    let interpolateResponseDataFn: sinon.SinonStub;
     let mockRequestHandler: MockRequestHandler;
     let mocksState: MocksState;
-
-    let nextFn: sinon.SinonStub;
-    let requestOnFn: sinon.SinonStub;
-    let responseWriteHeadFn: sinon.SinonStub;
-    let responseEndFn: sinon.SinonStub;
+    let mocksStateGetDelayFn: sinon.SinonStub;
     let mocksStateGetResponseFn: sinon.SinonStub;
     let mocksStateGetVariablesFn: sinon.SinonStub;
-    let mocksStateGetDelayFn: sinon.SinonStub;
-    let interpolateResponseDataFn: sinon.SinonStub;
-    let getJsonCallbackNameFn: sinon.SinonStub;
-    let fsReadFileSyncFn: sinon.SinonStub;
-    let clock: sinon.SinonFakeTimers;
-
-    let container: Container;
-
-    const APIMOCK_ID = 'apimockId';
-    const INTERPOLATED_RESPONSE_DATA = 'interpolatedResponseData';
-    const BINARY_CONTENT = 'binary content';
+    let nextFn: sinon.SinonStub;
+    let request: http.IncomingMessage;
+    let requestOnFn: sinon.SinonStub;
+    let response: http.ServerResponse;
+    let responseEndFn: sinon.SinonStub;
+    let responseWriteHeadFn: sinon.SinonStub;
 
     beforeAll(() => {
+        clock = sinon.useFakeTimers();
         container = new Container();
-        container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
+        mocksState = sinon.createStubInstance(MocksState);
+        mocksStateGetResponseFn = mocksState.getResponse as sinon.SinonStub;
+        mocksStateGetVariablesFn = mocksState.getVariables as sinon.SinonStub;
+        mocksStateGetDelayFn = mocksState.getDelay as sinon.SinonStub;
+        nextFn = sinon.stub();
+        request = sinon.createStubInstance(http.IncomingMessage);
+        requestOnFn = request.on as sinon.SinonStub;
+        response = sinon.createStubInstance(http.ServerResponse);
+        responseEndFn = response.end as sinon.SinonStub;
+        responseWriteHeadFn = response.writeHead as sinon.SinonStub;
+
+        container.bind<MocksState>('MocksState').toConstantValue(mocksState);
         container.bind<MockRequestHandler>('MockRequestHandler').to(MockRequestHandler);
 
-        nextFn = sinon.stub();
-        requestOnFn = sinon.stub();
-        responseWriteHeadFn = sinon.stub();
-        responseEndFn = sinon.stub();
-        clock = sinon.useFakeTimers();
-
-        mocksState = container.get<MocksState>('MocksState');
         mockRequestHandler = container.get<MockRequestHandler>('MockRequestHandler');
-        interpolateResponseDataFn = sinon.stub(MockRequestHandler.prototype, <any>'interpolateResponseData');
-        getJsonCallbackNameFn = sinon.stub(MockRequestHandler.prototype, <any>'getJsonCallbackName');
-
-        mocksStateGetResponseFn = sinon.stub(MocksState.prototype, <any>'getResponse');
-        mocksStateGetVariablesFn = sinon.stub(MocksState.prototype, <any>'getVariables');
-        mocksStateGetDelayFn = sinon.stub(MocksState.prototype, <any>'getDelay');
         fsReadFileSyncFn = sinon.stub(fs, <any>'readFileSync');
-
+        getJsonCallbackNameFn = sinon.stub(MockRequestHandler.prototype, <any>'getJsonCallbackName');
+        interpolateResponseDataFn = sinon.stub(MockRequestHandler.prototype, <any>'interpolateResponseData');
     });
 
     describe('handle', () => {
-        let request: any;
-        let response: any;
-        let mock: Mock;
-
-        beforeEach(() => {
-            request = {
-                url: '/ngapimock/mocks',
-                on: requestOnFn
-            };
-            response = {
-                writeHead: responseWriteHeadFn,
-                end: responseEndFn
-            } as any;
-            mock = {
-                name: 'some',
-                request: {
-                    method: HttpMethods.GET,
-                    url: '/some/url',
-                }
-            } as Mock;
-        });
         describe('selected response', () => {
             describe('binary', () => {
                 let mockResponse: MockResponse;
@@ -94,10 +80,10 @@ describe('MockRequestHandler', () => {
                 });
 
                 it('reads the binary content and returns it as response', () => {
-                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock});
+                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 
-                    sinon.assert.calledWith(mocksStateGetResponseFn, mock.name, APIMOCK_ID);
-                    sinon.assert.calledWith(mocksStateGetDelayFn, mock.name, APIMOCK_ID);
+                    sinon.assert.calledWith(mocksStateGetResponseFn, MOCK.name, APIMOCK_ID);
+                    sinon.assert.calledWith(mocksStateGetDelayFn, MOCK.name, APIMOCK_ID);
                     sinon.assert.calledWith(fsReadFileSyncFn, mockResponse.file);
 
                     clock.tick(1000);
@@ -107,7 +93,7 @@ describe('MockRequestHandler', () => {
 
                 it('wraps the payload in a json callback', () => {
                     getJsonCallbackNameFn.returns('callback');
-                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock});
+                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 
                     clock.tick(1000);
                     sinon.assert.calledWith(responseWriteHeadFn, mockResponse.status, mockResponse.headers);
@@ -143,11 +129,11 @@ describe('MockRequestHandler', () => {
                 });
 
                 it('interpolates the data and returns it as response', () => {
-                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock});
+                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 
-                    sinon.assert.calledWith(mocksStateGetResponseFn, mock.name, APIMOCK_ID);
+                    sinon.assert.calledWith(mocksStateGetResponseFn, MOCK.name, APIMOCK_ID);
                     sinon.assert.calledWith(mocksStateGetVariablesFn, APIMOCK_ID);
-                    sinon.assert.calledWith(mocksStateGetDelayFn, mock.name, APIMOCK_ID);
+                    sinon.assert.calledWith(mocksStateGetDelayFn, MOCK.name, APIMOCK_ID);
                     sinon.assert.calledWith(interpolateResponseDataFn, mockResponse.data, variables);
 
                     clock.tick(1000);
@@ -157,7 +143,7 @@ describe('MockRequestHandler', () => {
 
                 it('wraps the payload in a json callback', () => {
                     getJsonCallbackNameFn.returns('callback');
-                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock});
+                    mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 
                     clock.tick(1000);
                     sinon.assert.calledWith(responseWriteHeadFn, mockResponse.status, mockResponse.headers);
@@ -180,9 +166,9 @@ describe('MockRequestHandler', () => {
             it('calls next()', () => {
                 mocksStateGetResponseFn.returns(undefined);
 
-                mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock});
+                mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 
-                sinon.assert.calledWith(mocksStateGetResponseFn, mock.name, APIMOCK_ID);
+                sinon.assert.calledWith(mocksStateGetResponseFn, MOCK.name, APIMOCK_ID);
                 sinon.assert.notCalled(mocksStateGetVariablesFn);
                 sinon.assert.called(nextFn);
             }));
@@ -226,9 +212,6 @@ describe('MockRequestHandler', () => {
     });
 
     afterAll(() => {
-        mocksStateGetResponseFn.restore();
-        mocksStateGetVariablesFn.restore();
-        mocksStateGetDelayFn.restore();
         getJsonCallbackNameFn.restore();
         interpolateResponseDataFn.restore();
         clock.restore();

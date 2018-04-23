@@ -3,15 +3,19 @@ import {inject, injectable} from 'inversify';
 
 import * as http from 'http';
 
-import Handler from '../handler';
 import Mock from '../../../domain/mock';
 import MocksState from '../../../state/mocks.state';
+import {Handler} from '../handler';
 
 /**  Handler for a echoing a request. */
 @injectable()
 class EchoRequestHandler implements Handler {
-    @inject('MocksState')
-    private mocksState: MocksState;
+    /**
+     * Constructor.
+     * @param {MocksState} mocksState The mocks state.
+     */
+    constructor(@inject('MocksState') private mocksState: MocksState) {
+    }
 
     /** {@inheritDoc}.*/
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function,

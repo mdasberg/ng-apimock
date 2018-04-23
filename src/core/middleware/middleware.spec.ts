@@ -4,391 +4,335 @@ import {Container} from 'inversify';
 import * as http from 'http';
 import * as sinon from 'sinon';
 
-import ActionHandler from './handlers/api/action.handler';
+import DefaultsHandler from './handlers/api/defaults.handler';
 import EchoRequestHandler from './handlers/mock/echo.request.handler';
 import Middleware from './middleware';
 import MockRequestHandler from './handlers/mock/mock.request.handler';
 import RecordResponseHandler from './handlers/mock/record.response.handler';
-import ScenarioHandler from './handlers/api/scenario.handler';
+import UpdateMocksHandler from './handlers/api/update-mocks.handler';
 import MocksState from '../state/mocks.state';
-import Mock from '../domain/mock';
-import VariableHandler from './handlers/api/variable.handler';
+import SetVariableHandler from './handlers/api/set-variable.handler';
+import InitHandler from './handlers/api/init.handler';
+import GetMocksHandler from './handlers/api/get-mocks.handler';
+import GetVariablesHandler from './handlers/api/get-variables.handler';
+import DeleteVariableHandler from './handlers/api/delete-variable.handler';
+import PassThroughsHandler from './handlers/api/pass-throughs.handler';
+import {ApplicableHandler} from './handlers/handler';
 import {HttpMethods} from './http';
+import Mock from '../domain/mock';
 
 describe('Middleware', () => {
-    let middleware: Middleware;
-    let mocksState: MocksState;
+    const APIMOCK_ID = 'apimockId';
+    const HEADERS = {'some': 'header'};
+    const METHOD = HttpMethods.GET;
+    const PAYLOAD_STRING = '{"x":"x"}';
+    const PAYLOAD = {x: 'x'};
+    const SOME_URL = '/base-url';
 
-    let nextFn: sinon.SinonStub;
-    let requestOnFn: sinon.SinonStub;
-    let getApimockIdFn: sinon.SinonStub;
-    let scenarioHandlerHandleFn: sinon.SinonStub;
-    let actionHandlerHandleFn: sinon.SinonStub;
-    let apimockStateGetMatchingMockFn: sinon.SinonStub;
-    let echoRequestHandlerHandleFn: sinon.SinonStub;
-    let recordResponseHandlerHandleFn: sinon.SinonStub;
-    let mockRequestHandlerHandleFn: sinon.SinonStub;
-    let variableHandlerHandleFn: sinon.SinonStub;
+    let applicableHandler: ApplicableHandler;
+    let applicableHandlerHandleFn: sinon.SinonStub;
+    let applicableHandlerIsApplicableFn: sinon.SinonStub;
 
     let container: Container;
 
-    const APIMOCK_ID = 'apimockId';
+    let defaultsHandler: DefaultsHandler;
+    let defaultsHandlerHandleFn: sinon.SinonStub;
+
+    let deleteVariableHandler: DeleteVariableHandler;
+    let deleteVariableHandlerHandleFn: sinon.SinonStub;
+
+    let echoRequestHandler: EchoRequestHandler;
+    let echoRequestHandlerHandleFn: sinon.SinonStub;
+
+    let getApimockIdFn: sinon.SinonStub;
+    let getMatchingApplicableHandlerFn: sinon.SinonStub;
+
+    let getMocksHandler: GetMocksHandler;
+    let getMocksHandlerHandleFn: sinon.SinonStub;
+
+    let getVariablesHandler: GetVariablesHandler;
+    let getVariablesHandlerHandleFn: sinon.SinonStub;
+    let getVariablesHandlerIsApplicableFn: sinon.SinonStub;
+
+    let initHandler: InitHandler;
+    let initHandlerHandleFn: sinon.SinonStub;
+
+    let matchingMock: Mock;
+    let middleware: Middleware;
+
+    let mockRequestHandler: MockRequestHandler;
+    let mockRequestHandlerHandleFn: sinon.SinonStub;
+
+    let mocksState: MocksState;
+    let mocksStateGetMatchingMockFn: sinon.SinonStub;
+
+    let nextFn: sinon.SinonStub;
+
+    let passThroughsHandler: PassThroughsHandler;
+    let passThroughsHandlerHandleFn: sinon.SinonStub;
+
+    let recordResponseHandler: RecordResponseHandler;
+    let recordResponseHandlerHandleFn: sinon.SinonStub;
+
+    let request: http.IncomingMessage;
+    let requestOnFn: sinon.SinonStub;
+
+    let response: http.ServerResponse;
+
+    let setVariableHandler: SetVariableHandler;
+    let setVariableHandlerHandleFn: sinon.SinonStub;
+
+    let updateMocksHandler: UpdateMocksHandler;
+    let updateMocksHandlerHandleFn: sinon.SinonStub;
 
     beforeAll(() => {
         container = new Container();
-        container.bind<MockRequestHandler>('MockRequestHandler').to(MockRequestHandler);
-        container.bind<EchoRequestHandler>('EchoRequestHandler').to(EchoRequestHandler);
-        container.bind<RecordResponseHandler>('RecordResponseHandler').to(RecordResponseHandler);
-        container.bind<ScenarioHandler>('ScenarioHandler').to(ScenarioHandler);
-        container.bind<ActionHandler>('ActionHandler').to(ActionHandler);
-        container.bind<VariableHandler>('VariableHandler').to(VariableHandler);
-        container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
+        matchingMock = {
+            name: 'matching-mock',
+            isArray: true,
+            request: {
+                url: SOME_URL,
+                method: METHOD
+            }, responses: {}
+        };
+        mocksState = sinon.createStubInstance(MocksState);
+        mocksStateGetMatchingMockFn = mocksState.getMatchingMock as sinon.SinonStub;
+        request = sinon.createStubInstance(http.IncomingMessage);
+        requestOnFn = request.on as sinon.SinonStub;
+        response = sinon.createStubInstance(http.ServerResponse);
+        defaultsHandler = sinon.createStubInstance(DefaultsHandler);
+        defaultsHandlerHandleFn = defaultsHandler.handle as sinon.SinonStub;
+        deleteVariableHandler = sinon.createStubInstance(DeleteVariableHandler);
+        deleteVariableHandlerHandleFn = deleteVariableHandler.handle as sinon.SinonStub;
+        echoRequestHandler = sinon.createStubInstance(EchoRequestHandler);
+        echoRequestHandlerHandleFn = echoRequestHandler.handle as sinon.SinonStub;
+        getMocksHandler = sinon.createStubInstance(GetMocksHandler);
+        getMocksHandlerHandleFn = getMocksHandler.handle as sinon.SinonStub;
+        getVariablesHandler = sinon.createStubInstance(GetVariablesHandler);
+        getVariablesHandlerHandleFn = getVariablesHandler.handle as sinon.SinonStub;
+        getVariablesHandlerIsApplicableFn = getVariablesHandler.isApplicable as sinon.SinonStub;
+        applicableHandlerHandleFn = sinon.stub();
+        applicableHandlerIsApplicableFn = sinon.stub();
+        applicableHandler = {handle: applicableHandlerHandleFn, isApplicable: applicableHandlerIsApplicableFn};
+        initHandler = sinon.createStubInstance(InitHandler);
+        initHandlerHandleFn = initHandler.handle as sinon.SinonStub;
+        mockRequestHandler = sinon.createStubInstance(MockRequestHandler);
+        mockRequestHandlerHandleFn = mockRequestHandler.handle as sinon.SinonStub;
+        passThroughsHandler = sinon.createStubInstance(PassThroughsHandler);
+        passThroughsHandlerHandleFn = passThroughsHandler.handle as sinon.SinonStub;
+        recordResponseHandler = sinon.createStubInstance(RecordResponseHandler);
+        recordResponseHandlerHandleFn = recordResponseHandler.handle as sinon.SinonStub;
+        setVariableHandler = sinon.createStubInstance(SetVariableHandler);
+        setVariableHandlerHandleFn = setVariableHandler.handle as sinon.SinonStub;
+        updateMocksHandler = sinon.createStubInstance(UpdateMocksHandler);
+        updateMocksHandlerHandleFn = updateMocksHandler.handle as sinon.SinonStub;
 
+        container.bind<DefaultsHandler>('DefaultsHandler').toConstantValue(defaultsHandler);
+        container.bind<DeleteVariableHandler>('DeleteVariableHandler').toConstantValue(deleteVariableHandler);
+        container.bind<EchoRequestHandler>('EchoRequestHandler').toConstantValue(echoRequestHandler);
+        container.bind<GetMocksHandler>('GetMocksHandler').toConstantValue(getMocksHandler);
+        container.bind<GetVariablesHandler>('GetVariablesHandler').toConstantValue(getVariablesHandler);
+        container.bind<InitHandler>('InitHandler').toConstantValue(initHandler);
+        container.bind<MockRequestHandler>('MockRequestHandler').toConstantValue(mockRequestHandler);
+        container.bind<MocksState>('MocksState').toConstantValue(mocksState);
+        container.bind<PassThroughsHandler>('PassThroughsHandler').toConstantValue(passThroughsHandler);
+        container.bind<SetVariableHandler>('SetVariableHandler').toConstantValue(setVariableHandler);
+        container.bind<RecordResponseHandler>('RecordResponseHandler').toConstantValue(recordResponseHandler);
+        container.bind<UpdateMocksHandler>('UpdateMocksHandler').toConstantValue(updateMocksHandler);
         container.bind<Middleware>('Middleware').to(Middleware);
         nextFn = sinon.stub();
-        requestOnFn = sinon.stub();
-        mocksState = container.get<MocksState>('MocksState');
-        middleware = container.get<Middleware>('Middleware');
 
+        middleware = container.get<Middleware>('Middleware');
         getApimockIdFn = sinon.stub(Middleware.prototype, <any>'getApimockId');
-        scenarioHandlerHandleFn = sinon.stub(ScenarioHandler.prototype, <any>'handle');
-        actionHandlerHandleFn = sinon.stub(ActionHandler.prototype, <any>'handle');
-        apimockStateGetMatchingMockFn = sinon.stub(MocksState.prototype, <any>'getMatchingMock');
-        echoRequestHandlerHandleFn = sinon.stub(EchoRequestHandler.prototype, <any>'handle');
-        recordResponseHandlerHandleFn = sinon.stub(RecordResponseHandler.prototype, <any>'handle');
-        mockRequestHandlerHandleFn = sinon.stub(MockRequestHandler.prototype, <any>'handle');
-        variableHandlerHandleFn = sinon.stub(VariableHandler.prototype, <any>'handle');
+        getMatchingApplicableHandlerFn = sinon.stub(Middleware.prototype, <any>'getMatchingApplicableHandler');
     });
 
     describe('middleware', () => {
-        describe('scenario request', () => {
-            it('calls the scenarioHandler', () => {
-                getApimockIdFn.returns(APIMOCK_ID);
-                const request = {
-                    url: '/ngapimock/mocks',
-                    headers: {},
-                    on: requestOnFn
-                } as any;
-                const payload = '{"x":"x"}';
-                const response = {} as http.ServerResponse;
-                requestOnFn.onCall(0).returns(request);
-
-                middleware.middleware(request, response, nextFn);
-                requestOnFn.getCall(0).args[1](new Buffer(payload));
-                requestOnFn.getCall(1).args[1]();
-
-                sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(scenarioHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
-            });
-
-            afterEach(() => {
-                apimockStateGetMatchingMockFn.reset();
-                actionHandlerHandleFn.reset();
-                getApimockIdFn.reset();
-                requestOnFn.reset();
-                scenarioHandlerHandleFn.reset();
-                echoRequestHandlerHandleFn.reset();
-                recordResponseHandlerHandleFn.reset();
-                mockRequestHandlerHandleFn.reset();
-                variableHandlerHandleFn.reset();
-                nextFn.reset();
-            });
-        });
-
-        describe('variable request', () => {
-            it('calls the variablesHandler', () => {
-                getApimockIdFn.returns(APIMOCK_ID);
-                const request = {
-                    url: '/ngapimock/variables',
-                    headers: {},
-                    on: requestOnFn
-                } as any;
-                const payload = '{"x":"x"}';
-                const response = {} as http.ServerResponse;
-                requestOnFn.onCall(0).returns(request);
-
-                middleware.middleware(request, response, nextFn);
-                requestOnFn.getCall(0).args[1](new Buffer(payload));
-                requestOnFn.getCall(1).args[1]();
-
-                sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(variableHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
-            });
-
-            afterEach(() => {
-                apimockStateGetMatchingMockFn.reset();
-                actionHandlerHandleFn.reset();
-                getApimockIdFn.reset();
-                requestOnFn.reset();
-                scenarioHandlerHandleFn.reset();
-                echoRequestHandlerHandleFn.reset();
-                recordResponseHandlerHandleFn.reset();
-                mockRequestHandlerHandleFn.reset();
-                variableHandlerHandleFn.reset();
-                nextFn.reset();
-            });
-        });
-
-        describe('action request', () => {
-            it('calls the actionHandler', () => {
-                getApimockIdFn.returns(APIMOCK_ID);
-                const request = {
-                    url: '/ngapimock/actions',
-                    method: HttpMethods.PUT,
-                    headers: {},
-                    on: requestOnFn
-                } as any;
-                const payload = '{"x":"x"}';
-                const response = {} as http.ServerResponse;
-                requestOnFn.onCall(0).returns(request);
-
-                middleware.middleware(request, response, nextFn);
-                requestOnFn.getCall(0).args[1](new Buffer(payload));
-                requestOnFn.getCall(1).args[1]();
-
-                sinon.assert.called(getApimockIdFn);
-                sinon.assert.calledWith(actionHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: {x: 'x'}});
-            });
-
-            afterEach(() => {
-                apimockStateGetMatchingMockFn.reset();
-                actionHandlerHandleFn.reset();
-                getApimockIdFn.reset();
-                requestOnFn.reset();
-                scenarioHandlerHandleFn.reset();
-                echoRequestHandlerHandleFn.reset();
-                recordResponseHandlerHandleFn.reset();
-                mockRequestHandlerHandleFn.reset();
-                nextFn.reset();
-            });
-        });
-
-        describe('record request', () => {
-            it('calls next', () => {
-                getApimockIdFn.returns(APIMOCK_ID);
-                const request = {
-                    url: '/some/thing',
-                    method: HttpMethods.PUT,
-                    headers: {
-                        record: true
-                    },
-                    on: requestOnFn
-                } as any;
-                const response = {} as http.ServerResponse;
-
-                middleware.middleware(request, response, nextFn);
-
-                sinon.assert.called(getApimockIdFn);
-                sinon.assert.called(nextFn);
-            });
-
-            afterEach(() => {
-                apimockStateGetMatchingMockFn.reset();
-                actionHandlerHandleFn.reset();
-                getApimockIdFn.reset();
-                requestOnFn.reset();
-                scenarioHandlerHandleFn.reset();
-                echoRequestHandlerHandleFn.reset();
-                recordResponseHandlerHandleFn.reset();
-                mockRequestHandlerHandleFn.reset();
-                nextFn.reset();
-            });
-        });
-
-        describe('mock request', () => {
-            let request: any;
-            let matchingMock: Mock;
-            let response: http.ServerResponse;
-            let payload: string;
-
+        describe('recording headers is present', () => {
             beforeEach(() => {
-                request = {
-                    url: '/some/api',
-                    method: HttpMethods.GET,
-                    headers: {},
-                    on: requestOnFn
-                } as any;
-
-                matchingMock = {
-                    name: 'match'
-                } as Mock;
-
-                payload = '{"x":"x"}';
-
-                response = {} as http.ServerResponse;
-
-                requestOnFn.onCall(0).returns(request);
-                apimockStateGetMatchingMockFn.returns(matchingMock);
                 getApimockIdFn.returns(APIMOCK_ID);
+                request.headers = {'record': 'true'};
+
+                middleware.middleware(request, response, nextFn);
             });
 
-            describe('by default', () => {
+            it('calls next', () => sinon.assert.called(nextFn));
+
+            afterEach(() => {
+                getApimockIdFn.reset();
+                nextFn.reset();
+            });
+        });
+
+        describe('matching applicable handler', () => {
+            beforeEach(() => {
+                getApimockIdFn.returns(APIMOCK_ID);
+                getMatchingApplicableHandlerFn.returns(applicableHandler);
+                request.headers = HEADERS;
+                requestOnFn.onCall(0).returns(request);
+
+                middleware.middleware(request, response, nextFn);
+
+                requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                requestOnFn.getCall(1).args[1]();
+            });
+
+            it('gets the apimock id', () =>
+                sinon.assert.called(getApimockIdFn));
+
+            it('gets the matching applicable handler', () =>
+                sinon.assert.calledWith(getMatchingApplicableHandlerFn, request, PAYLOAD));
+
+            it('calls the handler.handle', () =>
+                sinon.assert.calledWith(applicableHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: PAYLOAD}));
+
+            afterEach(() => {
+                requestOnFn.reset();
+                getApimockIdFn.reset();
+                getMatchingApplicableHandlerFn.reset();
+            });
+        });
+
+        describe('matching mock', () => {
+            describe('always', () => {
                 beforeEach(() => {
+                    getApimockIdFn.returns(APIMOCK_ID);
+                    getMatchingApplicableHandlerFn.returns(undefined);
+                    mocksStateGetMatchingMockFn.returns(matchingMock);
+                    request.url = SOME_URL;
+                    request.method = METHOD;
+                    request.headers = HEADERS;
+                    requestOnFn.onCall(0).returns(request);
+
                     middleware.middleware(request, response, nextFn);
+
+                    requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                    requestOnFn.getCall(1).args[1]();
                 });
 
-                it('gets the matching mock with payload', () => {
-                    sinon.assert.calledWith(requestOnFn, 'data');
-                    sinon.assert.calledWith(requestOnFn, 'end');
+                it('gets the apimock id', () =>
+                    sinon.assert.called(getApimockIdFn));
 
-                    requestOnFn.getCall(0).args[1](new Buffer(payload));
-                    requestOnFn.getCall(1).args[1]();
+                it('gets the matching applicable handler', () =>
+                    sinon.assert.calledWith(getMatchingApplicableHandlerFn, request, {x: 'x'}));
 
-                    sinon.assert.calledWith(apimockStateGetMatchingMockFn, request.url, request.method, request.headers, {x: 'x'});
-                });
+                it('gets the matching mock', () =>
+                    sinon.assert.calledWith(mocksStateGetMatchingMockFn, SOME_URL, METHOD, HEADERS, PAYLOAD));
 
-                it('gets the matching mock without payload', () => {
-                    sinon.assert.calledWith(requestOnFn, 'data');
-                    sinon.assert.calledWith(requestOnFn, 'end');
-
-                    requestOnFn.getCall(1).args[1]();
-
-                    sinon.assert.calledWith(apimockStateGetMatchingMockFn, request.url, request.method, request.headers, {});
-                });
-                it('calls the echoHandler', () => {
-                    sinon.assert.calledWith(requestOnFn, 'data');
-                    sinon.assert.calledWith(requestOnFn, 'end');
-
-                    requestOnFn.getCall(1).args[1]();
-
-                    sinon.assert.called(getApimockIdFn);
+                it('calls the echo request handler', () =>
                     sinon.assert.calledWith(echoRequestHandlerHandleFn, request, response, nextFn, {
                         id: APIMOCK_ID,
                         mock: matchingMock,
-                        payload: {}
-                    });
-                });
+                        payload: PAYLOAD
+                    }));
 
                 afterEach(() => {
-                    apimockStateGetMatchingMockFn.reset();
-                    actionHandlerHandleFn.reset();
-                    getApimockIdFn.reset();
                     requestOnFn.reset();
-                    scenarioHandlerHandleFn.reset();
-                    echoRequestHandlerHandleFn.reset();
-                    recordResponseHandlerHandleFn.reset();
-                    mockRequestHandlerHandleFn.reset();
-                    nextFn.reset();
+                    getApimockIdFn.reset();
+                    getMatchingApplicableHandlerFn.reset();
                 });
             });
 
-            describe('record request', () => {
+            describe('recording is enabled', () => {
                 beforeEach(() => {
                     mocksState.record = true;
+                    getApimockIdFn.returns(APIMOCK_ID);
+                    getMatchingApplicableHandlerFn.returns(undefined);
+                    mocksStateGetMatchingMockFn.returns(matchingMock);
+                    request.url = SOME_URL;
+                    request.method = METHOD;
+                    request.headers = HEADERS;
+                    requestOnFn.onCall(0).returns(request);
+
                     middleware.middleware(request, response, nextFn);
+
+                    requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                    requestOnFn.getCall(1).args[1]();
                 });
 
-                it('calls the recordHandler', () => {
-                    requestOnFn.getCall(0).args[1](new Buffer(payload));
-                    requestOnFn.getCall(1).args[1]();
-
-                    sinon.assert.called(getApimockIdFn);
+                it('calls the record response handler', () =>
                     sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {
                         mock: matchingMock,
-                        payload: {x: 'x'}
-                    });
-                });
+                        payload: PAYLOAD
+                    }));
+
 
                 afterEach(() => {
-                    apimockStateGetMatchingMockFn.reset();
-                    actionHandlerHandleFn.reset();
-                    getApimockIdFn.reset();
                     requestOnFn.reset();
-                    scenarioHandlerHandleFn.reset();
-                    echoRequestHandlerHandleFn.reset();
+                    getApimockIdFn.reset();
+                    getMatchingApplicableHandlerFn.reset();
                     recordResponseHandlerHandleFn.reset();
-                    mockRequestHandlerHandleFn.reset();
-                    nextFn.reset();
                 });
             });
 
-            describe('mock request', () => {
-                it('calls the mockRequestHandler when recording is false', () => {
-                    mocksState.record = false;
-                    middleware.middleware(request, response, nextFn);
-                    requestOnFn.getCall(1).args[1]();
-
-                    sinon.assert.called(getApimockIdFn);
-                    sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, mock: matchingMock});
-                });
-
-                it('calls the mockRequestHandler when request.headers.record is true', () => {
-                    mocksState.record = true;
-                    request.headers.record = true;
-                    middleware.middleware(request, response, nextFn);
-
-                    sinon.assert.called(nextFn);
-                });
-
-                afterEach(() => {
-                    apimockStateGetMatchingMockFn.reset();
-                    actionHandlerHandleFn.reset();
-                    getApimockIdFn.reset();
-                    requestOnFn.reset();
-                    scenarioHandlerHandleFn.reset();
-                    echoRequestHandlerHandleFn.reset();
-                    recordResponseHandlerHandleFn.reset();
-                    mockRequestHandlerHandleFn.reset();
-                    nextFn.reset();
-                });
-            });
-
-            describe('else request', () => {
-                let request: any;
-                let matchingMock: Mock;
-                let response: http.ServerResponse;
-
+            describe('recording is disabled', () => {
                 beforeEach(() => {
-                    request = {
-                        url: '/some/api',
-                        method: HttpMethods.GET,
-                        headers: {},
-                        on: requestOnFn
-                    } as any;
-
-                    matchingMock = undefined;
-
-                    response = {} as http.ServerResponse;
-
-                    requestOnFn.onCall(0).returns(request);
-                    apimockStateGetMatchingMockFn.returns(matchingMock);
+                    mocksState.record = false;
                     getApimockIdFn.returns(APIMOCK_ID);
+                    getMatchingApplicableHandlerFn.returns(undefined);
+                    mocksStateGetMatchingMockFn.returns(matchingMock);
+                    request.url = SOME_URL;
+                    request.method = METHOD;
+                    request.headers = HEADERS;
+                    requestOnFn.onCall(0).returns(request);
 
                     middleware.middleware(request, response, nextFn);
-                });
 
-                it('calls next()', () => {
-                    sinon.assert.calledWith(requestOnFn, 'data');
-                    sinon.assert.calledWith(requestOnFn, 'end');
-
+                    requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
                     requestOnFn.getCall(1).args[1]();
-
-                    sinon.assert.called(nextFn);
                 });
+
+                it('calls the mock request handler', () => sinon.assert.calledWith(mockRequestHandlerHandleFn, request, response, nextFn, {
+                    id: APIMOCK_ID,
+                    mock: matchingMock
+                }));
 
                 afterEach(() => {
-                    apimockStateGetMatchingMockFn.reset();
-                    actionHandlerHandleFn.reset();
-                    getApimockIdFn.reset();
                     requestOnFn.reset();
-                    scenarioHandlerHandleFn.reset();
-                    echoRequestHandlerHandleFn.reset();
-                    recordResponseHandlerHandleFn.reset();
+                    getApimockIdFn.reset();
+                    getMatchingApplicableHandlerFn.reset();
                     mockRequestHandlerHandleFn.reset();
-                    nextFn.reset();
                 });
             });
+        });
+
+        describe('no matching mock', () => {
+            beforeEach(() => {
+                getApimockIdFn.returns(APIMOCK_ID);
+                getMatchingApplicableHandlerFn.returns(undefined);
+                mocksStateGetMatchingMockFn.returns(undefined);
+                requestOnFn.onCall(0).returns(request);
+                request.headers = HEADERS;
+
+                middleware.middleware(request, response, nextFn);
+
+                requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                requestOnFn.getCall(1).args[1]();
+            });
+
+            it('calls next', () => sinon.assert.called(nextFn));
 
             afterEach(() => {
-                apimockStateGetMatchingMockFn.reset();
-                actionHandlerHandleFn.reset();
-                getApimockIdFn.reset();
                 requestOnFn.reset();
-                scenarioHandlerHandleFn.reset();
-                echoRequestHandlerHandleFn.reset();
-                recordResponseHandlerHandleFn.reset();
-                mockRequestHandlerHandleFn.reset();
+                getApimockIdFn.reset();
+                getMatchingApplicableHandlerFn.reset();
+                nextFn.reset();
             });
+        });
+    });
+
+    describe('getMatchingApplicableHandler', () => {
+        beforeEach(() => {
+            getMatchingApplicableHandlerFn.callThrough();
+            getVariablesHandlerIsApplicableFn.returns(true);
+        });
+
+        it('finds the applicable handler', () =>
+            expect(middleware.getMatchingApplicableHandler(request, PAYLOAD)).toEqual(getVariablesHandler));
+
+        afterEach(() => {
+            getMatchingApplicableHandlerFn.reset();
+            getVariablesHandlerIsApplicableFn.reset();
         });
     });
 
@@ -403,16 +347,5 @@ describe('Middleware', () => {
         describe('apimockId cookie is not present', () =>
             it('returns undefined', () =>
                 expect(middleware.getApimockId({cookie: 'a=a;b=b;c=c'})).toBe(undefined)));
-    });
-
-    afterAll(() => {
-        apimockStateGetMatchingMockFn.restore();
-        actionHandlerHandleFn.restore();
-        getApimockIdFn.restore();
-        scenarioHandlerHandleFn.restore();
-        echoRequestHandlerHandleFn.restore();
-        recordResponseHandlerHandleFn.restore();
-        mockRequestHandlerHandleFn.restore();
-        variableHandlerHandleFn.restore();
     });
 });

@@ -10,62 +10,50 @@ import MocksState from '../../../state/mocks.state';
 import {HttpMethods} from '../../http';
 
 describe('EchoRequestHandler', () => {
-    let echoRequestHandler: EchoRequestHandler;
-    let mocksState: MocksState;
-
-    let nextFn: sinon.SinonStub;
-    let requestOnFn: sinon.SinonStub;
-    let mocksStateGetEchoFn: sinon.SinonStub;
-    let consoleLogFn: sinon.SinonStub;
+    const APIMOCK_ID = 'apimockId';
+    const PAYLOAD = {x: 'x'};
+    const MOCK = {
+        name: 'some',
+        request: {
+            method: HttpMethods.GET,
+            url: '/some/url',
+        }
+    } as Mock;
 
     let container: Container;
-
-    const APIMOCK_ID = 'apimockId';
+    let consoleLogFn: sinon.SinonStub;
+    let echoRequestHandler: EchoRequestHandler;
+    let mocksState: MocksState;
+    let mocksStateGetEchoFn: sinon.SinonStub;
+    let nextFn: sinon.SinonStub;
+    let request: http.IncomingMessage;
+    let requestOnFn: sinon.SinonStub;
+    let response: http.ServerResponse;
 
     beforeAll(() => {
-        container = new Container();
-        container.bind<MocksState>('MocksState').to(MocksState).inSingletonScope();
-        container.bind<EchoRequestHandler>('EchoRequestHandler').to(EchoRequestHandler);
-
-        nextFn = sinon.stub();
-        requestOnFn = sinon.stub();
-
-        mocksState = container.get<MocksState>('MocksState');
-        echoRequestHandler = container.get<EchoRequestHandler>('EchoRequestHandler');
-
-        mocksStateGetEchoFn = sinon.stub(MocksState.prototype, <any>'getEcho');
         consoleLogFn = sinon.stub(console, <any>'log');
+        container = new Container();
+        mocksState = sinon.createStubInstance(MocksState);
+        mocksStateGetEchoFn = mocksState.getEcho as sinon.SinonStub;
+        nextFn = sinon.stub();
+        request = sinon.createStubInstance(http.IncomingMessage);
+        requestOnFn = request.on as sinon.SinonStub;
+        response = sinon.createStubInstance(http.ServerResponse);
 
+        container.bind<EchoRequestHandler>('EchoRequestHandler').to(EchoRequestHandler);
+        container.bind<MocksState>('MocksState').toConstantValue(mocksState);
+
+        echoRequestHandler = container.get<EchoRequestHandler>('EchoRequestHandler');
     });
 
     describe('handle', () => {
-        let request: any;
-        let response: http.ServerResponse;
-        let mock: Mock;
-        let payload: any;
-
-        beforeEach(() => {
-            request = {
-                url: '/ngapimock/mocks',
-                on: requestOnFn
-            };
-            response = {} as http.ServerResponse;
-            mock = {
-                name: 'some',
-                request: {
-                    method: HttpMethods.GET,
-                    url: '/some/url',
-                }
-            } as Mock;
-            payload = {'x': 'x'};
-        });
         describe('echo = true', () =>
             it('console.logs the request', () => {
                 mocksStateGetEchoFn.returns(true);
 
-                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock, payload: payload});
-                sinon.assert.calledWith(mocksStateGetEchoFn, mock.name, APIMOCK_ID);
-                sinon.assert.calledWith(consoleLogFn, `${mock.request.method} request made on \'${mock.request.url}\' with payload: \'${JSON.stringify(payload)}`);
+                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK, payload: PAYLOAD});
+                sinon.assert.calledWith(mocksStateGetEchoFn, MOCK.name, APIMOCK_ID);
+                sinon.assert.calledWith(consoleLogFn, `${MOCK.request.method} request made on \'${MOCK.request.url}\' with payload: \'${JSON.stringify(PAYLOAD)}`);
             })
         );
 
@@ -73,8 +61,8 @@ describe('EchoRequestHandler', () => {
             it('does not console.logs the request', () => {
                 mocksStateGetEchoFn.returns(false);
 
-                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: mock, payload: payload});
-                sinon.assert.calledWith(mocksStateGetEchoFn, mock.name, APIMOCK_ID);
+                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK, payload: PAYLOAD});
+                sinon.assert.calledWith(mocksStateGetEchoFn, MOCK.name, APIMOCK_ID);
                 sinon.assert.notCalled(consoleLogFn);
             })
         );
@@ -87,7 +75,6 @@ describe('EchoRequestHandler', () => {
     });
 
     afterAll(() => {
-        mocksStateGetEchoFn.restore();
         consoleLogFn.restore();
     });
 });

@@ -1,9 +1,7 @@
 import * as http from 'http';
 
-import Mock from '../../domain/mock';
-
 /** Handler. */
-interface Handler {
+export interface Handler {
     /**
      * Takes care of the request.
      * @param {"http".IncomingMessage} request The http request.
@@ -14,4 +12,14 @@ interface Handler {
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params?: any): void;
 }
 
-export default Handler;
+
+/** Handler. */
+export interface ApplicableHandler extends Handler {
+    /**
+     * Indicates if the given request is applicable.
+     * @param {"http".IncomingMessage} request The request.
+     * @param payload The payload.
+     * @return {boolean} indicator The indicator.
+     */
+    isApplicable(request: http.IncomingMessage, payload?: any): boolean;
+}
