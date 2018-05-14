@@ -72,7 +72,7 @@ class MockRequestHandler implements Handler {
         _data = JSON.stringify(data);
         Object.keys(variables).forEach((key) => {
             if (variables.hasOwnProperty(key)) {
-                _data = _data.replace(new RegExp('%%' + key + '%%', 'g'), variables[key]);
+                _data = _data.replace(new RegExp(`%%${key}%%`, 'g'), variables[key]);
             }
         });
         return _data;

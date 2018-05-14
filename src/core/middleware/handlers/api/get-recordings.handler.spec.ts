@@ -4,12 +4,12 @@ import {Container} from 'inversify';
 import * as http from 'http';
 import * as sinon from 'sinon';
 
-import GetMocksHandler from './get-mocks.handler';
+import GetRecordingsHandler from './get-recordings.handler';
 import MocksState from '../../../state/mocks.state';
 import State from '../../../state/state';
 import {HttpHeaders, HttpMethods, HttpStatusCode} from '../../http';
 
-describe('GetMocksHandler', () => {
+describe('GetRecordingsHandler', () => {
     const APIMOCK_ID = 'apimockId';
     const BASE_URL = '/base-url';
     const DEFAULT_MOCKS_STATE = {
@@ -18,7 +18,7 @@ describe('GetMocksHandler', () => {
     };
 
     let container: Container;
-    let handler: GetMocksHandler;
+    let handler: GetRecordingsHandler;
     let matchingState: State;
     let mocksState: MocksState;
     let mocksStateGetMatchingStateFn: sinon.SinonStub;
@@ -42,9 +42,9 @@ describe('GetMocksHandler', () => {
 
         container.bind<string>('BaseUrl').toConstantValue(BASE_URL);
         container.bind<MocksState>('MocksState').toConstantValue(mocksState);
-        container.bind<GetMocksHandler>('GetMocksHandler').to(GetMocksHandler);
+        container.bind<GetRecordingsHandler>('GetRecordingsHandler').to(GetRecordingsHandler);
 
-        handler = container.get<GetMocksHandler>('GetMocksHandler');
+        handler = container.get<GetRecordingsHandler>('GetRecordingsHandler');
     });
 
     describe('handle', () => {
@@ -72,16 +72,7 @@ describe('GetMocksHandler', () => {
             handler.handle(request, response, nextFn, {id: APIMOCK_ID});
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.calledWith(responseEndFn, JSON.stringify({
-                state: matchingState.mocks,
-                mocks: [{
-                    name: mocksState.mocks[0].name,
-                    request: mocksState.mocks[0].request,
-                    responses: ['some', 'thing'] // all the response identifiers
-                }, {
-                    name: mocksState.mocks[1].name,
-                    request: mocksState.mocks[1].request,
-                    responses: ['some', 'thing'] // all the response identifiers
-                }]
+                recordings: mocksState.recordings,
             }));
         });
 
@@ -93,12 +84,12 @@ describe('GetMocksHandler', () => {
 
     describe('isApplicable', () => {
         it('indicates applicable when url and method match', () => {
-            request.url = `${BASE_URL}/mocks`;
+            request.url = `${BASE_URL}/recordings`;
             request.method = HttpMethods.GET;
             expect(handler.isApplicable(request)).toBe(true);
         });
         it('indicates not applicable when the method does not match', () => {
-            request.url = `${BASE_URL}/mocks`;
+            request.url = `${BASE_URL}/recordings`;
             request.method = HttpMethods.PUT;
             expect(handler.isApplicable(request)).toBe(false);
         });

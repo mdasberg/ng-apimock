@@ -2,7 +2,7 @@
   "name": "get items",
   "isArray": true,
   "request": {
-    "url": "items",
+    "url": "/items",
     "method": "GET"
   },
   "responses": {
@@ -20,7 +20,7 @@
         "custom": "custom"
       },
       "statusText": "text",
-      "default": true
+      "default": false
     },
     "crypto-exchanges": {
       "status": 200,

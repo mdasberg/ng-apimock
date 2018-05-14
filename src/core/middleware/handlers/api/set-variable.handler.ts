@@ -21,14 +21,14 @@ class SetVariableHandler implements ApplicableHandler {
 
     /** {@inheritDoc}.*/
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: {
-        id: string, payload: { [key: string]: string }
+        id: string, body: { [key: string]: string }
     }): void {
         const state = this.mocksState.getMatchingState(params.id);
-        const payload = params.payload;
+        const body = params.body;
         try {
-            if (Object.keys(payload).length > 0) {
-                Object.keys(payload).forEach((key) => {
-                    state.variables[key] = payload[key];
+            if (Object.keys(body).length > 0) {
+                Object.keys(body).forEach((key) => {
+                    state.variables[key] = body[key];
                 });
             } else {
                 throw new Error('A variable should have a key and value');

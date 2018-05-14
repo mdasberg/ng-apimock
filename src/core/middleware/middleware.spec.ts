@@ -20,13 +20,14 @@ import PassThroughsHandler from './handlers/api/pass-throughs.handler';
 import {ApplicableHandler} from './handlers/handler';
 import {HttpMethods} from './http';
 import Mock from '../domain/mock';
+import GetRecordingsHandler from './handlers/api/get-recordings.handler';
 
 describe('Middleware', () => {
     const APIMOCK_ID = 'apimockId';
     const HEADERS = {'some': 'header'};
     const METHOD = HttpMethods.GET;
-    const PAYLOAD_STRING = '{"x":"x"}';
-    const PAYLOAD = {x: 'x'};
+    const BODY_STRING = '{"x":"x"}';
+    const BODY = {x: 'x'};
     const SOME_URL = '/base-url';
 
     let applicableHandler: ApplicableHandler;
@@ -53,6 +54,10 @@ describe('Middleware', () => {
     let getVariablesHandler: GetVariablesHandler;
     let getVariablesHandlerHandleFn: sinon.SinonStub;
     let getVariablesHandlerIsApplicableFn: sinon.SinonStub;
+
+    let getRecordingsHandler: GetRecordingsHandler;
+    let getRecordingsHandlerHandleFn: sinon.SinonStub;
+    let getRecordingsHandlerIsApplicableFn: sinon.SinonStub;
 
     let initHandler: InitHandler;
     let initHandlerHandleFn: sinon.SinonStub;
@@ -111,6 +116,9 @@ describe('Middleware', () => {
         getVariablesHandler = sinon.createStubInstance(GetVariablesHandler);
         getVariablesHandlerHandleFn = getVariablesHandler.handle as sinon.SinonStub;
         getVariablesHandlerIsApplicableFn = getVariablesHandler.isApplicable as sinon.SinonStub;
+        getRecordingsHandler = sinon.createStubInstance(GetRecordingsHandler);
+        getRecordingsHandlerHandleFn = getRecordingsHandler.handle as sinon.SinonStub;
+        getRecordingsHandlerIsApplicableFn = getRecordingsHandler.isApplicable as sinon.SinonStub;
         applicableHandlerHandleFn = sinon.stub();
         applicableHandlerIsApplicableFn = sinon.stub();
         applicableHandler = {handle: applicableHandlerHandleFn, isApplicable: applicableHandlerIsApplicableFn};
@@ -132,6 +140,7 @@ describe('Middleware', () => {
         container.bind<EchoRequestHandler>('EchoRequestHandler').toConstantValue(echoRequestHandler);
         container.bind<GetMocksHandler>('GetMocksHandler').toConstantValue(getMocksHandler);
         container.bind<GetVariablesHandler>('GetVariablesHandler').toConstantValue(getVariablesHandler);
+        container.bind<GetRecordingsHandler>('GetRecordingsHandler').toConstantValue(getRecordingsHandler);
         container.bind<InitHandler>('InitHandler').toConstantValue(initHandler);
         container.bind<MockRequestHandler>('MockRequestHandler').toConstantValue(mockRequestHandler);
         container.bind<MocksState>('MocksState').toConstantValue(mocksState);
@@ -148,22 +157,6 @@ describe('Middleware', () => {
     });
 
     describe('middleware', () => {
-        describe('recording headers is present', () => {
-            beforeEach(() => {
-                getApimockIdFn.returns(APIMOCK_ID);
-                request.headers = {'record': 'true'};
-
-                middleware.middleware(request, response, nextFn);
-            });
-
-            it('calls next', () => sinon.assert.called(nextFn));
-
-            afterEach(() => {
-                getApimockIdFn.reset();
-                nextFn.reset();
-            });
-        });
-
         describe('matching applicable handler', () => {
             beforeEach(() => {
                 getApimockIdFn.returns(APIMOCK_ID);
@@ -173,7 +166,7 @@ describe('Middleware', () => {
 
                 middleware.middleware(request, response, nextFn);
 
-                requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                requestOnFn.getCall(0).args[1](new Buffer(BODY_STRING));
                 requestOnFn.getCall(1).args[1]();
             });
 
@@ -181,10 +174,10 @@ describe('Middleware', () => {
                 sinon.assert.called(getApimockIdFn));
 
             it('gets the matching applicable handler', () =>
-                sinon.assert.calledWith(getMatchingApplicableHandlerFn, request, PAYLOAD));
+                sinon.assert.calledWith(getMatchingApplicableHandlerFn, request, BODY));
 
             it('calls the handler.handle', () =>
-                sinon.assert.calledWith(applicableHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, payload: PAYLOAD}));
+                sinon.assert.calledWith(applicableHandlerHandleFn, request, response, nextFn, {id: APIMOCK_ID, body: BODY}));
 
             afterEach(() => {
                 requestOnFn.reset();
@@ -206,7 +199,7 @@ describe('Middleware', () => {
 
                     middleware.middleware(request, response, nextFn);
 
-                    requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                    requestOnFn.getCall(0).args[1](new Buffer(BODY_STRING));
                     requestOnFn.getCall(1).args[1]();
                 });
 
@@ -217,13 +210,13 @@ describe('Middleware', () => {
                     sinon.assert.calledWith(getMatchingApplicableHandlerFn, request, {x: 'x'}));
 
                 it('gets the matching mock', () =>
-                    sinon.assert.calledWith(mocksStateGetMatchingMockFn, SOME_URL, METHOD, HEADERS, PAYLOAD));
+                    sinon.assert.calledWith(mocksStateGetMatchingMockFn, SOME_URL, METHOD, HEADERS, BODY));
 
                 it('calls the echo request handler', () =>
                     sinon.assert.calledWith(echoRequestHandlerHandleFn, request, response, nextFn, {
                         id: APIMOCK_ID,
                         mock: matchingMock,
-                        payload: PAYLOAD
+                        body: BODY
                     }));
 
                 afterEach(() => {
@@ -243,18 +236,37 @@ describe('Middleware', () => {
                     request.method = METHOD;
                     request.headers = HEADERS;
                     requestOnFn.onCall(0).returns(request);
-
-                    middleware.middleware(request, response, nextFn);
-
-                    requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
-                    requestOnFn.getCall(1).args[1]();
                 });
 
-                it('calls the record response handler', () =>
-                    sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {
-                        mock: matchingMock,
-                        payload: PAYLOAD
-                    }));
+                describe('record header is present', () => {
+                    beforeEach(() => {
+                        request.headers.record = 'true';
+                        middleware.middleware(request, response, nextFn);
+
+                        requestOnFn.getCall(0).args[1](new Buffer(BODY_STRING));
+                        requestOnFn.getCall(1).args[1]();
+                    });
+
+                    it('does not call the record response handler', () =>
+                        sinon.assert.notCalled(recordResponseHandlerHandleFn));
+                });
+
+                describe('record header is not present', () => {
+                    beforeEach(() => {
+                        request.headers.record = undefined;
+                        middleware.middleware(request, response, nextFn);
+
+                        requestOnFn.getCall(0).args[1](new Buffer(BODY_STRING));
+                        requestOnFn.getCall(1).args[1]();
+                    });
+
+                    it('calls the record response handler', () =>
+                        sinon.assert.calledWith(recordResponseHandlerHandleFn, request, response, nextFn, {
+                            mock: matchingMock,
+                            body: BODY
+                        }));
+
+                });
 
 
                 afterEach(() => {
@@ -278,7 +290,7 @@ describe('Middleware', () => {
 
                     middleware.middleware(request, response, nextFn);
 
-                    requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                    requestOnFn.getCall(0).args[1](new Buffer(BODY_STRING));
                     requestOnFn.getCall(1).args[1]();
                 });
 
@@ -306,7 +318,7 @@ describe('Middleware', () => {
 
                 middleware.middleware(request, response, nextFn);
 
-                requestOnFn.getCall(0).args[1](new Buffer(PAYLOAD_STRING));
+                requestOnFn.getCall(0).args[1](new Buffer(BODY_STRING));
                 requestOnFn.getCall(1).args[1]();
             });
 
@@ -328,7 +340,7 @@ describe('Middleware', () => {
         });
 
         it('finds the applicable handler', () =>
-            expect(middleware.getMatchingApplicableHandler(request, PAYLOAD)).toEqual(getVariablesHandler));
+            expect(middleware.getMatchingApplicableHandler(request, BODY)).toEqual(getVariablesHandler));
 
         afterEach(() => {
             getMatchingApplicableHandlerFn.reset();

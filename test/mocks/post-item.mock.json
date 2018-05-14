@@ -2,7 +2,7 @@
   "name": "post item",
   "isArray": true,
   "request": {
-    "url": "items",
+    "url": "/items",
     "method": "POST",
     "payload": {
       "item": "^[a-zA-Z]{3,10}$"

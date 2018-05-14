@@ -215,11 +215,11 @@ describe('BaseApimockClient', () => {
 
     describe('updateMock', () => {
         it('calls updateMockRequest', () => {
-            const payload = {name: 'name', scenario: 'scenario', delay: 1000, echo: true};
+            const body = {name: 'name', scenario: 'scenario', delay: 1000, echo: true};
             updateMockFn.callThrough();
             wrapAsPromiseFn.resolves(Promise.resolve());
 
-            client.updateMock(payload);
+            client.updateMock(body);
 
             sinon.assert.called(wrapAsPromiseFn);
             wrapAsPromiseFn.getCall(0).args[0]();
@@ -236,9 +236,9 @@ describe('BaseApimockClient', () => {
     describe('updateMockRequest', () => {
         it('calls the api', () => {
             updateMockRequestFn.callThrough();
-            const payload = {name: 'name', scenario: 'scenario'};
-            client._updateMockRequest(payload, resolveFn, rejectFn);
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/mocks', 'PUT', payload, resolveFn, rejectFn);
+            const body = {name: 'name', scenario: 'scenario'};
+            client._updateMockRequest(body, resolveFn, rejectFn);
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/mocks', 'PUT', body, resolveFn, rejectFn);
         });
 
         afterEach(() => {
@@ -281,9 +281,9 @@ describe('BaseApimockClient', () => {
     describe('setVariablesRequest', () => {
         it('calls the api', () => {
             setVariablesRequestFn.callThrough();
-            const payload = {'one': 'first', 'two': 'second'};
-            client._setVariablesRequest(payload, resolveFn, rejectFn);
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables', 'PUT', payload, resolveFn, rejectFn);
+            const body = {'one': 'first', 'two': 'second'};
+            client._setVariablesRequest(body, resolveFn, rejectFn);
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables', 'PUT', body, resolveFn, rejectFn);
         });
 
         afterEach(() => {
@@ -367,9 +367,9 @@ describe('BaseApimockClient', () => {
     describe('performActionRequest', () => {
         it('calls the api', () => {
             performActionRequestFn.callThrough();
-            const payload = {action: 'action'};
-            client._performActionRequest(payload, resolveFn, rejectFn);
-            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/actions', 'PUT', payload, resolveFn, rejectFn);
+            const body = {action: 'action'};
+            client._performActionRequest(body, resolveFn, rejectFn);
+            sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/actions', 'PUT', body, resolveFn, rejectFn);
         });
 
         afterEach(() => {
@@ -381,21 +381,21 @@ describe('BaseApimockClient', () => {
     describe('invoke', () => {
         let url: string;
         let method: string;
-        let payload: any;
+        let body: any;
         let promise: Promise<any>;
 
         beforeEach(() => {
             url = 'url';
-            payload = {'one': 'one'};
+            body = {'one': 'one'};
             client.fetch = fetch;
             invokeFn.callThrough();
         });
 
         describe('method is GET', () => {
-            it('calls the api without payload', () => {
+            it('calls the api without body', () => {
                 fetch.resolves();
                 method = 'GET';
-                client.invoke(url, method, payload, resolveFn, rejectFn);
+                client.invoke(url, method, body, resolveFn, rejectFn);
 
                 sinon.assert.calledWith(fetch, url, {
                     method: method,
@@ -408,10 +408,10 @@ describe('BaseApimockClient', () => {
         });
 
         describe('method is DELETE', () => {
-            it('calls the api without payload', () => {
+            it('calls the api without body', () => {
                 fetch.resolves();
                 method = 'DELETE';
-                client.invoke(url, method, payload, resolveFn, rejectFn);
+                client.invoke(url, method, body, resolveFn, rejectFn);
 
                 sinon.assert.calledWith(fetch, url, {
                     method: method,
@@ -424,14 +424,14 @@ describe('BaseApimockClient', () => {
         });
 
         describe('method is POST', () => {
-            it('calls the api with payload', () => {
+            it('calls the api with body', () => {
                 fetch.resolves();
                 method = 'POST';
-                client.invoke(url, method, payload, resolveFn, rejectFn);
+                client.invoke(url, method, body, resolveFn, rejectFn);
 
                 sinon.assert.calledWith(fetch, url, {
                     method: method,
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify(body),
                     headers: {
                         'Content-Type': 'application/json',
                         'cookie': `apimockid=${client.apimockId}`
@@ -441,14 +441,14 @@ describe('BaseApimockClient', () => {
         });
 
         describe('method is PUT', () => {
-            it('calls the api with payload', () => {
+            it('calls the api with body', () => {
                 fetch.resolves();
                 method = 'PUT';
-                client.invoke(url, method, payload, resolveFn, rejectFn);
+                client.invoke(url, method, body, resolveFn, rejectFn);
 
                 sinon.assert.calledWith(fetch, url, {
                     method: method,
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify(body),
                     headers: {
                         'Content-Type': 'application/json',
                         'cookie': `apimockid=${client.apimockId}`
@@ -460,14 +460,14 @@ describe('BaseApimockClient', () => {
         describe('status code OK', () =>
             it('calls resolve', async () => {
                 fetch.resolves();
-                await client.invoke(url, method, payload, resolveFn, rejectFn);
+                await client.invoke(url, method, body, resolveFn, rejectFn);
                 sinon.assert.called(resolveFn);
             }));
 
         describe('status code not OK', () =>
             it('calls reject', async () => {
                 fetch.rejects();
-                await client.invoke(url, method, payload, resolveFn, rejectFn);
+                await client.invoke(url, method, body, resolveFn, rejectFn);
                 sinon.assert.called(rejectFn);
             }));
 

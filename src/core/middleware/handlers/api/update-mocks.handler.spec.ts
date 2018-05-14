@@ -69,57 +69,57 @@ describe('UpdateMocksHandler', () => {
         });
 
         it('sets the echo', () => {
-            const payload = {name: 'two', echo: true};
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {name: 'two', echo: true};
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
 
-            expect(matchingState.mocks[payload.name].echo).toBe(payload.echo);
+            expect(matchingState.mocks[body.name].echo).toBe(body.echo);
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.called(responseEndFn);
         });
 
         it('sets the delay', () => {
-            const payload = {name: 'two', delay: 1000};
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {name: 'two', delay: 1000};
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
 
-            expect(matchingState.mocks[payload.name].delay).toBe(payload.delay);
+            expect(matchingState.mocks[body.name].delay).toBe(body.delay);
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.called(responseEndFn);
         });
 
         it('selects a mocks', () => {
-            const payload = {name: 'two', scenario: 'thing'};
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {name: 'two', scenario: 'thing'};
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
 
-            expect(matchingState.mocks[payload.name].scenario).toBe(payload.scenario);
+            expect(matchingState.mocks[body.name].scenario).toBe(body.scenario);
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.called(responseEndFn);
         });
 
         it('selects passThrough', () => {
-            const payload = {name: 'two', scenario: 'passThrough'};
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {name: 'two', scenario: 'passThrough'};
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
 
-            expect(matchingState.mocks[payload.name].scenario).toBe(payload.scenario);
+            expect(matchingState.mocks[body.name].scenario).toBe(body.scenario);
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.called(responseEndFn);
         });
 
 
         it('throw error if scenario does not exist', () => {
-            const payload = {name: 'two', scenario: 'non-existing'};
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {name: 'two', scenario: 'non-existing'};
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
 
-            expect(matchingState.mocks[payload.name].scenario).toBe((DEFAULT_MOCKS_STATE as any)[payload.name].scenario);
+            expect(matchingState.mocks[body.name].scenario).toBe((DEFAULT_MOCKS_STATE as any)[body.name].scenario);
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.CONFLICT, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
-            sinon.assert.calledWith(responseEndFn, `{"message":"No scenario matching ['${payload.scenario}'] found"}`);
+            sinon.assert.calledWith(responseEndFn, `{"message":"No scenario matching ['${body.scenario}'] found"}`);
         });
 
         it('throw error if mock does not exist', () => {
-            const payload = {name: 'non-existing', scenario: 'non-existing'};
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {name: 'non-existing', scenario: 'non-existing'};
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
 
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.CONFLICT, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
-            sinon.assert.calledWith(responseEndFn, `{"message":"No mock matching name ['${payload.name}'] found"}`);
+            sinon.assert.calledWith(responseEndFn, `{"message":"No mock matching name ['${body.name}'] found"}`);
         });
 
         afterEach(() => {

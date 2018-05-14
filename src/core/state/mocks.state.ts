@@ -2,12 +2,12 @@ import 'reflect-metadata';
 import {injectable} from 'inversify';
 
 import GlobalState from './global.state';
-import HttpResponseRecording from './httpResponseRecording';
 import Mock from '../domain/mock';
 import MockResponse from '../domain/mock.response';
 import SessionState from './session.state';
 import State from './state';
 import {IncomingHttpHeaders} from 'http';
+import Recording from './recording';
 
 /** The mocks state. */
 @injectable()
@@ -25,7 +25,7 @@ class MocksState {
         }
     };
 
-    recordings: { [identifier: string]: HttpResponseRecording[] };
+    recordings: { [identifier: string]: Recording[] };
     record: boolean;
 
     global: GlobalState;
@@ -61,14 +61,14 @@ class MocksState {
     }
 
     /**
-     * Gets the mock matching the given url, method, headers and payload.
+     * Gets the mock matching the given url, method, headers and body.
      * @param {string} url The url.
      * @param {string} method The method.
      * @param {IncomingHttpHeaders} headers The headers.
-     * @param {any} payload The payload.
+     * @param {any} body The body.
      * @return {Mock} mock The matching mock.
      */
-    getMatchingMock(url: string, method: string, headers: IncomingHttpHeaders, payload: any): Mock {
+    getMatchingMock(url: string, method: string, headers: IncomingHttpHeaders, body: any): Mock {
         return this.mocks.find(_mock => {
             const matchUrl = new RegExp(_mock.request.url).exec(decodeURI(url)) !== null;
             const matchMethod = _mock.request.method === method;
@@ -82,16 +82,16 @@ class MocksState {
                 }).length === 0;
             }
 
-            let matchPayload = true;
-            if (_mock.request.payload !== undefined) {
-                matchPayload = Object.keys(_mock.request.payload).filter((key) => {
-                    const defined = payload[key] !== undefined;
-                    const matched = new RegExp(_mock.request.payload[key]).exec(payload[key]) !== null;
+            let matchBody = true;
+            if (_mock.request.body !== undefined) {
+                matchBody = Object.keys(_mock.request.body).filter((key) => {
+                    const defined = body[key] !== undefined;
+                    const matched = new RegExp(_mock.request.body[key]).exec(body[key]) !== null;
                     return !defined || !matched;
                 }).length === 0;
             }
 
-            return matchUrl && matchMethod && matchHeaders && matchPayload;
+            return matchUrl && matchMethod && matchHeaders && matchBody;
         });
     }
 

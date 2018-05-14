@@ -58,12 +58,12 @@ class ProtractorClient extends BaseApimockClient implements ApimockClient {
 
     /**
      * Sets the variables. If the variable already exists, it will be overridden.
-     * @param payload The payload
+     * @param body The body.
      * @return {Promise} promise The promise.
      * @deprecated use {@link setVariables}
      */
-    async setGlobalVariables(payload: { [p: string]: string }): Promise<any> {
-        return await this.setVariables(payload);
+    async setGlobalVariables(body: { [p: string]: string }): Promise<any> {
+        return await this.setVariables(body);
     }
 
     /**

@@ -34,8 +34,8 @@ abstract class BaseApimockClient {
      * @return {Promise<any>} promise The promise.
      */
     async setApimockCookie(): Promise<any> {
-        await this.openUrl(this.baseUrl + '/init').then(() =>
-            this.setCookie('apimockid', this.apimockId));
+        await this.openUrl(this.baseUrl + '/init');
+        await this.setCookie('apimockid', this.apimockId);
         return this;
     }
 
@@ -104,45 +104,45 @@ abstract class BaseApimockClient {
     }
 
     /** {@inheritDoc}. */
-    async updateMock(payload: { name: string, scenario?: string, delay?: number, echo?: boolean }): Promise<any> {
+    async updateMock(body: { name: string, scenario?: string, delay?: number, echo?: boolean }): Promise<any> {
         return await this.wrapAsPromise((resolve: Function, reject: Function) =>
-            this._updateMockRequest(payload, resolve, reject));
+            this._updateMockRequest(body, resolve, reject));
     }
 
     /**
      * Updates the mock state.
-     * @param payload The payload.
+     * @param body The body.
      * @param {Function} reject The reject callback.
      * @param {Function} resolve The resolve callback.
      * @private
      */
-    async _updateMockRequest(payload: { name: string, scenario?: string, delay?: number, echo?: boolean }, resolve: Function,
+    async _updateMockRequest(body: { name: string, scenario?: string, delay?: number, echo?: boolean }, resolve: Function,
                              reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + '/mocks', HttpMethods.PUT, payload, resolve, reject);
+        return await this.invoke(this.baseUrl + '/mocks', HttpMethods.PUT, body, resolve, reject);
     }
 
     /** {@inheritDoc}. */
     async setVariable(key: string, value: string): Promise<any> {
-        const payload: { [key: string]: string } = {};
-        payload[key] = value;
-        return await this.setVariables(payload);
+        const body: { [key: string]: string } = {};
+        body[key] = value;
+        return await this.setVariables(body);
     }
 
     /** {@inheritDoc}. */
-    async setVariables(payload: { [key: string]: string }): Promise<any> {
+    async setVariables(body: { [key: string]: string }): Promise<any> {
         return await this.wrapAsPromise((resolve: Function, reject: Function) =>
-            this._setVariablesRequest(payload, resolve, reject));
+            this._setVariablesRequest(body, resolve, reject));
     }
 
     /**
      * Updates the variables.
-     * @param payload The payload
+     * @param body The body
      * @param {Function} reject The reject callback.
      * @param {Function} resolve The resolve callback.
      * @private
      */
-    async _setVariablesRequest(payload: { [key: string]: string }, resolve: Function, reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + '/variables', HttpMethods.PUT, payload, resolve, reject);
+    async _setVariablesRequest(body: { [key: string]: string }, resolve: Function, reject: Function): Promise<any> {
+        return await this.invoke(this.baseUrl + '/variables', HttpMethods.PUT, body, resolve, reject);
     }
 
     /** {@inheritDoc}. */
@@ -182,23 +182,23 @@ abstract class BaseApimockClient {
 
     /**
      * Performs an action either defaults or passThrough.
-     * @param payload The payload
+     * @param body The body
      * @param {Function} reject The reject callback.
      * @param {Function} resolve The resolve callback.
      */
-    async _performActionRequest(payload: { action: string }, resolve: Function, reject: Function): Promise<any> {
-        return await this.invoke(this.baseUrl + '/actions', HttpMethods.PUT, payload, resolve, reject);
+    async _performActionRequest(body: { action: string }, resolve: Function, reject: Function): Promise<any> {
+        return await this.invoke(this.baseUrl + '/actions', HttpMethods.PUT, body, resolve, reject);
     }
 
     /**
      * Invokes the api and handles the response.
      * @param {string} url The url.
      * @param {string} method The method.
-     * @param payload The payload.
+     * @param body The body.
      * @param {Function} reject The reject callback.
      * @param {Function} resolve The resolve callback.
      */
-    async invoke(url: string, method: string, payload: any, resolve: Function, reject: Function): Promise<any> {
+    async invoke(url: string, method: string, body: any, resolve: Function, reject: Function): Promise<any> {
         const requestInit: RequestInit = {
             method: method,
             headers: Object.assign({}, {
@@ -207,7 +207,7 @@ abstract class BaseApimockClient {
         };
 
         if ([HttpMethods.GET, HttpMethods.DELETE].indexOf(method) === -1) {
-            requestInit.body = JSON.stringify(payload);
+            requestInit.body = JSON.stringify(body);
         }
 
         return await this.fetch(url, requestInit)

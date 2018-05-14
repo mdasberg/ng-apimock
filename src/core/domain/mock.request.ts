@@ -4,9 +4,9 @@ interface MockRequest {
     url: string;
     // the http method (GET, POST, PUT, DELETE)
     method: string;
-    // payload
-    payload?: { [key: string]: string };
-    // payload
+    // body
+    body?: { [key: string]: string };
+    // body
     headers?: { [key: string]: string };
 }
 

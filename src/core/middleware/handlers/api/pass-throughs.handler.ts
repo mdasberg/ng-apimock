@@ -27,9 +27,9 @@ class PassThroughsHandler implements ApplicableHandler {
     }
 
     /** {@inheritDoc}.*/
-    isApplicable(request: http.IncomingMessage, payload: any): boolean {
+    isApplicable(request: http.IncomingMessage, body: any): boolean {
         const urlMatches = request.url.startsWith(`${this.baseUrl}/actions`);
-        const actionMatches = payload !== undefined && payload.action === 'passThroughs';
+        const actionMatches = body !== undefined && body.action === 'passThroughs';
         return urlMatches && actionMatches;
     }
 }

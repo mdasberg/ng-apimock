@@ -24,18 +24,18 @@ class UpdateMocksHandler implements ApplicableHandler {
 
     /** {@inheritDoc}.*/
     handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: {
-        id: string, payload: { name: string, scenario?: string, echo?: boolean, delay?: number }
+        id: string, body: { name: string, scenario?: string, echo?: boolean, delay?: number }
     }): void {
         const state = this.mocksState.getMatchingState(params.id);
-        const payload = params.payload;
+        const body = params.body;
         try {
-            const mockName: string = payload.name;
+            const mockName: string = body.name;
             const matchingMock: Mock = this.mocksState.mocks.find((mock) => mock.name === mockName);
 
             if (matchingMock !== undefined) {
-                const scenario: string = payload.scenario;
-                const echo: boolean = payload.echo;
-                const delay: number = payload.delay;
+                const scenario: string = body.scenario;
+                const echo: boolean = body.echo;
+                const delay: number = body.delay;
 
                 if (echo !== undefined) {
                     state.mocks[mockName].echo = echo;

@@ -34,10 +34,10 @@ interface ApimockClient {
 
     /**
      * Sets the variables.
-     * @param payload The payload.
+     * @param body The body.
      * @return {Promise} promise The promise.
      */
-    setVariables(payload: { [key: string]: string }): Promise<any>;
+    setVariables(body: { [key: string]: string }): Promise<any>;
 
     /**
      * Sets for all the mocks the selected scenario back to the default.

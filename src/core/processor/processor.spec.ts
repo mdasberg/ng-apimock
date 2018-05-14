@@ -61,7 +61,7 @@ describe('MocksProcessor', () => {
             fsReadJsonSyncFn.onCall(2).returns({
                 name: 'full-request',
                 isArray: true,
-                request: {url: 'full/url', method: 'GET', headers: {'Cache-control': 'no-store'}, payload: {'uuid': '\\d+'}},
+                request: {url: 'full/url', method: 'GET', headers: {'Cache-control': 'no-store'}, body: {'uuid': '\\d+'}},
                 responses: {
                     'full-response': {
                         status: 404,

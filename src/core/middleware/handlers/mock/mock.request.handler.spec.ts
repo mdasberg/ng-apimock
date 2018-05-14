@@ -91,7 +91,7 @@ describe('MockRequestHandler', () => {
                     sinon.assert.calledWith(responseEndFn, BINARY_CONTENT);
                 });
 
-                it('wraps the payload in a json callback', () => {
+                it('wraps the body in a json callback', () => {
                     getJsonCallbackNameFn.returns('callback');
                     mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 
@@ -141,7 +141,7 @@ describe('MockRequestHandler', () => {
                     sinon.assert.calledWith(responseEndFn, INTERPOLATED_RESPONSE_DATA);
                 });
 
-                it('wraps the payload in a json callback', () => {
+                it('wraps the body in a json callback', () => {
                     getJsonCallbackNameFn.returns('callback');
                     mockRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK});
 

@@ -18,8 +18,8 @@ export interface ApplicableHandler extends Handler {
     /**
      * Indicates if the given request is applicable.
      * @param {"http".IncomingMessage} request The request.
-     * @param payload The payload.
+     * @param body The body.
      * @return {boolean} indicator The indicator.
      */
-    isApplicable(request: http.IncomingMessage, payload?: any): boolean;
+    isApplicable(request: http.IncomingMessage, body?: any): boolean;
 }

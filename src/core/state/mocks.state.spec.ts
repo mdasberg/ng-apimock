@@ -25,7 +25,7 @@ describe('MocksState', () => {
                 'Content-Type': '.*/json',
                 'Cache-Control': 'no-cache'
             },
-            payload: {
+            body: {
                 number: '\\d+',
                 identifier: '^[a-zA-Z]{4}$'
             }
@@ -95,8 +95,8 @@ describe('MocksState', () => {
     });
 
     describe('getMatchingMock', () => {
-        const VALID_PAYLOAD = {number: 123, identifier: 'abcd'};
-        const INVALID_PAYLOAD = {number: 123, identifier: 'ab'};
+        const VALID_BODY = {number: 123, identifier: 'abcd'};
+        const INVALID_BODY = {number: 123, identifier: 'ab'};
         const VALID_HEADERS = {'content-type': 'application/json', 'cache-control': 'no-cache'};
         const INVALID_HEADERS = {'content-type': 'application/json', 'cache-control': 'public'};
         const VALID_URL = 'some/api';
@@ -104,26 +104,26 @@ describe('MocksState', () => {
 
         describe('url does not match', () =>
             it('returns undefined', () =>
-                expect(mocksState.getMatchingMock(INVALID_URL, 'P2OST', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
+                expect(mocksState.getMatchingMock(INVALID_URL, 'P2OST', VALID_HEADERS, VALID_BODY)).toBeUndefined()));
 
         describe('method does not match', () =>
             it('returns undefined', () =>
-                expect(mocksState.getMatchingMock(VALID_URL, 'PUT', VALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
+                expect(mocksState.getMatchingMock(VALID_URL, 'PUT', VALID_HEADERS, VALID_BODY)).toBeUndefined()));
 
         describe('headers does not match', () =>
             it('returns undefined', () =>
-                expect(mocksState.getMatchingMock(VALID_URL, 'POST', INVALID_HEADERS, VALID_PAYLOAD)).toBeUndefined()));
+                expect(mocksState.getMatchingMock(VALID_URL, 'POST', INVALID_HEADERS, VALID_BODY)).toBeUndefined()));
 
-        describe('payload does not match', () =>
+        describe('body does not match', () =>
             it('returns undefined', () =>
-                expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, INVALID_PAYLOAD)).toBeUndefined()));
+                expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, INVALID_BODY)).toBeUndefined()));
 
         describe('request matches', () =>
             it('returns the matching mock', () => {
                 // match simple mock - only url and method
                 expect(mocksState.getMatchingMock(VALID_URL, 'GET', {}, {})).toBe(simpleMock);
-                // match advanced mock - url, method, headers, payload
-                expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, VALID_PAYLOAD)).toBe(advancedMock);
+                // match advanced mock - url, method, headers, body
+                expect(mocksState.getMatchingMock(VALID_URL, 'POST', VALID_HEADERS, VALID_BODY)).toBe(advancedMock);
             }));
     });
 

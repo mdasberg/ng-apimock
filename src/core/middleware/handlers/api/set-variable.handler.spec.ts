@@ -59,16 +59,16 @@ describe('SetVariableHandler', () => {
         });
 
         it('sets the variable', () => {
-            const payload = {'four': 'fourth'} as any;
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {'four': 'fourth'} as any;
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.called(responseEndFn);
             expect(matchingState.variables['four']).toBe('fourth');
         });
 
         it('sets the variables', () => {
-            const payload = {'five': 'fifth', 'six': 'sixth'} as any;
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {'five': 'fifth', 'six': 'sixth'} as any;
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.called(responseEndFn);
             expect(matchingState.variables['five']).toBe('fifth');
@@ -76,8 +76,8 @@ describe('SetVariableHandler', () => {
         });
 
         it('throw error if no key value pair is present', () => {
-            const payload = {} as any;
-            handler.handle(request, response, nextFn, {id: APIMOCK_ID, payload: payload});
+            const body = {} as any;
+            handler.handle(request, response, nextFn, {id: APIMOCK_ID, body: body});
             sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.CONFLICT, HttpHeaders.CONTENT_TYPE_APPLICATION_JSON);
             sinon.assert.calledWith(responseEndFn, `{"message":"A variable should have a key and value"}`);
         });

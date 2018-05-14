@@ -11,7 +11,7 @@ import {HttpMethods} from '../../http';
 
 describe('EchoRequestHandler', () => {
     const APIMOCK_ID = 'apimockId';
-    const PAYLOAD = {x: 'x'};
+    const BODY = {x: 'x'};
     const MOCK = {
         name: 'some',
         request: {
@@ -51,9 +51,9 @@ describe('EchoRequestHandler', () => {
             it('console.logs the request', () => {
                 mocksStateGetEchoFn.returns(true);
 
-                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK, payload: PAYLOAD});
+                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK, body: BODY});
                 sinon.assert.calledWith(mocksStateGetEchoFn, MOCK.name, APIMOCK_ID);
-                sinon.assert.calledWith(consoleLogFn, `${MOCK.request.method} request made on \'${MOCK.request.url}\' with payload: \'${JSON.stringify(PAYLOAD)}`);
+                sinon.assert.calledWith(consoleLogFn, `${MOCK.request.method} request made on \'${MOCK.request.url}\' with body: \'${JSON.stringify(BODY)}`);
             })
         );
 
@@ -61,7 +61,7 @@ describe('EchoRequestHandler', () => {
             it('does not console.logs the request', () => {
                 mocksStateGetEchoFn.returns(false);
 
-                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK, payload: PAYLOAD});
+                echoRequestHandler.handle(request, response, nextFn, {id: APIMOCK_ID, mock: MOCK, body: BODY});
                 sinon.assert.calledWith(mocksStateGetEchoFn, MOCK.name, APIMOCK_ID);
                 sinon.assert.notCalled(consoleLogFn);
             })
