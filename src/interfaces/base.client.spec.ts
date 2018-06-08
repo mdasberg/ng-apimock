@@ -10,6 +10,7 @@ class TestClient extends BaseApimockClient {
     setCookie(name: string, value: string): Promise<any> {
         return undefined;
     }
+
     wrapAsPromise(func: Function): Promise<any> {
         return undefined;
     }
@@ -78,17 +79,17 @@ describe('BaseApimockClient', () => {
 
     describe('setApimockCookie', () => {
         let promise: Promise<any>;
-        beforeEach(()=> {
+        beforeEach(() => {
             openUrlFn.resolves();
             setCookieFn.resolves();
             promise = client.setApimockCookie();
         });
-        it('opens the init url', async() => {
+        it('opens the init url', async () => {
             await promise;
             sinon.assert.calledWith(openUrlFn, BASE_URL + '/ngapimock/init');
         });
 
-        it('sets the cookie', async() => {
+        it('sets the cookie', async () => {
             await promise;
 
             sinon.assert.calledWith(setCookieFn, 'apimockid', client.apimockId);
@@ -126,7 +127,7 @@ describe('BaseApimockClient', () => {
             client._getMocksRequest(resolveFn, rejectFn);
             sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/mocks', 'GET', {}, sinon.match.func, rejectFn);
 
-            invokeFn.getCall(0).args[3]({json: ()=> ({x: 'x'})});
+            invokeFn.getCall(0).args[3]({json: () => ({x: 'x'})});
             sinon.assert.calledWith(resolveFn, {x: 'x'}); // convert to json object
         });
 
@@ -163,7 +164,7 @@ describe('BaseApimockClient', () => {
             client._getVariablesRequest(resolveFn, rejectFn);
             sinon.assert.calledWith(invokeFn, BASE_URL + '/ngapimock/variables', 'GET', {}, sinon.match.func, rejectFn);
 
-            invokeFn.getCall(0).args[3]({json: ()=> ({x: 'x'})});
+            invokeFn.getCall(0).args[3]({json: () => ({x: 'x'})});
             sinon.assert.calledWith(resolveFn, {x: 'x'}); // convert to json object
         });
 

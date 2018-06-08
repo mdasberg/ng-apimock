@@ -214,12 +214,12 @@ describe('RecordResponseHandler', () => {
                 expect(actual.request.headers).toEqual({host: 'localhost:8888'});
                 expect(actual.request.body).toEqual({'some-key': 'some-value'});
                 // updates the data
-                expect(actual.response.data).toBe('{"apimockFileLocation":"baseUrl/recordings/generated-uuid.pdf"}' );
+                expect(actual.response.data).toBe('{"apimockFileLocation":"baseUrl/recordings/generated-uuid.pdf"}');
                 expect(actual.response.status).toEqual(HttpStatusCode.OK);
                 expect(actual.response.headers).toEqual({'Content-Type': '...'});
             });
 
-            it('saves the data', ()=> {
+            it('saves the data', () => {
                 sinon.assert.calledWith(fsWriteFileSyncFn, path.join(os.tmpdir(), 'generated-uuid.pdf'));
             });
         });

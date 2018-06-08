@@ -6,8 +6,8 @@ export module HttpMethods {
 }
 
 export module HttpHeaders {
-    export const CONTENT_TYPE_APPLICATION_JSON = { 'Content-Type': 'application/json' };
-    export const CONTENT_TYPE_BINARY = { 'Content-Type': 'application/octet-stream' };
+    export const CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json'};
+    export const CONTENT_TYPE_BINARY = {'Content-Type': 'application/octet-stream'};
 }
 
 export module HttpStatusCode {

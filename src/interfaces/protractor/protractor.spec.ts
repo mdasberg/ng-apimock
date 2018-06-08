@@ -78,13 +78,15 @@ describe('ProtractorClient', () => {
         describe('use promise', () =>
             it('returns a promise', () => {
                 client.usePromise = true;
-                expect(client.wrapAsPromise(() => {}) instanceof Promise).toBe(true);
+                expect(client.wrapAsPromise(() => {
+                }) instanceof Promise).toBe(true);
             }));
 
         describe('use promise === false', () =>
             it('returns a protractor.promise.defer', () => {
                 client.usePromise = false;
-                expect(client.wrapAsPromise(() => {})).toEqual(deferredPromise);
+                expect(client.wrapAsPromise(() => {
+                })).toEqual(deferredPromise);
             }));
     });
 });

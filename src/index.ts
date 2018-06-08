@@ -1,7 +1,7 @@
 import container from './core/ioc-container';
 import MocksProcessor from './core/processor/processor';
 import Middleware from './core/middleware/middleware';
-import * as http from "http";
+import * as http from 'http';
 
 class Apimock {
     get processor() {

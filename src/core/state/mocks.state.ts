@@ -12,10 +12,6 @@ import Recording from './recording';
 /** The mocks state. */
 @injectable()
 class MocksState {
-    private DEFAULT_DELAY = 0;
-    private DEFAULT_ECHO = false;
-    private PASS_THROUGH = 'passThrough';
-
     mocks: Mock[];
     defaults: {
         [identifier: string]: {
@@ -24,12 +20,13 @@ class MocksState {
             echo: boolean;
         }
     };
-
     recordings: { [identifier: string]: Recording[] };
     record: boolean;
-
     global: GlobalState;
     sessions: SessionState[];
+    private DEFAULT_DELAY = 0;
+    private DEFAULT_ECHO = false;
+    private PASS_THROUGH = 'passThrough';
 
     /** Constructor. */
     constructor() {

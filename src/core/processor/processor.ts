@@ -12,12 +12,11 @@ import {HttpHeaders, HttpStatusCode} from '../middleware/http';
 /** Mocks processor. */
 @injectable()
 class MocksProcessor {
+    @inject('MocksState')
+    mocksState: MocksState;
     private DEFAULT_DELAY = 0;
     private DEFAULT_ECHO = false;
     private PASS_THROUGH = 'passThrough';
-
-    @inject('MocksState')
-    mocksState: MocksState;
 
     /**
      * Initialize apimock by:

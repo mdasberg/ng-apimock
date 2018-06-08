@@ -71,7 +71,7 @@ class RecordResponseHandler implements Handler {
 
             response.writeHead(responseStatusCode, responseHeaders);
             response.end(responseData);
-        } catch(err) {
+        } catch (err) {
             response.end(err.message);
         }
     }

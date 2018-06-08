@@ -52,4 +52,4 @@ interface ApimockClient {
     setMocksToPassThrough(): Promise<any>;
 }
 
- export default ApimockClient;
+export default ApimockClient;
