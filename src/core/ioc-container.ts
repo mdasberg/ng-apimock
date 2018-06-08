@@ -39,7 +39,7 @@ container.bind<DeleteVariableHandler>('DeleteVariableHandler').to(DeleteVariable
 container.bind<DefaultsHandler>('DefaultsHandler').to(DefaultsHandler);
 container.bind<PassThroughsHandler>('PassThroughsHandler').to(PassThroughsHandler);
 
-container.bind<GetRecordedResponseHandler>('RecordedResponseHandler').to(GetRecordedResponseHandler);
+container.bind<GetRecordedResponseHandler>('GetRecordedResponseHandler').to(GetRecordedResponseHandler);
 container.bind<GetRecordingsHandler>('GetRecordingsHandler').to(GetRecordingsHandler);
 
 container.bind<MocksProcessor>('MocksProcessor').to(MocksProcessor);
