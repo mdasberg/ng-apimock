@@ -20,7 +20,7 @@
         "custom": "custom"
       },
       "statusText": "text",
-      "default": false
+      "default": true
     },
     "crypto-exchanges": {
       "status": 200,

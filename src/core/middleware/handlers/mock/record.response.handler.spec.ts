@@ -1,187 +1,235 @@
-// import 'reflect-metadata';
-// import {Container} from 'inversify';
-// import * as http from 'http';
-// import * as sinon from 'sinon';
-//
-// import Mock from '../../../domain/mock';
-// import RecordResponseHandler from './record.response.handler';
-// import MocksState from '../../../state/mocks.state';
-// import {HttpMethods, HttpStatusCode} from '../../http';
-// import Recording from '../../../state/recording';
-//
-// describe('RecordResponseHandler', () => {
-//     const HEADERS = {host: 'localhost:8888'};
-//     const METHOD = HttpMethods.GET;
-//     const PAYLOAD = '{"x":"x"}';
-//     const SOME_URL = '/some/api';
-//
-//     let clock: sinon.SinonFakeTimers;
-//     let container: Container;
-//     let httpRequestFn: sinon.SinonStub;
-//     let mocksState: MocksState;
-//     let nextFn: sinon.SinonStub;
-//     let now: Date;
-//     let recordFn: sinon.SinonStub;
-//     let recordResponseHandler: RecordResponseHandler;
-//     let request: http.IncomingMessage;
-//     let requestOnFn: sinon.SinonStub;
-//     let requestEndFn: sinon.SinonStub;
-//     let response: http.ServerResponse;
-//     let responseEndFn: sinon.SinonStub;
-//     let responseOnFn: sinon.SinonStub;
-//     let responseSetEncodingFn: sinon.SinonStub;
-//
-//     beforeAll(() => {
-//         container = new Container();
-//         mocksState = sinon.createStubInstance(MocksState);
-//         nextFn = sinon.stub();
-//         request = sinon.createStubInstance(http.IncomingMessage);
-//         requestOnFn = sinon.stub();
-//         requestEndFn = sinon.stub();
-//         response = sinon.createStubInstance(http.ServerResponse);
-//         responseOnFn = response.on as sinon.SinonStub;
-//         responseEndFn = response.end as sinon.SinonStub;
-//         responseSetEncodingFn = sinon.stub();
-//
-//         container.bind<MocksState>('MocksState').toConstantValue(mocksState);
-//         container.bind<RecordResponseHandler>('RecordResponseHandler').to(RecordResponseHandler);
-//
-//         mocksState = container.get<MocksState>('MocksState');
-//         recordResponseHandler = container.get<RecordResponseHandler>('RecordResponseHandler');
-//
-//         recordFn = sinon.stub(RecordResponseHandler.prototype, <any>'record');
-//         httpRequestFn = sinon.stub(http, <any>'request');
-//         now = new Date();
-//         clock = sinon.useFakeTimers(now.getTime());
-//     });
-//
-//     describe('handle', () => {
-//         let mock: Mock;
-//
-//         beforeEach(() => {
-//             request.url = SOME_URL;
-//             request.method = METHOD;
-//             request.headers = HEADERS;
-//
-//             mock = {name: 'some'} as Mock;
-//
-//             httpRequestFn.returns({
-//                 on: requestOnFn,
-//                 end: requestEndFn
-//             });
-//
-//             recordResponseHandler.handle(request, response, nextFn, {mock: mock, payload: PAYLOAD});
-//         });
-//
-//         it('sets the record header to true', () =>
-//             expect(request.headers.record).toBe('true'));
-//
-//         it('calls http.request', () => {
-//             sinon.assert.calledWith(httpRequestFn, {
-//                 host: 'localhost',
-//                 port: 8888,
-//                 path: request.url,
-//                 method: request.method,
-//                 headers: request.headers
-//             });
-//
-//             sinon.assert.calledWith(requestOnFn, 'error', sinon.match.func);
-//             sinon.assert.called(requestEndFn);
-//         });
-//
-//         it('on request error report the error', () => {
-//             requestOnFn.getCall(0).args[1]('oops');
-//             sinon.assert.calledWith(responseEndFn, 'oops');
-//         });
-//
-//         it('on request data record', () => {
-//             httpRequestFn.getCall(0).args[1]({
-//                 setEncoding: responseSetEncodingFn,
-//                 on: responseOnFn,
-//                 statusCode: HttpStatusCode.OK
-//             });
-//
-//             sinon.assert.calledWith(responseSetEncodingFn, 'utf8');
-//
-//             // call on response data
-//             const chunk = new Buffer('{"y":"y"}');
-//             responseOnFn.getCall(0).args[1](chunk);
-//             sinon.assert.calledWith(recordFn, PAYLOAD, chunk.toString('utf-8'), request, HttpStatusCode.OK);
-//             sinon.assert.calledWith(responseEndFn, chunk);
-//         });
-//
-//         afterEach(() => {
-//             requestOnFn.reset();
-//             requestEndFn.reset();
-//             responseEndFn.reset();
-//             responseOnFn.reset();
-//             responseSetEncodingFn.reset();
-//             httpRequestFn.reset();
-//             httpRequestFn.reset();
-//             recordFn.reset();
-//         });
-//     });
-//
-//     describe('record', () => {
-//         beforeEach(() => {
-//             mocksState.recordings = {};
-//             mocksState.recordings['some'] = [];
-//         });
-//         it('stores the recording', () => {
-//             recordFn.callThrough();
-//             recordResponseHandler.record('{"x":"x"}', 'chunk', {
-//                 method: METHOD,
-//                 url: SOME_URL
-//             } as http.IncomingMessage, HttpStatusCode.OK, 'some');
-//
-//             expect(mocksState.recordings['some'][0]).toEqual({
-//                 data: 'chunk',
-//                 payload: PAYLOAD,
-//                 datetime: now.getTime(),
-//                 method: METHOD,
-//                 url: SOME_URL,
-//                 statusCode: 200
-//             } as Recording);
-//
-//             // convert buffer to string
-//             recordResponseHandler.record(PAYLOAD, new Buffer('chunk'), {
-//                 method: METHOD,
-//                 url: SOME_URL
-//             } as http.IncomingMessage, HttpStatusCode.OK, 'some');
-//
-//             expect(mocksState.recordings['some'][0].data).toBe('chunk');
-//         });
-//
-//         it('replaces the oldest recording if the max recordings are exceeded', () => {
-//             recordFn.callThrough();
-//             const first = {description: 'first'} as any;
-//             const second = {description: 'second'} as any;
-//             mocksState.recordings['some'].push(first);
-//             mocksState.recordings['some'].push(second);
-//             expect(mocksState.recordings['some'].length).toBe(2);
-//
-//             recordResponseHandler.record(PAYLOAD, 'chunk', {
-//                 method: METHOD,
-//                 url: SOME_URL
-//             } as http.IncomingMessage, HttpStatusCode.OK, 'some');
-//
-//             expect(mocksState.recordings['some'].length).toBe(2);
-//             expect(mocksState.recordings['some'][0]).toEqual(second);
-//             expect(mocksState.recordings['some'][1]).toEqual({
-//                 data: 'chunk',
-//                 payload: PAYLOAD,
-//                 datetime: now.getTime(),
-//                 method: METHOD,
-//                 url: SOME_URL,
-//                 statusCode: 200
-//             } as HttpRecording);
-//         });
-//     });
-//
-//     afterAll(() => {
-//         httpRequestFn.restore();
-//         httpRequestFn.restore();
-//         recordFn.restore();
-//         clock.restore();
-//     });
-// });
+import 'reflect-metadata';
+import {Container} from 'inversify';
+import * as fs from 'fs-extra';
+import * as http from 'http';
+import * as os from 'os';
+import * as path from 'path';
+import * as sinon from 'sinon';
+import * as uuid from 'uuid';
+
+import RecordResponseHandler from './record.response.handler';
+import MocksState from '../../../state/mocks.state';
+import Mock from '../../../domain/mock';
+import {HttpMethods, HttpStatusCode} from '../../http';
+import Recording from '../../../state/recording';
+
+describe('RecordResponseHandler', () => {
+    let body: string;
+    let clock: sinon.SinonFakeTimers;
+    let container: Container;
+    let fetchResponseFn: sinon.SinonStub;
+    let fsWriteFileSyncFn: sinon.SinonStub;
+    let mocksState: MocksState;
+    let nextFn: sinon.SinonStub;
+    let mock: Mock;
+    let now: Date;
+    let recordFn: sinon.SinonStub;
+    let recordResponseHandler: RecordResponseHandler;
+    let request: http.IncomingMessage;
+    let responseBufferFn: sinon.SinonStub;
+    let responseHeadersGetFn: sinon.SinonStub;
+    let responseHeadersRawFn: sinon.SinonStub;
+    let response: http.ServerResponse;
+    let responseEndFn: sinon.SinonStub;
+    let responseWriteHeadFn: sinon.SinonStub;
+    let uuidV4Fn: sinon.SinonStub;
+
+
+    beforeAll(() => {
+        body = '{"x":"x"}';
+        container = new Container();
+        mocksState = sinon.createStubInstance(MocksState);
+        mock = {name: 'some'} as Mock;
+        nextFn = sinon.stub();
+        now = new Date();
+        clock = sinon.useFakeTimers(now.getTime());
+        request = sinon.createStubInstance(http.IncomingMessage);
+        request.url = '/some/api';
+        request.method = HttpMethods.GET;
+        request.headers = {host: 'localhost:8888'};
+        responseBufferFn = sinon.stub();
+        responseHeadersRawFn = sinon.stub();
+        responseHeadersGetFn = sinon.stub();
+        response = sinon.createStubInstance(http.ServerResponse);
+        responseWriteHeadFn = response.writeHead as sinon.SinonStub;
+        responseEndFn = response.end as sinon.SinonStub;
+        uuidV4Fn = sinon.stub(uuid, <any>'v4');
+        fsWriteFileSyncFn = sinon.stub(fs, <any>'writeFileSync');
+
+        container.bind<string>('BaseUrl').toConstantValue('baseUrl');
+        container.bind<MocksState>('MocksState').toConstantValue(mocksState);
+        container.bind<RecordResponseHandler>('RecordResponseHandler').to(RecordResponseHandler);
+
+        mocksState = container.get<MocksState>('MocksState');
+        recordResponseHandler = container.get<RecordResponseHandler>('RecordResponseHandler');
+
+        recordFn = sinon.stub(RecordResponseHandler.prototype, <any>'record');
+        fetchResponseFn = sinon.stub(RecordResponseHandler.prototype, <any>'fetchResponse');
+    });
+
+    describe('handle', () => {
+        beforeEach(() => {
+            responseBufferFn.returns('the-data');
+            responseHeadersRawFn.returns({'Content-Type': 'application/pdf'});
+        });
+
+        describe('by default', () => {
+            beforeEach(() => {
+                fetchResponseFn.resolves({
+                    buffer: responseBufferFn, headers: {raw: responseHeadersRawFn}, status: 200
+                });
+                recordResponseHandler.handle(request, response, nextFn, {mock: mock, body: body});
+            });
+
+            it('sets the record header to true', () =>
+                expect(request.headers.record).toBe('true'));
+
+            it('calls the api', () => {
+                sinon.assert.calledWith(fetchResponseFn, sinon.match(async (actual: Request) => {
+                    await expect(actual.url).toBe('http://localhost:8888/some/api');
+                    await expect(actual.method).toBe(HttpMethods.GET);
+                    await expect(actual.headers.get('host')).toBe('localhost:8888');
+                    return await expect(actual.headers.get('record')).toBe('true');
+                }));
+            });
+
+            afterEach(() => {
+                fetchResponseFn.reset();
+                recordFn.reset();
+            });
+        });
+
+        describe('on successful api call', () => {
+            beforeEach(() => {
+                responseHeadersGetFn.returns('application/pdf');
+                fetchResponseFn.resolves({
+                    buffer: responseBufferFn, headers: {raw: responseHeadersRawFn, get: responseHeadersGetFn}, status: 200
+                });
+            });
+
+            it('on request data record', async () => {
+                await recordResponseHandler.handle(request, response, nextFn, {mock: mock, body: body});
+                sinon.assert.calledWith(recordFn, 'some', sinon.match(async (actual: Recording) => {
+                    await expect(actual.request.url).toBe('/some/api');
+                    await expect(actual.request.method).toBe(HttpMethods.GET);
+                    await expect(actual.request.headers).toEqual({host: 'localhost:8888', record: 'true'});
+                    await expect(actual.request.body).toBe(JSON.stringify({x: 'x'}) as any);
+
+                    await expect(actual.response.data).toBe('the-data');
+                    await expect(actual.response.status).toBe(HttpStatusCode.OK);
+                    await expect(actual.response.headers).toEqual({'Content-Type': 'application/pdf'});
+                    return true;
+                }));
+            });
+
+            it('returns the response', async () => {
+                await recordResponseHandler.handle(request, response, nextFn, {mock: mock, body: body});
+                sinon.assert.calledWith(responseWriteHeadFn, HttpStatusCode.OK, {'Content-Type': 'application/pdf'});
+                sinon.assert.calledWith(responseEndFn, 'the-data');
+            });
+
+            afterEach(() => {
+                fetchResponseFn.reset();
+                recordFn.reset();
+                responseEndFn.reset();
+                responseWriteHeadFn.reset();
+            });
+        });
+
+        describe('on unsuccessful api call', () => {
+            let rejectedPromise: Promise<any>;
+            beforeEach(() => {
+                rejectedPromise = Promise.reject({message: 'oops'});
+                fetchResponseFn.resolves(rejectedPromise);
+            });
+
+            it('returns the error response', async () => {
+                try {
+                    await recordResponseHandler.handle(request, response, nextFn, {mock: mock, body: body});
+                    await rejectedPromise;
+                } catch (err) {
+                    sinon.assert.calledWith(responseEndFn, 'oops');
+                }
+            });
+
+            afterEach(() => {
+                fetchResponseFn.reset();
+                recordFn.reset();
+                responseEndFn.reset();
+                responseWriteHeadFn.reset();
+            });
+        });
+    });
+
+    describe('record', () => {
+        let recording: Recording;
+
+        beforeEach(() => {
+            mocksState.recordings = {};
+
+            recording = {
+                request: {
+                    url: '/some/url',
+                    method: HttpMethods.GET,
+                    headers: {host: 'localhost:8888'},
+                    body: {'some-key': 'some-value'}
+                },
+                response: {
+                    data: 'the-data',
+                    status: HttpStatusCode.OK,
+                    headers: {'Content-Type': '...'},
+                    contentType: '...'
+                },
+                datetime: new Date().getTime()
+            };
+
+            recordFn.callThrough();
+            uuidV4Fn.returns('generated-uuid');
+        });
+
+        describe('applicable mimetype', () => {
+            it('stores the recording', () => {
+                recording.response.contentType = 'application/json';
+                recordFn.callThrough();
+                recordResponseHandler.record('identifier', recording);
+                const actual = mocksState.recordings['identifier'][0];
+                expect(actual.request.url).toBe('/some/url');
+                expect(actual.request.method).toBe(HttpMethods.GET);
+                expect(actual.request.headers).toEqual({host: 'localhost:8888'});
+                expect(actual.request.body).toEqual({'some-key': 'some-value'});
+                expect(actual.response.data).toBe('the-data');
+                expect(actual.response.status).toEqual(HttpStatusCode.OK);
+                expect(actual.response.headers).toEqual({'Content-Type': '...'});
+            });
+        });
+
+        describe('non applicable mimetype', () => {
+            it('stores the recording', () => {
+                recording.response.contentType = 'application/pdf';
+                recordFn.callThrough();
+                recordResponseHandler.record('identifier', recording);
+                const actual = mocksState.recordings['identifier'][0];
+                expect(actual.request.url).toBe('/some/url');
+                expect(actual.request.method).toBe(HttpMethods.GET);
+                expect(actual.request.headers).toEqual({host: 'localhost:8888'});
+                expect(actual.request.body).toEqual({'some-key': 'some-value'});
+                // updates the data
+                expect(actual.response.data).toBe('{"apimockFileLocation":"baseUrl/recordings/generated-uuid.pdf"}' );
+                expect(actual.response.status).toEqual(HttpStatusCode.OK);
+                expect(actual.response.headers).toEqual({'Content-Type': '...'});
+            });
+
+            it('saves the data', ()=> {
+                sinon.assert.calledWith(fsWriteFileSyncFn, path.join(os.tmpdir(), 'generated-uuid.pdf'));
+            });
+        });
+    });
+
+    afterAll(() => {
+        clock.restore();
+        fsWriteFileSyncFn.restore();
+        fetchResponseFn.restore();
+        recordFn.restore();
+        uuidV4Fn.restore();
+    });
+});

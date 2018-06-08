@@ -1,37 +1,42 @@
 import 'reflect-metadata';
 import {inject, injectable} from 'inversify';
 
+import * as fs from 'fs-extra';
+import fetch, {Request} from 'node-fetch';
 import * as http from 'http';
+import * as os from 'os';
+import * as path from 'path';
+import * as uuid from 'uuid';
 
 import Mock from '../../../domain/mock';
 import MocksState from '../../../state/mocks.state';
 import {Handler} from '../handler';
-import {HttpMethods} from '../../http';
 import Recording from '../../../state/recording';
+import {HttpMethods} from '../../http';
+
 
 /**  Handler for a recording a response. */
 @injectable()
 class RecordResponseHandler implements Handler {
-    RESPONSE_ENCODING = 'utf8';
-    MAX_RECORDINGS_PER_MOCK = 2;
-    fetch: any;
+    APPLICABLE_MIMETYPES = ['application/json', 'application/xml'];
+    RESPONSE_ENCODING = 'base64';
 
     /**
      * Constructor.
      * @param {MocksState} mocksState The mocks state.
      */
-    constructor(@inject('MocksState') private mocksState: MocksState) {
-        this.fetch = require('node-fetch');
+    constructor(@inject('BaseUrl') private baseUrl: string,
+                @inject('MocksState') private mocksState: MocksState) {
     }
 
     /** {@inheritDoc}.*/
-    handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock, body: any }): void {
+    async handle(request: http.IncomingMessage, response: http.ServerResponse, next: Function, params: { mock: Mock, body: any }): Promise<any> {
         const method = request.method;
         const headers = request.headers;
 
         headers.record = 'true';
 
-        const requestInit: RequestInit = {
+        const requestInit: any = {
             method: method,
             headers: headers as HeadersInit
         };
@@ -40,49 +45,61 @@ class RecordResponseHandler implements Handler {
             requestInit.body = JSON.stringify(params.body);
         }
 
-        this.fetch(`http://${headers.host}${request.url}`, requestInit)
-            .then(async (res: any) => {
-                const responseData = await res.buffer();
-                const responseHeaders = await res.headers.raw();
-                const responseStatusCode = res.status;
-                const recording: Recording = {
-                    request: {
-                        url: request.url,
-                        method: request.method,
-                        headers: request.headers,
-                        body: params.body
-                    },
-                    response: {
-                        data: responseData.toString(this.RESPONSE_ENCODING),
-                        status: responseStatusCode,
-                        headers: responseHeaders
-                    },
-                    datetime: new Date().getTime()
-                };
+        try {
+            const res = await this.fetchResponse(new Request(`http://${headers.host}${request.url}`, requestInit));
+            const responseData = await res.buffer();
+            const responseHeaders = await res.headers.raw();
+            const responseStatusCode = res.status;
 
-                this.record(params.mock.name, recording);
+            const recording: any = {
+                request: {
+                    url: request.url,
+                    method: request.method,
+                    headers: request.headers,
+                    body: params.body
+                },
+                response: {
+                    data: responseData.toString(this.RESPONSE_ENCODING),
+                    status: responseStatusCode,
+                    headers: responseHeaders,
+                    contentType: res.headers.get('content-type')
+                },
+                datetime: new Date().getTime()
+            };
 
-                response.writeHead(responseStatusCode, responseHeaders);
-                response.end(responseData);
-            })
-            .catch((res: any) => response.end(res.message));
+            this.record(params.mock.name, recording);
+
+            response.writeHead(responseStatusCode, responseHeaders);
+            response.end(responseData);
+        } catch(err) {
+            response.end(err.message);
+        }
+    }
+
+    /**
+     * Fetch the request.
+     * @param {Request} request The request.
+     * @return {Promise<any>} promise The promise.
+     */
+    fetchResponse(request: Request): Promise<any> {
+        return fetch(request);
     }
 
     /**
      * Stores the recording with the matching mock.
-     * Recording are limited to the MAX_RECORDINGS_PER_MOCK.
-     * When the maximum number is reached, the oldest recording is removed.
-     * @param {object} body The body.
-     * @param {string | Buffer} chunk The chunk.
-     * @param {"http".IncomingMessage} request The http request.
-     * @param {number} status The status code.
      * @param {string} identifier The identifier.
+     * @param {Recording} recording The recordings.
      */
     record(identifier: string, recording: Recording) {
+        const contentType: string = recording.response.contentType;
         if (this.mocksState.recordings[identifier] === undefined) {
             this.mocksState.recordings[identifier] = [];
-        } else if (this.mocksState.recordings[identifier].length > (this.MAX_RECORDINGS_PER_MOCK - 1)) {
-            this.mocksState.recordings[identifier].shift();
+        }
+
+        if (this.APPLICABLE_MIMETYPES.indexOf(contentType) === -1) {
+            const destination = `${uuid.v4()}.${contentType.substring(contentType.indexOf('/') + 1)}`;
+            fs.writeFileSync(path.join(os.tmpdir(), destination), new Buffer(recording.response.data, 'base64'));
+            recording.response.data = JSON.stringify({apimockFileLocation: `${this.baseUrl}/recordings/${destination}`});
         }
         this.mocksState.recordings[identifier].push(recording);
     }

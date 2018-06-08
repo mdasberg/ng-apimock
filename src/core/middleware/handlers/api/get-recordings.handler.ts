@@ -30,7 +30,7 @@ class GetRecordingsHandler implements ApplicableHandler {
 
     /** {@inheritDoc}.*/
     isApplicable(request: http.IncomingMessage): boolean {
-        const urlMatches = request.url.startsWith(`${this.baseUrl}/recordings`);
+        const urlMatches = request.url === `${this.baseUrl}/recordings`;
         const methodMatches = request.method === HttpMethods.GET;
         return urlMatches && methodMatches;
     }

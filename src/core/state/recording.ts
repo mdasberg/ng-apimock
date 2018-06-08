@@ -12,6 +12,7 @@ interface Recording {
         data: string;
         status: number;
         headers: OutgoingHttpHeaders;
+        contentType: string;
     };
     datetime: number;
 }

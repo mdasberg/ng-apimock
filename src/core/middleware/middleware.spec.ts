@@ -21,6 +21,7 @@ import {ApplicableHandler} from './handlers/handler';
 import {HttpMethods} from './http';
 import Mock from '../domain/mock';
 import GetRecordingsHandler from './handlers/api/get-recordings.handler';
+import GetRecordedResponseHandler from './handlers/api/get-recorded-response.handler';
 
 describe('Middleware', () => {
     const APIMOCK_ID = 'apimockId';
@@ -79,6 +80,9 @@ describe('Middleware', () => {
     let recordResponseHandler: RecordResponseHandler;
     let recordResponseHandlerHandleFn: sinon.SinonStub;
 
+    let getRecordedResponseHandler: GetRecordedResponseHandler;
+    let recordedResponseHandlerHandleFn: sinon.SinonStub;
+
     let request: http.IncomingMessage;
     let requestOnFn: sinon.SinonStub;
 
@@ -130,6 +134,8 @@ describe('Middleware', () => {
         passThroughsHandlerHandleFn = passThroughsHandler.handle as sinon.SinonStub;
         recordResponseHandler = sinon.createStubInstance(RecordResponseHandler);
         recordResponseHandlerHandleFn = recordResponseHandler.handle as sinon.SinonStub;
+        getRecordedResponseHandler = sinon.createStubInstance(GetRecordedResponseHandler);
+        recordedResponseHandlerHandleFn = getRecordedResponseHandler.handle as sinon.SinonStub;
         setVariableHandler = sinon.createStubInstance(SetVariableHandler);
         setVariableHandlerHandleFn = setVariableHandler.handle as sinon.SinonStub;
         updateMocksHandler = sinon.createStubInstance(UpdateMocksHandler);
@@ -147,6 +153,7 @@ describe('Middleware', () => {
         container.bind<PassThroughsHandler>('PassThroughsHandler').toConstantValue(passThroughsHandler);
         container.bind<SetVariableHandler>('SetVariableHandler').toConstantValue(setVariableHandler);
         container.bind<RecordResponseHandler>('RecordResponseHandler').toConstantValue(recordResponseHandler);
+        container.bind<GetRecordedResponseHandler>('GetRecordedResponseHandler').toConstantValue(getRecordedResponseHandler);
         container.bind<UpdateMocksHandler>('UpdateMocksHandler').toConstantValue(updateMocksHandler);
         container.bind<Middleware>('Middleware').to(Middleware);
         nextFn = sinon.stub();

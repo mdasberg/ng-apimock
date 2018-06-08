@@ -18,6 +18,7 @@ import PassThroughsHandler from './handlers/api/pass-throughs.handler';
 import InitHandler from './handlers/api/init.handler';
 import {ApplicableHandler} from './handlers/handler';
 import GetRecordingsHandler from './handlers/api/get-recordings.handler';
+import GetRecordedResponseHandler from './handlers/api/get-recorded-response.handler';
 
 /** Middleware. */
 @injectable()
@@ -51,6 +52,7 @@ class Middleware {
                 @inject('MocksState') private apimockState: MocksState,
                 @inject('PassThroughsHandler') private passThroughsHandler: PassThroughsHandler,
                 @inject('RecordResponseHandler') private recordResponseHandler: RecordResponseHandler,
+                @inject('GetRecordedResponseHandler') private getRecordedResponseHandler: GetRecordedResponseHandler,
                 @inject('SetVariableHandler') private setVariableHandler: SetVariableHandler,
                 @inject('UpdateMocksHandler') private updateMocksHandler: UpdateMocksHandler) {
         this.handlers = [
@@ -61,6 +63,7 @@ class Middleware {
             getVariablesHandler,
             initHandler,
             passThroughsHandler,
+            getRecordedResponseHandler,
             setVariableHandler,
             updateMocksHandler
         ];

@@ -6,7 +6,7 @@ const apimock = require(path.join(process.cwd(), 'dist','index'));
 
 apimock.processor.process(path.join(process.cwd(), 'test', 'mocks'));
 
-app.use((request, response, next) => apimock.middleware.middleware(request, response, next));
+app.use(apimock.middleware);
 app.use('/', serveStatic(path.join(process.cwd(), 'node_modules/ng-apimock-angular-test-app/dist')));
 app.use('/items', function (request, response, next) {
     response.writeHead(200, {'Content-Type': 'application/json'});
