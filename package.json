@@ -51,9 +51,7 @@
     "glob": "7.1.2",
     "inversify": "4.11.1",
     "node-fetch": "2.1.1",
-    "path": "0.12.7",
     "reflect-metadata": "0.1.12",
-    "sinon": "4.1.4",
     "url-join": "4.0.0",
     "uuid": "3.2.1"
   },
