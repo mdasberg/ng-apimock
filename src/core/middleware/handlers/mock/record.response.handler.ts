@@ -59,7 +59,7 @@ class RecordResponseHandler implements Handler {
                     body: params.body
                 },
                 response: {
-                    data: responseData.toString(this.RESPONSE_ENCODING),
+                    data: responseData,
                     status: responseStatusCode,
                     headers: responseHeaders,
                     contentType: res.headers.get('content-type')
@@ -98,8 +98,10 @@ class RecordResponseHandler implements Handler {
 
         if (this.APPLICABLE_MIMETYPES.indexOf(contentType) === -1) {
             const destination = `${uuid.v4()}.${contentType.substring(contentType.indexOf('/') + 1)}`;
-            fs.writeFileSync(path.join(os.tmpdir(), destination), new Buffer(recording.response.data, 'base64'));
+            fs.writeFileSync(path.join(os.tmpdir(), destination), new Buffer((recording.response.data as any).toString(this.RESPONSE_ENCODING), this.RESPONSE_ENCODING));
             recording.response.data = JSON.stringify({apimockFileLocation: `${this.baseUrl}/recordings/${destination}`});
+        } else {
+            recording.response.data = recording.response.data.toString();
         }
         this.mocksState.recordings[identifier].push(recording);
     }
