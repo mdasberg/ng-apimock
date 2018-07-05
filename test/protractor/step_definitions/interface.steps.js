@@ -11,7 +11,8 @@
         const mocksDirectory = path.join(process.cwd(), 'test', 'mocks', 'api');
         const responses = {
             list: fs.readJsonSync(path.join(mocksDirectory, 'some-api-list.json')).responses,
-            update: fs.readJsonSync(path.join(mocksDirectory, 'some-api-post.json')).responses,
+            insert: fs.readJsonSync(path.join(mocksDirectory, 'some-api-insert.json')).responses,
+            update: fs.readJsonSync(path.join(mocksDirectory, 'some-api-update.json')).responses,
             download: fs.readJsonSync(path.join(mocksDirectory, 'some-api-download.json')).responses
         };
 

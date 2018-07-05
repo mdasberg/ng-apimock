@@ -1,9 +1,9 @@
 # ng-apimock [![Build Status](https://travis-ci.org/mdasberg/ng-apimock.svg?branch=master)](https://travis-ci.org/mdasberg/ng-apimock) [![npm version](https://img.shields.io/node/v/ng-apimock.svg)](https://github.com/mdasberg/ng-apimock) [![dependency Status](https://img.shields.io/david/mdasberg/ng-apimock.svg)](https://david-dm.org/mdasberg/ng-apimock) [![devDependency Status](https://img.shields.io/david/dev/mdasberg/ng-apimock.svg)](https://david-dm.org/mdasberg/gng-apimock#info=devDependencies) [![npm downloads](https://img.shields.io/npm/dm/ng-apimock.svg?style=flat-square)](https://www.npmjs.com/package/ng-apimock)
 
 > Node plugin that provides the ability to use scenario based api mocking:
- - for local development 
+ - for local development
  - for protractor testing
- 
+
 #### Plugins that use ng-apimock
  - [grunt-ng-apimock](https://mdasberg.github.io/grunt-ng-apimock) is a plugin that makes ng-apimock available for [Grunt](http://gruntjs.com/)
  - [gulp-ng-apimock](https://mdasberg.github.io/gulp-ng-apimock) is a plugin that makes ng-apimock available for [Gulp](http://gulpjs.com/)
@@ -29,10 +29,10 @@ In order to use the available mocks, you need to call the run function with this
 
 ```js
 ngApimock.run({
-  "baseUrl": "http://<NODE_SERVER_API_URL>:<PORT>", // If not informed browser.baseUrl will be used 
-  "src": "test/mocks", 
-  "outputDir": "path/to/outputDir", 
-  "done": function() { 
+  "baseUrl": "http://<NODE_SERVER_API_URL>:<PORT>", // If not informed browser.baseUrl will be used
+  "src": "test/mocks",
+  "outputDir": "path/to/outputDir",
+  "done": function() {
   // async
   }
 });
@@ -60,6 +60,7 @@ There are a couple of rules to follow.
 {
   "expression": "your expression here (ie a regex without the leading and trailing '/' or a string)",
   "method": "the http method (ie GET, POST, PUT or DELETE)", // supports JSONP as well
+  "body": "request body matcher (ie a regex without the leading and trailing '/' or a string)"  // optional
   "name": "identifiable name for this service call"  // if non is provided, expression$$method will be used
   "isArray": "indicates if the response data is an array or object",
   "responses": {
@@ -99,7 +100,7 @@ For local development you can use the web interface to add, change or delete var
 For protractor you can use the following commands
 ```js
      ngApimock.setGlobalVariable(name, value); // to add or update
-     ngApimock.deleteGlobalVariable(name); // to delete 
+     ngApimock.deleteGlobalVariable(name); // to delete
 ```
 
 ### Howto serve selected mocks
@@ -135,9 +136,9 @@ app.use(function middleware2(req, res, next) {
 
 ### Howto use for local development
 
-As you have configured both the [connect middleware](#add-the-connect-middleware) and the [mocking interface](#add-the-mocking-interface-to-your-connect-configuration), everything 
+As you have configured both the [connect middleware](#add-the-connect-middleware) and the [mocking interface](#add-the-mocking-interface-to-your-connect-configuration), everything
   should work out of the box. By default all the responses configured as default, will be returned if the expression matches.
-  
+
   If you would like to change the selected scenario, you can go to http://localhost:9000/mocking and use the interface to change the selected scenario or variables
 
 The interface looks like this:
@@ -157,21 +158,21 @@ exports.config = {
     }
 };
 ```
-and from that point on you can use it in your tests 
+and from that point on you can use it in your tests
 ```js
 describe('Some test', function () {
     it('should do something', function() {
         ngApimock.selectScenario('name of some api', 'another'); // at runtime you can change a scenario
     });
  });
-   
+
 ```
 
 By default all the scenario's marked as default will be returned if the expression matches. So you only need to add ngApimock.selectScenario in case your test needs
 another scenario response to be returned.
 
-NgApimock also works when running multiple tests concurrent, by using the protract session id of the test. 
-This ensures that changing a scenario in one test, will not effect another test. 
+NgApimock also works when running multiple tests concurrent, by using the protract session id of the test.
+This ensures that changing a scenario in one test, will not effect another test.
 
 ### Using Angular 2 or higher with Protractor?
 If you are using Angular 2 or higher in combination with Protractor you will need to add the following to you configuration.
@@ -203,7 +204,7 @@ Sets the delay time in milliseconds for the mock so the response will be delayed
 
 #### echoRequest(name, indicator)
 Sets the indicator which enables / disables the request logging (only post request should be logged)
-  
+
 #### setAllScenariosToDefault()
 Resets all mocks to the default scenarios
 
@@ -211,16 +212,16 @@ Resets all mocks to the default scenarios
 Resets all mocks to use passthroughs
 
 #### setGlobalVariable(key, value)
-Adds or updates the global key/value pair 
+Adds or updates the global key/value pair
 
 #### setGlobalVariables(variables)
-Adds or updates the global key/value pairs  ie. {'some':'value', 'another': 'value'}  
+Adds or updates the global key/value pairs  ie. {'some':'value', 'another': 'value'}
 
 #### deleteGlobalVariable(key)
 Remove the global variable matching the key
 
 ### Howto use recording functionality
-You can record API calls in NgApimock. This is usefull if you have a live API, and want to create mocks for them. 
+You can record API calls in NgApimock. This is usefull if you have a live API, and want to create mocks for them.
 You turn on Recording in the header Record (checkbox), and start calling the API. Requests are recorded for each mock. You can zoom in up to Request Response information.
 The response data can be used in mock files, described earlier.
 

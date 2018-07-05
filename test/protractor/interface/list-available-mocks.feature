@@ -12,6 +12,7 @@ Feature: List all the available mocks
     Given a mock with name download has marked binary-download as its default scenario
     And a mock with name list has no scenario marked as default
     And a mock with name update has marked successful as its default scenario
+    And a mock with name insert has marked successful as its default scenario
 
   Scenario: Show available mocks
     Given I open the mocking interface
@@ -20,3 +21,4 @@ Feature: List all the available mocks
       | download | binary-download |
       | list     | passThrough     |
       | update   | successful      |
+      | insert   | successful      |

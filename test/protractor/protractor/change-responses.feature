@@ -14,6 +14,7 @@ Feature: Change responses
     Given a mock with name download has marked binary-download as its default scenario
     And a mock with name list has no scenario marked as default
     And a mock with name update has marked successful as its default scenario
+    And a mock with name insert has marked successful as its default scenario
 
     # Verify without selecting any scenario
 
@@ -27,6 +28,12 @@ Feature: Change responses
     When I post data
     Then the successful response should be returned for mock with name update
     And the status code should be undefined for mock with name update
+
+  Scenario: Match request body
+    Given I open the test page
+    When I post some other data
+    Then the successful response should be returned for mock with name insert
+    And the status code should be undefined for mock with name insert
 
   Scenario: Download binary
     Given I open the test page

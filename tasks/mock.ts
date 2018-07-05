@@ -10,6 +10,8 @@ interface Mock {
     expression: string;
     // the http method (GET, POST, PUT, DELETE)
     method: string;
+    // the request body
+    body?: string;
     // the available responses
     responses: { [key: string]: MockResponse };
 }
