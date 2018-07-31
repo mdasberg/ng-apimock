@@ -1,7 +1,7 @@
 {
   "name": "ng-apimock-with-presets",
   "description": "An ng-apimock fork with preset functionality",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/stephanmullerNL/ng-apimock",
   "author": {
     "name": "Stephan Muller",
