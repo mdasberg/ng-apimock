@@ -1,31 +1,31 @@
 {
-  "name": "ng-apimock",
-  "description": "Node plugin that provides the ability to use scenario based api mocking of angular apps",
-  "version": "1.4.4",
-  "homepage": "https://mdasberg.github.io/ng-apimock",
+  "name": "ng-apimock-with-presets",
+  "description": "An ng-apimock fork with preset functionality",
+  "version": "0.0.1",
+  "homepage": "https://github.com/stephanmullerNL/ng-apimock",
   "author": {
-    "name": "Mischa Dasberg",
-    "email": "mischa@dasberg.nl"
+    "name": "Stephan Muller",
+    "email": "stephanmullernl@gmail.com"
   },
   "contributors": [
+    "Mischa Dasberg (ng-apimock) <mischa@dasberg.nl>",
     "Frank Merema <frankmerema@gmail.com>",
     "Jeroen van de Pol <jeroenvandepol@gmail.com>",
     "Justus Romijn <justus.romijn@gmail.com>",
     "Richard Rijnberk <r.rijnberk@gmail.com>",
-    "Stephan Muller' <stephanmullernl@gmail.com>",
     "Wim Selles <wim@wswebcreation.nl>"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mdasberg/ng-apimock.git"
+    "url": "git+https://github.com/stephanmullerNL/ng-apimock.git"
   },
   "bugs": {
-    "url": "https://github.com/mdasberg/ng-apimock/issues"
+    "url": "https://github.com/stephanmullerNL/ng-apimock/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/mdasberg/ng-apimock/blob/master/LICENSE-MIT"
+      "url": "https://github.com/stephanmullerNL/ng-apimock/blob/master/LICENSE-MIT"
     }
   ],
   "main": "tasks/index.js",
@@ -50,7 +50,7 @@
     "fs-extra": "4.0.1",
     "glob": "7.1.2",
     "hooker": "0.2.3",
-    "lodash": "4.17.4",
+    "lodash": "^4.17.10",
     "path": "0.12.7",
     "then-request": "4.1.0",
     "url-join": "2.0.2",
@@ -61,7 +61,8 @@
     "api",
     "mock",
     "scenario",
-    "httpbackend"
+    "httpbackend",
+    "webdriverio"
   ],
   "devDependencies": {
     "@types/async": "2.0.41",
@@ -71,13 +72,11 @@
     "@types/glob": "5.0.31",
     "chai": "4.1.1",
     "chai-as-promised": "7.1.1",
-    "connect": "3.6.3",
+    "connect": "^3.6.6",
     "cucumber": "2.3.1",
     "cucumberjs-junitxml": "1.0.0",
-    "jasmine-node": "1.14.5",
-    "protractor": "5.1.2",
-    "protractor-cucumber-framework": "3.1.2",
-    "serve-static": "1.12.3",
+    "jasmine-node": "^2.0.1",
+    "serve-static": "^1.13.2",
     "shortid": "2.2.8",
     "tslint": "5.6.0",
     "tslint-eslint-rules": "4.1.1",
