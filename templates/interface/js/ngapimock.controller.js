@@ -14,6 +14,7 @@
         vm.addVariable = addVariable;
         vm.updateVariable = updateVariable;
         vm.deleteVariable = deleteVariable;
+        vm.searchFilter = searchFilter;
 
         vm.$onInit = function () {
             fetchMocks();
@@ -156,6 +157,18 @@
             variableService.delete({key: key}, function () {
                 delete vm.variables[key];
             });
+        }
+
+        /**
+         * Check if the expression of the mock matches the searchUrl.
+         * @param mock A mock.
+         */
+        function searchFilter(mock) {
+            if (!vm.searchUrl || !mock.expression) {
+                return true;
+            }
+
+            return vm.searchUrl.match(mock.expression);
         }
     }
 
