@@ -33,7 +33,6 @@
         Given(/^I open the mocking interface$/, () => browser.get('/mocking'));
 
         Then(/^I filter using a URL$/, () => {
-            console.log(mockingPo.searchField);
             return mockingPo.searchField.sendKeys('online/rest/some/api/pdf');
         });
 
@@ -45,7 +44,6 @@
             })));
 
         When(/^I select (.*) for mock with name (.*)$/, (scenario, name) => {
-            console.log('scenario', scenario);
             return mockingPo.mock(name).scenario.sendKeys(scenario);
         });
 

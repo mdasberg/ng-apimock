@@ -28,4 +28,4 @@ Feature: List all the available mocks
     Then I filter using a URL
     Then the following scenario's should be selected:
       | name     | scenario        |
-      | download | binary-download | 
+      | download | binary-download |
