@@ -15,10 +15,21 @@
             loading: element(by.name('loading'))
         };
 
+        po.response = {
+            data: element(by.binding('$ctrl.response.data')),
+            error: element(by.binding('$ctrl.response.error'))
+        }
+
         po.update = {
             button: element(by.buttonText('post me')),
-            data: element(by.binding('$ctrl.update.data')),
-            error: element(by.binding('$ctrl.update.error'))
+            data: po.response.data,
+            error: po.response.error
+        };
+
+        po.insert = {
+            button: element(by.buttonText('insert')),
+            data: po.response.data,
+            error: po.response.error
         };
 
         po.download = {

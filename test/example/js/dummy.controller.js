@@ -52,19 +52,18 @@
         }
 
         /** Posts the data. */
-        function post() {
+        function post(data) {
             api.post({
-                x: 'x', y: 'y',
-                data: {
-                    some: 'thing'
-                }
+                x: 'x',
+                y: 'y',
+                data: data
             }, function (data) {
-                vm.update = {
+                vm.response = {
                     data: data,
                     error: undefined
                 };
             }, function (response) {
-                vm.update = {
+                vm.response = {
                     data: undefined,
                     error: response.status
                 };

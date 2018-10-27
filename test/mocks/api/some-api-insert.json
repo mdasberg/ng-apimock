@@ -1,0 +1,17 @@
+{
+  "expression": "online\/rest\/some\/api\/.*\/and\/.*",
+  "method": "POST",
+  "body": "thing two",
+  "name": "insert",
+  "responses": {
+    "successful": {
+      "status": 200,
+      "default": true,
+      "data": {
+        "some": "thing two"
+      }
+    }
+  }
+}
+
+

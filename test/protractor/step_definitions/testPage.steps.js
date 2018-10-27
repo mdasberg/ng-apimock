@@ -9,7 +9,8 @@
         const mocksDirectory = path.join(process.cwd(), 'test', 'mocks', 'api');
         const responses = {
             list: fs.readJsonSync(path.join(mocksDirectory, 'some-api-list.json')).responses,
-            update: fs.readJsonSync(path.join(mocksDirectory, 'some-api-post.json')).responses,
+            update: fs.readJsonSync(path.join(mocksDirectory, 'some-api-update.json')).responses,
+            insert: fs.readJsonSync(path.join(mocksDirectory, 'some-api-insert.json')).responses,
             download: fs.readJsonSync(path.join(mocksDirectory, 'some-api-download.json')).responses
         };
         const passThroughResponses = {
@@ -52,6 +53,8 @@
             expect(testPo[name].error.getText()).to.eventually.equal(statusCode === 'undefined' ? '' : statusCode));
 
         When(/^I post data$/, () => testPo.update.button.click());
+
+        When(/^I post some other data$/, () => testPo.insert.button.click());
 
         When(/^I download the pdf$/, () => {
             fs.removeSync(browser.params.default_directory + 'my.pdf');

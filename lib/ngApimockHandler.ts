@@ -55,26 +55,21 @@ abstract class NgApimockHandler implements Handler {
      * - a record call
      */
     handleRequest(request: http.IncomingMessage, response: http.ServerResponse, next: Function, registry: Registry,
-                  ngApimockId: string): void {
+        ngApimockId: string): void {
         // #1
-        const match = this.getMatchingMock(registry.mocks, request.url, request.method);
-        let payload: string;
+        const requestDataChunks: Buffer[] = [];
+        request.on('data', (rawData: Buffer) => requestDataChunks.push(rawData));
 
-        if (match) {
-            const selection = this.getSelection(registry, match.identifier, ngApimockId);
-            const variables = this.getVariables(registry, ngApimockId);
-            const mockResponse = match.responses[selection];
-            const requestDataChunks: Buffer[] = [];
+        request.on('end', () => {
+            const payload: string = Buffer.concat(requestDataChunks).toString();
+            const match = this.getMatchingMock(registry.mocks, request.url, request.method, payload);
 
-            request.on('data', (rawData: Buffer) => {
-                requestDataChunks.push(rawData);
-            });
+            if (match) {
+                const selection = this.getSelection(registry, match.identifier, ngApimockId);
+                const variables = this.getVariables(registry, ngApimockId);
+                const mockResponse = match.responses[selection];
 
-
-            if (mockResponse !== undefined) {
-                request.on('end', () => {
-                    payload = Buffer.concat(requestDataChunks).toString();
-
+                if (mockResponse !== undefined) {
                     if (this.getEcho(registry, match.identifier, ngApimockId)) {
                         console.log(match.method + ' request made on \'' + match.expression + '\' with payload: ', payload);
                     }
@@ -113,13 +108,9 @@ abstract class NgApimockHandler implements Handler {
                     } else {
                         sendResponse();
                     }
-                });
-            } else {
-                // remove the recording header to stop recording after this call succeeds
-                if (registry.record && !request.headers.record) {
-                    request.on('end', () => {
-                        payload = Buffer.concat(requestDataChunks).toString();
-
+                } else {
+                    // remove the recording header to stop recording after this call succeeds
+                    if (registry.record && !request.headers.record) {
                         const headers = request.headers;
                         const host = <string>headers.host;
                         const options = {
@@ -145,14 +136,14 @@ abstract class NgApimockHandler implements Handler {
                             response.end(e);
                         });
                         req.end();
-                    });
-                } else {
-                    next();
+                    } else {
+                        next();
+                    }
                 }
+            } else {
+                next();
             }
-        } else {
-            next();
-        }
+        });
     }
 
     /**
@@ -160,15 +151,19 @@ abstract class NgApimockHandler implements Handler {
      * @param mocks The mocks.
      * @param requestUrl The http request url.
      * @param method The http request method.
+     * @param payload The http request payload.
      * @returns matchingMock The matching mock.
      */
-    getMatchingMock(mocks: Mock[], requestUrl: string, method: string): Mock {
-        return mocks.filter(_mock => {
-            const expressionMatches = new RegExp(_mock.expression).exec(decodeURI(requestUrl)) !== null,
-                methodMatches = _mock.method === method;
+    getMatchingMock(mocks: Mock[], requestUrl: string, method: string, payload: string): Mock {
+        const allMatches: Mock[] = mocks.filter(_mock => {
+            const expressionMatches: boolean = !!(new RegExp(_mock.expression).exec(decodeURI(requestUrl)));
+            const methodMatches: boolean = _mock.method === method;
+            const bodyMatches: boolean = _mock.body ? !!(new RegExp(_mock.body).exec(payload)) : true;
 
-            return expressionMatches && methodMatches;
-        })[0];
+            return expressionMatches && methodMatches && bodyMatches;
+        });
+
+        return allMatches.filter(_mock => _mock.body)[0] || allMatches[0]
     }
 
     /**
