@@ -31,6 +31,11 @@
 
         Given(/^I open the mocking interface$/, () => browser.get('/mocking'));
 
+        Then(/^I filter using a URL$/, () => {
+            console.log(mockingPo.searchField);
+            return mockingPo.searchField.sendKeys('online/rest/some/api/pdf');
+        });
+
         Then(/^the following scenario's should be selected:$/, (table) =>
             protractor.promise.all(table.hashes().map((row) => {
                 const actual = mockingPo.mock(row.name).scenario.$$(('option[selected="selected"]')).first().getText();
