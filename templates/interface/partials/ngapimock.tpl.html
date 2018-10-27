@@ -1,5 +1,10 @@
 <h4>Currently the following mocks have been detected</h4>
 
+<div id="search-container">
+    <span>Search for matching expressions</span>
+    <input type="text" placeholder="URL" ng-model="$ctrl.searchUrl" id="search-field">
+</div>
+
 <table class="table table-striped table-bordered table-hover">
     <thead>
     <tr>
@@ -13,7 +18,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr data-ng-repeat-start="mock in $ctrl.mocks track by mock.identifier"
+    <tr data-ng-repeat-start="mock in $ctrl.mocks | filter:$ctrl.searchFilter track by mock.identifier"
         data-ng-init="selected = mock.responses[$ctrl.selections[mock.identifier]]; delay = $ctrl.delays[mock.identifier] || selected.delay;"
         identifier="{{::mock.name}}">
         <td><span data-ng-bind="::mock.expression.toString()"></span></td>

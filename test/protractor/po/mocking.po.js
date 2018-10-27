@@ -15,6 +15,7 @@
                 .then((identifier) => identifier === name))
             .first());
 
+        po.searchField = element(by.id('search-field'));
         po.record = element(by.model('$ctrl.record'));
         po.setToPassThroughs = element(by.buttonText('All to passThrough'));
         po.resetsToDefaults = element(by.buttonText('Reset to defaults'));

@@ -22,3 +22,10 @@ Feature: List all the available mocks
       | list     | passThrough     |
       | update   | successful      |
       | insert   | successful      |
+
+  Scenario: Filter the available mocks
+    Given I open the mocking interface
+    Then I filter using a URL
+    Then the following scenario's should be selected:
+      | name     | scenario        |
+      | download | binary-download | 
