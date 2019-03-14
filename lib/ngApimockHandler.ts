@@ -168,16 +168,19 @@ abstract class NgApimockHandler implements Handler {
     }
 
     /**
-     * Returns whether or not the payload matches the mock body either a string or as a partial or full object.
+     * Indicates if the payload matches the mock body either as a string or as an object.
      * @param mockBody {string|object} the mock body
      * @param payload {string} the request payload
      */
     bodyMatches(mockBody: string, payload: string): boolean {
+        // mock body as string
         if (typeof mockBody === 'string') {
             return !!(new RegExp(mockBody).exec(payload));
         }
-        const result = extend(clone(mockBody), JSON.parse(payload));
-        return isEqual(result, mockBody);
+        // mock body as object
+        const requestBody = JSON.parse(payload);
+        const expectedBody = extend(clone(mockBody), requestBody);
+        return isEqual(requestBody, expectedBody);
     }
 
     /**
