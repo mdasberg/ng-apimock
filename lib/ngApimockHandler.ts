@@ -1,7 +1,7 @@
 import * as http from 'http';
 import * as fs from 'fs-extra';
 import * as url from 'url';
-import { clone, extend, isEqual } from 'lodash';
+import { clone, isEqual, merge } from 'lodash';
 import Mock from '../tasks/mock';
 import {httpHeaders} from './http';
 import Registry from './registry';
@@ -172,14 +172,14 @@ abstract class NgApimockHandler implements Handler {
      * @param mockBody {string|object} the mock body
      * @param payload {string} the request payload
      */
-    bodyMatches(mockBody: string, payload: string): boolean {
+    bodyMatches(mockBody: any, payload: string): boolean {
         // mock body as string
         if (typeof mockBody === 'string') {
             return !!(new RegExp(mockBody).exec(payload));
         }
         // mock body as object
         const requestBody = JSON.parse(payload);
-        const expectedBody = extend(clone(mockBody), requestBody);
+        const expectedBody = merge(clone(requestBody), mockBody);
         return isEqual(requestBody, expectedBody);
     }
 
