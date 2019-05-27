@@ -10,8 +10,7 @@
  
   
 # MIGRATION to the new modular version
-A new version of Ng-apimock has been released. This version has been refactored into a modular way.
-The module has been split-up into separate [packages](https://github.com/ng-apimock). You can find the migration guide [here](https://github.com/ng-apimock/core/blob/master/MIGRATION.md). 
+A new version of Ng-apimock has been released. This version has been refactored into [multiple modules](https://github.com/ng-apimock). You can find the migration guide [here](https://github.com/ng-apimock/core/blob/master/MIGRATION.md). 
 
 The functionality has been split up into the following modules:
 - [@ng-apimock/core](https://github.com/ng-apimock/core) - the api
