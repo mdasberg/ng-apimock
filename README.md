@@ -3,6 +3,11 @@
 > Node plugin that provides the ability to use scenario based api mocking:
  - for local development
  - for protractor testing
+ 
+# MIGRATION to the new modular version
+A new version of Ng-apimock has been released. This version has been refactored into a modular way.
+The module has been split-up into separate [packages](https://github.com/ng-apimock). You can find the migration guide [here](https://github.com/ng-apimock/core/blob/master/MIGRATION.md).
+ 
 
 #### Plugins that use ng-apimock
  - [grunt-ng-apimock](https://mdasberg.github.io/grunt-ng-apimock) is a plugin that makes ng-apimock available for [Grunt](http://gruntjs.com/)
