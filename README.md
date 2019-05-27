@@ -3,15 +3,23 @@
 > Node plugin that provides the ability to use scenario based api mocking:
  - for local development
  - for protractor testing
- 
-# MIGRATION to the new modular version
-A new version of Ng-apimock has been released. This version has been refactored into a modular way.
-The module has been split-up into separate [packages](https://github.com/ng-apimock). You can find the migration guide [here](https://github.com/ng-apimock/core/blob/master/MIGRATION.md).
- 
 
 #### Plugins that use ng-apimock
  - [grunt-ng-apimock](https://mdasberg.github.io/grunt-ng-apimock) is a plugin that makes ng-apimock available for [Grunt](http://gruntjs.com/)
  - [gulp-ng-apimock](https://mdasberg.github.io/gulp-ng-apimock) is a plugin that makes ng-apimock available for [Gulp](http://gulpjs.com/)
+ 
+  
+# MIGRATION to the new modular version
+A new version of Ng-apimock has been released. This version has been refactored into a modular way.
+The module has been split-up into separate [packages](https://github.com/ng-apimock). You can find the migration guide [here](https://github.com/ng-apimock/core/blob/master/MIGRATION.md). 
+
+The functionality has been split up into the following modules:
+- [@ng-apimock/core](https://github.com/ng-apimock/core) - the api
+- [@ng-apimock/protractor-plugin](https://github.com/ng-apimock/protractor-plugin) - the protractor plugin 
+- [@ng-apimock/webdriverio-plugin](https://github.com/ng-apimock/webdriverio-plugin) - the webdriverio plugin 
+- [@ng-apimock/dev-interface](https://github.com/ng-apimock/dev-interface) - the development interface for local development
+- [@ng-apimock/cypress-plugin](https://github.com/ng-apimock/cypress-plugin) - the cypress plugin
+ 
 
 ## Getting Started
 
