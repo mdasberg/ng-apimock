@@ -72,7 +72,7 @@ There are a couple of rules to follow.
 {
   "expression": "your expression here (ie a regex without the leading and trailing '/' or a string)",
   "method": "the http method (ie GET, POST, PUT or DELETE)", // supports JSONP as well
-  "body": "request body matcher (ie a regex without the leading and trailing '/' or a string)"  // optional
+  "body": "request body matcher (ie an object, a regex without the leading and trailing '/' or a string)"  // optional
   "name": "identifiable name for this service call"  // if non is provided, expression$$method will be used
   "isArray": "indicates if the response data is an array or object",
   "responses": {
@@ -92,6 +92,73 @@ There are a couple of rules to follow.
 }
 
 ```
+
+## About the body matcher
+
+### As a string
+The string provided as the body matcher will be used as a RegExp to match against the request payload.
+
+### As an object
+You can provide a full or partial object to be matched against the request payload.
+
+The request body will match the payload if: 
+- the fields names match;
+- the field values and types match;
+- the fields are at the same level in the object hierarchy;
+
+For example, consider the following request payload:
+```json
+{
+  "company": "YouTube, LLC",
+  "address": {
+    "street": "901 Cherry Ave",
+    "city": "San Bruno",
+    "state": "CA",
+    "zip": 94066
+  }
+}
+```
+
+**Example #1:**
+```json
+{
+  "body": {
+    "company": "YouTube, LLC"
+  }
+}
+```
+| Match | Reason |
+| ----- | ------ |
+| True  | Partial object with same field matching name, type, value and level |
+
+**Example #2:**
+```json
+{
+  "body": {
+    "address": {
+      "state": "CA"
+    }
+  }
+}
+```
+| Match | Reason |
+| ----- | ------ |
+| True  | Partial object with sub-node with same field matching name, type, value and level |
+
+**Example #3:**
+```json
+{
+  "body": {
+    "address": {
+      "state": "CA",
+      "country": "USA" // <-- not present on request payload
+    }
+  }
+}
+```
+| Match | Reason |
+| ----- | ------ |
+| False | It expects a field that is not present on payload |
 
 ## Howto use global variables
 If for instance, you have date sensitive information in you mocks, mock data is not flexible enough.

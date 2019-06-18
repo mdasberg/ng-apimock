@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as fs from 'fs-extra';
 import * as url from 'url';
+import { clone, isEqual, merge } from 'lodash';
 import Mock from '../tasks/mock';
 import {httpHeaders} from './http';
 import Registry from './registry';
@@ -158,12 +159,28 @@ abstract class NgApimockHandler implements Handler {
         const allMatches: Mock[] = mocks.filter(_mock => {
             const expressionMatches: boolean = !!(new RegExp(_mock.expression).exec(decodeURI(requestUrl)));
             const methodMatches: boolean = _mock.method === method;
-            const bodyMatches: boolean = _mock.body ? !!(new RegExp(_mock.body).exec(payload)) : true;
+            const bodyMatches: boolean = _mock.body ? this.bodyMatches(_mock.body, payload) : true;
 
             return expressionMatches && methodMatches && bodyMatches;
         });
 
         return allMatches.filter(_mock => _mock.body)[0] || allMatches[0]
+    }
+
+    /**
+     * Indicates if the payload matches the mock body either as a string or as an object.
+     * @param mockBody {string|object} the mock body
+     * @param payload {string} the request payload
+     */
+    bodyMatches(mockBody: any, payload: string): boolean {
+        // mock body as string
+        if (typeof mockBody === 'string') {
+            return !!(new RegExp(mockBody).exec(payload));
+        }
+        // mock body as object
+        const requestBody = JSON.parse(payload);
+        const expectedBody = merge(clone(requestBody), mockBody);
+        return isEqual(requestBody, expectedBody);
     }
 
     /**

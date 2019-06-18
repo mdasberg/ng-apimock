@@ -11,7 +11,7 @@ interface Mock {
     // the http method (GET, POST, PUT, DELETE)
     method: string;
     // the request body
-    body?: string;
+    body?: any;
     // the available responses
     responses: { [key: string]: MockResponse };
 }
