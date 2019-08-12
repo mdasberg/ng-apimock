@@ -65,7 +65,7 @@
         });
 
         Then(/^I delay the response for mock with name (.*) for (\d+) milliseconds$/, (name, delay) => {
-            browser.ignoreSynchronization = true;
+            browser.waitForAngularEnabled(false);
             return ngApimock.delayResponse(name, parseInt(delay));
         });
     });

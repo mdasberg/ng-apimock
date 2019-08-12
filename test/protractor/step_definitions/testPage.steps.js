@@ -71,7 +71,7 @@
         When(/^I wait a (\d+) milliseconds$/, (wait) => browser.sleep(wait));
 
         Then(/^the loading message is visible$/, () => {
-            browser.ignoreSynchronization = false;
+            browser.waitForAngularEnabled(true);
             return expect(testPo.list.loading.getText()).to.eventually.equal('finished');
         });
     });

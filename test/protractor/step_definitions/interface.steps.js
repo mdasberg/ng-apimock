@@ -37,7 +37,7 @@
         });
 
         Then(/^the following scenario's should be selected:$/, (table) =>
-            protractor.promise.all(table.hashes().map((row) => {
+            Promise.all(table.hashes().map((row) => {
                 const actual = mockingPo.mock(row.name).scenario.$$(('option[selected="selected"]')).first().getText();
                 const expected = row.scenario;
                 return expect(actual).to.eventually.equal(expected);
@@ -80,6 +80,6 @@
         Then(/^I delay the response for mock with name (.*) for (\d+) milliseconds$/, (name, delay) =>
             mockingPo.mock(name).delay.clear().sendKeys(parseInt(delay))
                 .then(() => browser.sleep(1000)
-                    .then(() => browser.ignoreSynchronization = true))); // debounce delay
+                    .then(() => browser.waitForAngularEnabled(false)))); // debounce delay
     });
 })();
