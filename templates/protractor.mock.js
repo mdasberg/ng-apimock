@@ -10,15 +10,15 @@
     const baseUrl = _require('url-join')(requestUrl || browser.baseUrl, 'ngapimock');
 
     let _handleRequest = function (httpMethod, urlSuffix, opts, errorMessage) {
-        const deferred = protractor.promise.defer();
-        request(httpMethod, baseUrl + urlSuffix, opts).done((res) => {
-            if (res.statusCode !== 200) {
-                deferred.reject(errorMessage);
-            } else {
-                deferred.fulfill();
-            }
+        return new Promise((resolve, reject) => {
+            request(httpMethod, baseUrl + urlSuffix, opts).done((res) => {
+                if (res.statusCode !== 200) {
+                    reject(errorMessage);
+                } else {
+                    resolve();
+                }
+            });
         });
-        return deferred.promise;
     };
 
     const ProtractorMock = function () {

@@ -12,14 +12,15 @@ config.params = {
 };
 
 config.specs = [
-    '../**/interface/*.feature'
+    '../**/interface/list-available-mocks.feature',
+    '../**/interface/change-responses.feature'
 ];
 
 config.multiCapabilities = [
     {
         browserName: 'chrome',
-        shardTestFiles: true,
-        maxInstances: 10,
+        shardTestFiles: false,
+        maxInstances: 1,
         chromeOptions: {
             // Get rid of --ignore-certificate yellow warning
             args: ['--no-sandbox', '--test-type=browser'],
