@@ -26,6 +26,19 @@ class Processor {
             root: '/'
         }).forEach((file) =>
             mocks.push(fs.readJsonSync(path.join(directory, file))));
+
+        const dynamicMocks = glob.sync('**/*.builder.js', {
+            cwd: directory,
+            root: '/'
+        }).map(file => {
+            return require(path.relative(path.resolve(__dirname), path.resolve(path.join(directory, file))));
+        });
+
+        dynamicMocks.forEach(mock => {
+            if(mock.default) 
+                mocks.push(mock.default);
+        })
+
         return mocks;
     }
 
