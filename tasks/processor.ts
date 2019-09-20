@@ -35,8 +35,9 @@ class Processor {
         });
 
         dynamicMocks.forEach(mock => {
-            if(mock.default) 
+            if(mock.default) {
                 mocks.push(mock.default);
+            }
         })
 
         return mocks;
