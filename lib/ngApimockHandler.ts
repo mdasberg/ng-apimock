@@ -8,7 +8,7 @@ import Handler from './handler';
 
 /** Abstract Handler for a request. */
 abstract class NgApimockHandler implements Handler {
-    MAX_RECORDINGS_PER_MOCK = 2;
+    MAX_RECORDINGS_PER_MOCK = 5;
 
     /**
      * Gets the selection.

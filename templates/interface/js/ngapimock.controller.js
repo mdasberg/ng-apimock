@@ -60,6 +60,7 @@
             mockService.get({}, function (response) {
                 angular.merge(vm.mocks, response.mocks);
                 vm.selections = response.selections;
+                vm.recordings = response.recordings;
             });
         }
 
