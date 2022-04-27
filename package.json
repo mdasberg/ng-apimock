@@ -45,7 +45,7 @@
     "angular": "1.6.6",
     "angular-mocks": "1.6.6",
     "angular-resource": "1.6.6",
-    "async": "2.5.0",
+    "async": "2.6.4",
     "chokidar": "^3.0.2",
     "fs-extra": "4.0.1",
     "glob": "7.1.2",
